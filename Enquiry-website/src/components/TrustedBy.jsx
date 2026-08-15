@@ -12,7 +12,7 @@ const TrustedBy = () => {
     'Blinkit',
     'Zepto',
     'Swiggy Instamart',
-    'Nature\'s Basket'
+    'Nature\'s Basket/ecom'
   ]
 
   return (

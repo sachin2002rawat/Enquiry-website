@@ -4,7 +4,7 @@ const TrustedBy = () => {
   // List of trusted partner retail companies
   const companies = [
     'Reliance Retail',
-    'Big Basket',
+    'Bigs Basket',
     'D-Mart',
     'Amazon Fresh',
     'Flipkart',

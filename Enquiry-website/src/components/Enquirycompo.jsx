@@ -141,6 +141,7 @@ const Enquirycompo = ({ isModal = false, isOpen: customIsOpen, onClose: customOn
                 className="enquiry-input"
                 required
               />
+              
               <Mail className="enquiry-field-icon" size={18} />
             </div>
           </div>

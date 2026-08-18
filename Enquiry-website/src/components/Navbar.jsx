@@ -105,6 +105,9 @@ const Navbar = () => {
                   onClick={(e) => {
                     e.preventDefault()
                     setActiveLink(link.name)
+                    if (link.name === 'Enquiry') {
+                      openEnquiryModal()
+                    }
                     setMobileMenuOpen(false)
                   }}
                 >

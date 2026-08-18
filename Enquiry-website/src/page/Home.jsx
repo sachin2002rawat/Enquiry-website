@@ -9,7 +9,6 @@ import ScrollReveal from '../components/ScrollReveal'
 // Lazy load below-the-fold components for performance
 const WideRangeProducts = lazy(() => import('../components/WideRangeProducts'))
 const PopularProduct = lazy(() => import('../components/Product/PopularProduct'))
-const Enquirycompo = lazy(() => import('../components/Enquirycompo'))
 const ContactUs = lazy(() => import('../components/ContactUs'))
 const AboutCompany = lazy(() => import('../components/AboutCompany'))
 const Review = lazy(() => import('../components/Review'))
@@ -43,7 +42,6 @@ const Home = () => {
       
       <Suspense fallback={<SectionLoader />}>
         <ScrollReveal variant="up"><PopularProduct /></ScrollReveal>
-        <ScrollReveal variant="up"><Enquirycompo /></ScrollReveal>
         <ScrollReveal variant="up"><ContactUs /></ScrollReveal>
         <ScrollReveal variant="up"><AboutCompany /></ScrollReveal>
         <ScrollReveal variant="up"><Review /></ScrollReveal>

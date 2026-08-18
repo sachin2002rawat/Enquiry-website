@@ -4,11 +4,13 @@ import { MessageSquare } from 'lucide-react'
 import { FaWhatsapp } from 'react-icons/fa'
 import { FiArrowRight, FiArrowLeft } from 'react-icons/fi'
 import productsList from '../../ProductsData.json'
+import { useEnquiryModal } from '../../context/EnquiryModalContext'
 
 const PopularProduct = () => {
   const navigate = useNavigate()
   const [activeIndex, setActiveIndex] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
+  const { openEnquiryModal } = useEnquiryModal()
 
   // Auto-play: cycles cards every 3 seconds, pauses on mouse hover
   useEffect(() => {
@@ -31,7 +33,7 @@ const PopularProduct = () => {
 
   const handleEnquire = (productName, e) => {
     e.stopPropagation() // Prevent card select click trigger
-    alert(`Opening enquiry form for: ${productName}`)
+    openEnquiryModal()
   }
 
   const handleBulkWhatsApp = (productName, e) => {

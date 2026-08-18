@@ -114,6 +114,9 @@ const ProductNavbar = () => {
                 onClick={(e) => {
                   if (item.path === '#') e.preventDefault()
                   setActiveNav(item.name)
+                  if (item.name === 'Enquiry') {
+                    openEnquiryModal()
+                  }
                   setMobileMenuOpen(false)
                 }}
               >

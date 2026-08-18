@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './ProductDetailHero.css';
+import { useEnquiryModal } from '../../context/EnquiryModalContext';
 import { 
   Share2, 
   ZoomIn, 
@@ -36,6 +37,7 @@ const HARDCODED_PRODUCT = {
 };
 
 const ProductHero = ({ product }) => {
+  const { openEnquiryModal } = useEnquiryModal();
   const activeProduct = {
     title: product?.name || product?.title || HARDCODED_PRODUCT.title,
     category: product?.category || HARDCODED_PRODUCT.category,
@@ -273,7 +275,7 @@ const ProductHero = ({ product }) => {
             <button 
               type="button" 
               className="ph-btn-enquiry" 
-              onClick={() => alert("Send Enquiry clicked!")}
+              onClick={() => openEnquiryModal()}
             >
               <Mail size={18} />
               <span>Send Enquiry</span>

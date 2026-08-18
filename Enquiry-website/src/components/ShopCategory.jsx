@@ -1,12 +1,27 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { FiArrowRight, FiArrowLeft } from 'react-icons/fi'
 import { Store } from 'lucide-react'
 
 import productsData from '../ProductsData.json'
 
 const ShopCategory = () => {
+  const navigate = useNavigate()
   // Store the list of categories/products in state so we can rotate/reorder it
   const [categories, setCategories] = useState(productsData)
+
+  const handleViewAll = () => {
+    navigate('/product')
+  }
+
+  const handleCategoryClick = (category) => {
+    if (category) {
+      const targetSlug = category.slug || category.id
+      navigate(`/product/${targetSlug}`)
+    } else {
+      navigate('/product')
+    }
+  }
 
   // Sizing styles matching wide range products section (3 large cards layout)
   const cardStyle = {
@@ -18,6 +33,7 @@ const ShopCategory = () => {
     justifyContent: 'space-between',
     alignItems: 'center',
     boxSizing: 'border-box',
+    cursor: 'pointer'
   }
 
   const imgContainerStyle = {
@@ -85,7 +101,7 @@ const ShopCategory = () => {
           </div>
           <div className="shop-category-titles">
             <span className="shop-category-subtitle">Browse By</span>
-            <h2 className="shop-category-title">Shop by Category</h2>
+            <h2 className="shop-category-title">Our Categories</h2>
           </div>
         </div>
          
@@ -94,7 +110,7 @@ const ShopCategory = () => {
         {/* Right Side: View All Button */}
         <button 
           className="view-all-btn"  
-          onClick={() => alert('View All Categories Clicked')}   
+          onClick={handleViewAll}   
         >
           View All
         </button>
@@ -120,7 +136,7 @@ const ShopCategory = () => {
                 key={category.id} 
                 className="category-card"  
                 style={cardStyle}
-                onClick={() => alert(`Clicked Category: ${displayName}`)}
+                onClick={() => handleCategoryClick(category)}
               >
                 {/* Container for the category image (covers 75% of card height) */}
                 <div 

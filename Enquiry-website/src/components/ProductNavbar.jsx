@@ -2,10 +2,12 @@ import React, { useState } from 'react'
 import { LayoutGrid, MessageSquareMore, User, Menu, X } from 'lucide-react'
 import { FaCommentDots } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
+import { useEnquiryModal } from '../context/EnquiryModalContext'
 
 const ProductNavbar = () => {
   const [activeNav, setActiveNav] = useState('Home')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { openEnquiryModal } = useEnquiryModal()
 
   const navItems = [
     { name: 'Home', path: '/' },
@@ -21,7 +23,7 @@ const ProductNavbar = () => {
   }
 
   const handleEnquiryClick = () => {
-    alert('Send Enquiry form opened')
+    openEnquiryModal()
   }
 
   return (
@@ -58,6 +60,9 @@ const ProductNavbar = () => {
                 onClick={(e) => {
                   if (item.path === '#') e.preventDefault()
                   setActiveNav(item.name)
+                  if (item.name === 'Enquiry') {
+                    openEnquiryModal()
+                  }
                 }}
               >
                 {item.name}

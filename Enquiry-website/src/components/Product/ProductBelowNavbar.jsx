@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { FiPackage, FiShield } from 'react-icons/fi'
 import { FaRegCommentDots } from 'react-icons/fa'
 import { TbTruckDelivery } from 'react-icons/tb'
+import { useEnquiryModal } from '../../context/EnquiryModalContext'
 
 /**
  * ProductBelowNavbar Component
@@ -10,8 +11,10 @@ import { TbTruckDelivery } from 'react-icons/tb'
  * Features 3 identical, perfectly aligned bronze feature badges.
  */
 const ProductBelowNavbar = () => {
+  const { openEnquiryModal } = useEnquiryModal()
+
   const handleBulkEnquiry = () => {
-    alert('Bulk Enquiry form opened!')
+    openEnquiryModal()
   }
 
   return (

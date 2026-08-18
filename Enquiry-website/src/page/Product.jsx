@@ -32,7 +32,7 @@ const Product = () => {
   const [sortBy, setSortBy] = useState('Default Sorting');
   const [viewMode, setViewMode] = useState('grid');
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 6; // 6 cards shown per page (2 rows of 3 grid cards)
+  const ITEMS_PER_PAGE = 12; // 12 cards shown per page (4 rows of 3 grid cards)
 
   // 1. Calculate dynamic category counts directly from ProductsData.json
   const categoriesWithCounts = useMemo(() => {

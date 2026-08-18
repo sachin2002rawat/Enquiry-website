@@ -3,8 +3,8 @@ import { FiChevronDown, FiChevronUp } from 'react-icons/fi'
 import faqData from '../Faq.json'
 
 const FAQ = () => {
-  // Default open the first question (id: 1) to match mockup design screenshot
-  const [openId, setOpenId] = useState(1)
+  // All FAQ items closed by default
+  const [openId, setOpenId] = useState(null)
 
   const toggleFaq = (id) => {
     setOpenId(prev => (prev === id ? null : id))

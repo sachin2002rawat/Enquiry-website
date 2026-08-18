@@ -2,6 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FaStar, FaRegCommentDots, FaWhatsapp } from 'react-icons/fa'
 import { FiImage } from 'react-icons/fi'
+import { useEnquiryModal } from '../../context/EnquiryModalContext'
 
 /**
  * ProductCard Component
@@ -9,6 +10,7 @@ import { FiImage } from 'react-icons/fi'
  */
 const ProductCard = ({ product }) => {
   const navigate = useNavigate()
+  const { openEnquiryModal } = useEnquiryModal()
   const displayTitle = product?.name || product?.title || 'Product Item'
   const category = product?.category || 'PURE SPICES'
   const rating = product?.rating || 5
@@ -24,7 +26,7 @@ const ProductCard = ({ product }) => {
 
   const handleSendEnquiry = (e) => {
     if (e) e.stopPropagation()
-    alert(`Send Enquiry for ${displayTitle}`)
+    openEnquiryModal()
   }
 
   const handleWhatsAppClick = (e) => {

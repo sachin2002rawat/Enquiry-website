@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { LayoutGrid, MessageSquareMore, Menu, X } from 'lucide-react'
+import { useEnquiryModal } from '../context/EnquiryModalContext'
 
 /**
  * Navbar Component (Home Page Navbar)
@@ -8,6 +9,7 @@ import { LayoutGrid, MessageSquareMore, Menu, X } from 'lucide-react'
 const Navbar = () => {
   const [activeLink, setActiveLink] = useState('Home')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { openEnquiryModal } = useEnquiryModal()
 
   const navLinks = [
     { name: 'Home', href: '#' },
@@ -23,7 +25,7 @@ const Navbar = () => {
   }
 
   const handleEnquiryClick = () => {
-    alert('Send Enquiry form opened')
+    openEnquiryModal()
   }
 
   return (
@@ -53,6 +55,9 @@ const Navbar = () => {
                 onClick={(e) => {
                   e.preventDefault()
                   setActiveLink(link.name)
+                  if (link.name === 'Enquiry') {
+                    openEnquiryModal()
+                  }
                 }}
               >
                 {link.name}

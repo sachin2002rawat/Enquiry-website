@@ -4,10 +4,12 @@ import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import CompanySection from '../components/CompanySection'
 import ShopCategory from '../components/ShopCategory'
+import ScrollReveal from '../components/ScrollReveal'
 
 // Lazy load below-the-fold components for performance
 const WideRangeProducts = lazy(() => import('../components/WideRangeProducts'))
 const PopularProduct = lazy(() => import('../components/Product/PopularProduct'))
+const Enquirycompo = lazy(() => import('../components/Enquirycompo'))
 const ContactUs = lazy(() => import('../components/ContactUs'))
 const AboutCompany = lazy(() => import('../components/AboutCompany'))
 const Review = lazy(() => import('../components/Review'))
@@ -35,18 +37,19 @@ const Home = () => {
       <Topbar />
       <Navbar />
       <Hero />
-      <CompanySection />
-      <ShopCategory />
+      <ScrollReveal variant="up"><CompanySection /></ScrollReveal>
+      <ScrollReveal variant="up"><WideRangeProducts /></ScrollReveal>
+      <ScrollReveal variant="up"><ShopCategory /></ScrollReveal>
       
       <Suspense fallback={<SectionLoader />}>
-        <WideRangeProducts />
-        <PopularProduct />
-        <ContactUs />
-        <AboutCompany />
-        <Review />
-        <FAQ />
-        <LatestArticle />
-        <Feature />
+        <ScrollReveal variant="up"><PopularProduct /></ScrollReveal>
+        <ScrollReveal variant="up"><Enquirycompo /></ScrollReveal>
+        <ScrollReveal variant="up"><ContactUs /></ScrollReveal>
+        <ScrollReveal variant="up"><AboutCompany /></ScrollReveal>
+        <ScrollReveal variant="up"><Review /></ScrollReveal>
+        <ScrollReveal variant="up"><FAQ /></ScrollReveal>
+        <ScrollReveal variant="up"><LatestArticle /></ScrollReveal>
+        <ScrollReveal variant="up"><Feature /></ScrollReveal>
         <Footer />
       </Suspense>
     </div>

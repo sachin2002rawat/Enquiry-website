@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { FiSearch } from 'react-icons/fi'
 import { FaCommentDots } from 'react-icons/fa'
+import { useEnquiryModal } from '../context/EnquiryModalContext'
 
 const Topbar = () => {
   const [searchQuery, setSearchQuery] = useState('')
+  const { openEnquiryModal } = useEnquiryModal()
 
   // Handle search submission
   const handleSearch = (e) => {
@@ -19,7 +21,14 @@ const Topbar = () => {
         
         {/* Left: Promo Text */}
         <div className="topbar-promo">
-          <a href="#" className="promo-link">
+          <a 
+            href="#" 
+            className="promo-link"
+            onClick={(e) => {
+              e.preventDefault()
+              openEnquiryModal()
+            }}
+          >
             *Welcome <span>Enquiry Now</span> *
           </a>
         </div>

@@ -7,6 +7,7 @@ import Enquirycompo from './components/Enquirycompo'
 import { EnquiryModalProvider } from './context/EnquiryModalContext'
 import useScrollReveal from './hooks/useScrollReveal'
 import './App.css'
+import Contact from './page/Contact'
 
 const AppContent = () => {
   useScrollReveal()
@@ -19,6 +20,7 @@ const AppContent = () => {
         <Route path="/product" element={<Product />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/productDetail" element={<ProductDetails />} />
+         <Route path="/contact" element={<Contact/>} />
       </Routes>
       
       {/* Global Glassmorphic Enquiry Pop-up Modal */}

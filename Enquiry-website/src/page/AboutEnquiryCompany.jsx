@@ -115,7 +115,7 @@ const AboutEnquiryCompany = () => {
             <h2 className="relationship-title">One Relationship at a Time</h2>
             
             <p className="relationship-paragraph">
-              Founded with a clear vision and unwavering commitment, we have grown into a trusted partner for thousands of clients across the country. Our work is guided by integrity, innovation, and a deep respect for the people we serve.
+              Founded with a clear vision and unwavering commitment, we have grown into a trusted partner for thousands of clients across the country. Our work is guided by integrity, innovation, and a deep respect for the people we are serve.
             </p>
             
             <p className="relationship-paragraph">

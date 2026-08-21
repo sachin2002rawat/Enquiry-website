@@ -42,7 +42,7 @@ const Home = () => {
       
       <Suspense fallback={<SectionLoader />}>
         <ScrollReveal variant="up"><PopularProduct /></ScrollReveal>
-        <ScrollReveal variant="up"><ContactUs /></ScrollReveal>
+        {/* <ScrollReveal variant="up"><ContactUs /></ScrollReveal> */}
         <ScrollReveal variant="up"><AboutCompany /></ScrollReveal>
         <ScrollReveal variant="up"><Review /></ScrollReveal>
         <ScrollReveal variant="up"><FAQ /></ScrollReveal>

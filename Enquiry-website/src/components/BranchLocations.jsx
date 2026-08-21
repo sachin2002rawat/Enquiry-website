@@ -8,7 +8,7 @@ import {
   FiX, 
   FiExternalLink,
   FiPackage,
-  FiShieldCheck,
+  FiShield,
   FiZap,
   FiSend
 } from 'react-icons/fi'
@@ -180,7 +180,7 @@ const BranchLocations = () => {
 
                   <div className="enquiry-feature-item">
                     <div className="feature-icon-box">
-                      <FiShieldCheck size={20} />
+                      <FiShield size={20} />
                     </div>
                     <div>
                       <h4 className="feature-title">Live Product Quality Inspection</h4>

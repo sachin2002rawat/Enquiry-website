@@ -13,14 +13,14 @@ import {
 import { FaXTwitter } from 'react-icons/fa6'
 import { FiMessageSquare, FiArrowRight, FiShield } from 'react-icons/fi'
 
+import { useNavigate } from 'react-router-dom'
+
 const Footer = () => {
+  const navigate = useNavigate()
+
   const handleLearnMore = () => {
-    const aboutSection = document.querySelector('.about-company-section')
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: 'smooth' })
-    } else {
-      alert('Learn More clicked!')
-    }
+    navigate('/about-company')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleWhatsApp = () => {
@@ -159,17 +159,6 @@ const Footer = () => {
         </div>
 
       </div>
-
-      {/* Floating Sticky WhatsApp Quick Button */}
-      <button 
-        type="button" 
-        className="footer-floating-whatsapp"
-        onClick={handleWhatsApp}
-        aria-label="Chat on WhatsApp"
-      >
-        <FaWhatsapp size={24} color="#ffffff" />
-      </button>
-
     </footer>
   )
 }

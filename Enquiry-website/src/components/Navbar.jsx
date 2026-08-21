@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { LayoutGrid, MessageSquareMore, Menu, X } from 'lucide-react'
+import { FiSearch } from 'react-icons/fi'
+import { Link, useNavigate } from 'react-router-dom'
 import { useEnquiryModal } from '../context/EnquiryModalContext'
 
 /**
@@ -9,15 +11,16 @@ import { useEnquiryModal } from '../context/EnquiryModalContext'
 const Navbar = () => {
   const [activeLink, setActiveLink] = useState('Home')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const navigate = useNavigate()
   const { openEnquiryModal } = useEnquiryModal()
 
   const navLinks = [
-    { name: 'Home', href: '#' },
-    { name: 'About Company', href: '#' },
-    { name: 'Community', href: '#' },
-    { name: 'Enquiry', href: '#' },
-    { name: 'Blog', href: '#' },
-    { name: 'Contact Us', href: '#' }
+    { name: 'Home', path: '/' },
+    { name: 'About Company', path: '/about-company' },
+    { name: 'Enquiry', path: '#' },
+    { name: 'Blog', path: '/blog' },
+    { name: 'Contact Us', path: '/contact' }
   ]
 
   const handleCategoriesClick = () => {
@@ -28,18 +31,35 @@ const Navbar = () => {
     openEnquiryModal()
   }
 
+  const handleSearchSubmit = (e) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      navigate('/product')
+    }
+  }
+
   return (
     <nav className="navbar">
       <div className="navbar-content">
-        {/* Left: Categories Button */}
-        <div className="nav-categories">
+        {/* Left: Categories Button (Desktop) / Send Enquiry Button (Mobile Left Side) */}
+        <div className="nav-categories-wrapper">
           <button 
             type="button" 
-            className="categories-btn" 
+            className="categories-btn desktop-only" 
             onClick={handleCategoriesClick}
           >
             <LayoutGrid size={18} className="categories-icon" />
             <span>Categories</span>
+          </button>
+
+          {/* Send Enquiry Button (Mobile Left) */}
+          <button 
+            type="button" 
+            className="enquiry-btn mobile-only" 
+            onClick={handleEnquiryClick}
+          >
+            <MessageSquareMore size={18} className="enquiry-btn-icon" />
+            <span>Send Enquiry</span>
           </button>
         </div>
 
@@ -50,10 +70,12 @@ const Navbar = () => {
               key={link.name} 
               className={`nav-link-item ${activeLink === link.name ? 'active' : ''}`}
             >
-              <a 
-                href={link.href} 
+              <Link 
+                to={link.path} 
                 onClick={(e) => {
-                  e.preventDefault()
+                  if (link.path === '#') {
+                    e.preventDefault()
+                  }
                   setActiveLink(link.name)
                   if (link.name === 'Enquiry') {
                     openEnquiryModal()
@@ -61,14 +83,14 @@ const Navbar = () => {
                 }}
               >
                 {link.name}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
 
-        {/* Right: Send Enquiry Button & Hamburger Toggle */}
+        {/* Right: Send Enquiry Button (Desktop) & Search Bar + Hamburger Toggle (Mobile Right Side) */}
         <div className="nav-right-group">
-          <div className="nav-enquiry">
+          <div className="nav-enquiry desktop-only">
             <button 
               type="button" 
               className="enquiry-btn" 
@@ -78,6 +100,20 @@ const Navbar = () => {
               <span>Send Enquiry</span>
             </button>
           </div>
+
+          {/* Search Bar (Mobile Right) */}
+          <form className="mobile-nav-search-form mobile-only" onSubmit={handleSearchSubmit}>
+            <input 
+              type="text" 
+              className="mobile-nav-search-input" 
+              placeholder="Search..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button type="submit" className="mobile-nav-search-btn" aria-label="Search">
+              <FiSearch size={16} />
+            </button>
+          </form>
 
           {/* Hamburger Menu Toggle Button (Visible on Mobile Only) */}
           <button
@@ -100,10 +136,12 @@ const Navbar = () => {
                 key={link.name} 
                 className={`mobile-nav-link-item ${activeLink === link.name ? 'active' : ''}`}
               >
-                <a 
-                  href={link.href} 
+                <Link 
+                  to={link.path} 
                   onClick={(e) => {
-                    e.preventDefault()
+                    if (link.path === '#') {
+                      e.preventDefault()
+                    }
                     setActiveLink(link.name)
                     if (link.name === 'Enquiry') {
                       openEnquiryModal()
@@ -112,7 +150,7 @@ const Navbar = () => {
                   }}
                 >
                   {link.name}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

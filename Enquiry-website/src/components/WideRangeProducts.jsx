@@ -1,50 +1,76 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MessageSquare } from 'lucide-react'
-import { FaWhatsapp } from 'react-icons/fa'
-import { FiArrowRight, FiArrowLeft } from 'react-icons/fi'
+import { FaWhatsapp, FaStar } from 'react-icons/fa'
+import { FiArrowRight, FiArrowLeft, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import productsData from '../ProductsData.json'
+import { useEnquiryModal } from '../context/EnquiryModalContext'
 
 const WideRangeProducts = () => {
   const navigate = useNavigate()
+  const { openEnquiryModal } = useEnquiryModal()
 
-  // Store products in state to rotate for infinite carousel sliding
+  // State for Desktop Carousel Slider
   const [products, setProducts] = useState(productsData)
 
-  // Move carousel to the right (take first card, move to the end)
-  const handleNext = () => {
+  // State for Mobile Pagination List View (5 items per page)
+  const [mobilePage, setMobilePage] = useState(1)
+  const itemsPerPage = 5
+
+  const totalMobilePages = Math.ceil(productsData.length / itemsPerPage)
+
+  // Move carousel to the right on desktop
+  const handleNextDesktop = () => {
     setProducts((prev) => {
       const copy = [...prev]
-      const first = copy.shift() // Remove first card
-      copy.push(first)           // Add it to the end
+      const first = copy.shift()
+      copy.push(first)
       return copy
     })
   }
 
-  // Move carousel to the left (take last card, move to the beginning)
-  const handlePrev = () => {
+  // Move carousel to the left on desktop
+  const handlePrevDesktop = () => {
     setProducts((prev) => {
       const copy = [...prev]
-      const last = copy.pop()    // Remove last card
-      copy.unshift(last)         // Add it to the beginning
+      const last = copy.pop()
+      copy.unshift(last)
       return copy
     })
+  }
+
+  // Mobile page change handler
+  const handleMobilePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalMobilePages) {
+      setMobilePage(newPage)
+      const section = document.querySelector('.wide-range-section')
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
   }
 
   const handleEnquire = (productTitle, e) => {
     if (e) e.stopPropagation()
-    alert(`Opening inquiry form for: ${productTitle}`)
+    openEnquiryModal()
   }
 
   const handleWhatsApp = (productTitle, e) => {
     if (e) e.stopPropagation()
-    alert(`Opening WhatsApp chat for product: ${productTitle}`)
+    const message = encodeURIComponent(`Hi, I am interested in inquiring about ${productTitle}.`)
+    window.open(`https://wa.me/?text=${message}`, '_blank')
   }
 
   const handleCardClick = (product) => {
     const targetSlug = product.slug || product.id
     navigate(`/product/${targetSlug}`)
   }
+
+  // Current slice of products for mobile list (5 products per page)
+  const currentMobileProducts = productsData.slice(
+    (mobilePage - 1) * itemsPerPage,
+    mobilePage * itemsPerPage
+  )
 
   return (
     <section className="wide-range-section">
@@ -69,19 +95,19 @@ const WideRangeProducts = () => {
         </a>
       </div>
 
-      {/* 2. Carousel Container (with Overlay Navigation Arrows) */}
-      <div className="wide-range-carousel-wrapper">
+      {/* 2. Desktop Carousel View (Hidden on Mobile) */}
+      <div className="wide-range-carousel-wrapper desktop-only-carousel">
         {/* Left Arrow Button */}
         <button 
           type="button"
           className="carousel-arrow-btn prev" 
-          onClick={handlePrev} 
+          onClick={handlePrevDesktop} 
           aria-label="Previous products"
         >
           <FiArrowLeft size={20} />
         </button>
 
-        {/* Products List (overflow: hidden handles hiding of off-screen cards) */}
+        {/* Desktop Carousel Cards Track */}
         <div className="wide-range-grid">
           {products.slice(0, 3).map((product) => (
             <div 
@@ -90,11 +116,8 @@ const WideRangeProducts = () => {
               onClick={() => handleCardClick(product)}
               style={{ cursor: 'pointer' }}
             >
-              
-              {/* Card Tag Category Header */}
               <span className="product-wide-tag">{product.collection}</span>
               
-              {/* Card Product Image */}
               <div className="product-wide-img-container">
                 <img 
                   src={product.image} 
@@ -109,16 +132,10 @@ const WideRangeProducts = () => {
                 />
               </div>
               
-              {/* Card Product Title */}
               <h3 className="product-wide-title">{product.name}</h3>
-              
-              {/* Card Category Tag */}
               <span className="product-wide-category">{product.category}</span>
-              
-              {/* Card Product Description */}
               <p className="product-wide-description">{product.description}</p>
               
-              {/* Card Bottom Actions (Enquire & WhatsApp Buttons) */}
               <div className="product-wide-actions">
                 <button 
                   type="button" 
@@ -137,7 +154,6 @@ const WideRangeProducts = () => {
                   <FaWhatsapp size={20} />
                 </button>
               </div>
-              
             </div>
           ))}
         </div>
@@ -146,11 +162,114 @@ const WideRangeProducts = () => {
         <button 
           type="button"
           className="carousel-arrow-btn next" 
-          onClick={handleNext} 
+          onClick={handleNextDesktop} 
           aria-label="Next products"
         >
           <FiArrowRight size={20} />
         </button>
+      </div>
+
+      {/* 3. Mobile Vertical List View with Pagination (Visible ONLY on Mobile screens <= 768px) */}
+      <div className="wide-range-mobile-list-wrapper mobile-only-list">
+        <div className="wide-range-mobile-list">
+          {currentMobileProducts.map((product) => (
+            <div 
+              key={product.id} 
+              className="wide-range-mobile-card"
+              onClick={() => handleCardClick(product)}
+            >
+              {/* Top Split Section: Left Image, Right Details */}
+              <div className="mobile-card-top">
+                <div className="mobile-card-img-container">
+                  <img 
+                    src={product.image} 
+                    alt={product.name} 
+                    className="mobile-card-img" 
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/premium_spices.png";
+                    }}
+                  />
+                </div>
+
+                <div className="mobile-card-info">
+                  <span className="mobile-card-category">{product.category}</span>
+                  <h3 className="mobile-card-title">{product.name}</h3>
+                  
+                  {/* Rating Stars Row */}
+                  <div className="mobile-card-rating">
+                    <div className="stars-group">
+                      {[...Array(5)].map((_, i) => (
+                        <FaStar key={i} size={13} color="#f59e0b" />
+                      ))}
+                    </div>
+                    <span className="rating-count">({product.reviewsCount || 127})</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Action Row (Below both Image & Details) */}
+              <div className="mobile-card-actions">
+                <button 
+                  type="button" 
+                  className="mobile-enquire-btn"
+                  onClick={(e) => handleEnquire(product.name, e)}
+                >
+                  <MessageSquare size={16} /> Send Enquiry
+                </button>
+                
+                <button 
+                  type="button" 
+                  className="mobile-whatsapp-btn"
+                  onClick={(e) => handleWhatsApp(product.name, e)}
+                  aria-label={`WhatsApp ${product.name}`}
+                >
+                  <FaWhatsapp size={20} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Mobile Pagination (Shown ONLY on Mobile) */}
+        <div className="wide-range-mobile-pagination">
+          <button 
+            type="button" 
+            className="mobile-page-btn nav-btn"
+            disabled={mobilePage === 1}
+            onClick={() => handleMobilePageChange(mobilePage - 1)}
+            aria-label="Previous page"
+          >
+            <FiChevronLeft size={18} />
+          </button>
+
+          <div className="mobile-page-numbers">
+            {Array.from({ length: totalMobilePages }, (_, index) => {
+              const pageNum = index + 1
+              return (
+                <button
+                  key={pageNum}
+                  type="button"
+                  className={`mobile-page-num ${mobilePage === pageNum ? 'active' : ''}`}
+                  onClick={() => handleMobilePageChange(pageNum)}
+                >
+                  {pageNum}
+                </button>
+              )
+            })}
+          </div>
+
+          <button 
+            type="button" 
+            className="mobile-page-btn nav-btn"
+            disabled={mobilePage === totalMobilePages}
+            onClick={() => handleMobilePageChange(mobilePage + 1)}
+            aria-label="Next page"
+          >
+            <FiChevronRight size={18} />
+          </button>
+        </div>
       </div>
     </section>
   )

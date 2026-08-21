@@ -54,8 +54,8 @@ const Enquirycompo = ({ isModal = false, isOpen: customIsOpen, onClose: customOn
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!formData.email || !formData.phone) {
-      alert('Please fill out all required fields.')
+    if (!formData.phone.trim()) {
+      alert('Please enter your Mobile Number.')
       return
     }
     setIsSubmitted(true)
@@ -89,7 +89,7 @@ const Enquirycompo = ({ isModal = false, isOpen: customIsOpen, onClose: customOn
       {/* Card Header Title & Subtitle */}
       <h2 className="enquiry-title">Buying Requirement Details</h2>
       <p className="enquiry-subtitle">
-        Fill up form below for enquiry and our Expert will contact you soon. All fields are required.
+        Fill up form below for enquiry and our Expert will contact you soon.
       </p>
 
       {isSubmitted ? (
@@ -107,49 +107,10 @@ const Enquirycompo = ({ isModal = false, isOpen: customIsOpen, onClose: customOn
       ) : (
         <form className="enquiry-form" onSubmit={handleSubmit}>
           
-          {/* Field 1: Request If Any In Your Inquiry */}
-          <div className="enquiry-field-group">
-            <label htmlFor="request" className="enquiry-label">
-              Request If Any In Your Inquiry *
-            </label>
-            <div className="enquiry-input-wrapper">
-              <input
-                type="text"
-                id="request"
-                name="request"
-                value={formData.request}
-                onChange={handleChange}
-                className="enquiry-input"
-                required
-              />
-              <Smartphone className="enquiry-field-icon" size={18} />
-            </div>
-          </div>
-
-          {/* Field 2: Email Address */}
-          <div className="enquiry-field-group">
-            <label htmlFor="email" className="enquiry-label">
-              Email Address *
-            </label>
-            <div className="enquiry-input-wrapper">
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="enquiry-input"
-                required
-              />
-              
-              <Mail className="enquiry-field-icon" size={18} />
-            </div>
-          </div>
-
-          {/* Field 3: Phone Number */}
+          {/* Field 1: Mobile Number (Required, Star *) */}
           <div className="enquiry-field-group">
             <label htmlFor="phone" className="enquiry-label">
-              Phone Number *
+              Mobile Number *
             </label>
             <div className="enquiry-input-wrapper">
               <input
@@ -162,6 +123,42 @@ const Enquirycompo = ({ isModal = false, isOpen: customIsOpen, onClose: customOn
                 required
               />
               <Smartphone className="enquiry-field-icon" size={18} />
+            </div>
+          </div>
+
+          {/* Field 2: Email Address (Optional, No Star) */}
+          <div className="enquiry-field-group">
+            <label htmlFor="email" className="enquiry-label">
+              Email Address
+            </label>
+            <div className="enquiry-input-wrapper">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="enquiry-input"
+              />
+              <Mail className="enquiry-field-icon" size={18} />
+            </div>
+          </div>
+
+          {/* Field 3: Your Enquiry (Textarea) */}
+          <div className="enquiry-field-group">
+            <label htmlFor="request" className="enquiry-label">
+              Your Enquiry
+            </label>
+            <div className="enquiry-input-wrapper">
+              <textarea
+                id="request"
+                name="request"
+                value={formData.request}
+                onChange={handleChange}
+                className="enquiry-input enquiry-textarea"
+                placeholder="Write your enquiry details here..."
+                rows={3}
+              />
             </div>
           </div>
 

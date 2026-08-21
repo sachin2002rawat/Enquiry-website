@@ -198,6 +198,16 @@
   border-bottom-color: #2563eb;
 }
 
+.enquiry-textarea {
+  resize: vertical;
+  min-height: 54px;
+  max-height: 110px;
+  padding: 4px 8px 4px 0 !important;
+  border-bottom: 1.5px solid #1e293b;
+  border-radius: 0;
+  line-height: 1.4;
+}
+
 .enquiry-field-icon {
   position: absolute;
   right: 4px;

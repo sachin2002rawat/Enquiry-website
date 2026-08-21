@@ -1,10 +1,14 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Award, Users } from 'lucide-react'
 import { FiArrowRight } from 'react-icons/fi'
 
 const AboutCompany = () => {
+  const navigate = useNavigate()
+
   const handleAboutMore = () => {
-    alert('Opening About Company detailed overview...')
+    navigate('/about-company')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (

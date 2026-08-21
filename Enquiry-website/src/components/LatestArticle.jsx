@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { FiArrowRight, FiArrowLeft } from 'react-icons/fi'
-import articlesData from '../LatestArticle.json'
+import productsData from '../ProductsData.json'
 
 const LatestArticle = () => {
-  // Store articles in state for carousel rotation
-  const [articles, setArticles] = useState(articlesData)
+  // Store products/articles in state for carousel rotation
+  const [products, setProducts] = useState(productsData)
 
   const handleNext = () => {
-    setArticles((prev) => {
+    setProducts((prev) => {
       const copy = [...prev]
       const first = copy.shift()
       copy.push(first)
@@ -16,7 +16,7 @@ const LatestArticle = () => {
   }
 
   const handlePrev = () => {
-    setArticles((prev) => {
+    setProducts((prev) => {
       const copy = [...prev]
       const last = copy.pop()
       copy.unshift(last)
@@ -25,7 +25,7 @@ const LatestArticle = () => {
   }
 
   const handleArticleClick = (title) => {
-    alert(`Reading Article: "${title}"`)
+    window.location.href = '/blog'
   }
 
   return (
@@ -41,12 +41,8 @@ const LatestArticle = () => {
 
           <div className="latest-header-right">
             <a 
-              href="#articles" 
+              href="/blog" 
               className="view-all-articles-link"
-              onClick={(e) => {
-                e.preventDefault()
-                alert('Viewing All Articles...')
-              }}
             >
               View All Articles <span className="link-arrow">→</span>
             </a>
@@ -75,40 +71,40 @@ const LatestArticle = () => {
 
         {/* Articles Grid / Carousel Stage */}
         <div className="latest-articles-grid">
-          {articles.slice(0, 3).map((article) => (
+          {products.slice(0, 3).map((article) => (
             <div 
               key={article.id} 
               className="article-card"
-              onClick={() => handleArticleClick(article.title)}
+              onClick={() => handleArticleClick(article.name)}
             >
               {/* Ribbon Bookmark Date Tag */}
               <div className="article-date-ribbon">
                 <span className="ribbon-fold"></span>
-                {article.date}
+                {article.category || 'FEATURED'}
               </div>
 
               {/* Card Image */}
               <div className="article-img-container">
                 <img 
                   src={article.image} 
-                  alt={article.title} 
+                  alt={article.name} 
                   className="article-img"
                   loading="lazy"
                   decoding="async"
                   onError={(e) => {
                     e.target.onerror = null
-                    e.target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'
+                    e.target.src = '/premium_spices.png'
                   }}
                 />
               </div>
 
               {/* Bottom Frosted Glassmorphism Panel */}
               <div className="article-glass-panel">
-                <h3 className="article-title">{article.title}</h3>
+                <h3 className="article-title">{article.name}</h3>
                 
                 <div className="article-panel-footer">
                   <span className="read-more-link">
-                    {article.readMore || 'Read More'} <FiArrowRight size={15} className="read-arrow" />
+                    Read More <FiArrowRight size={15} className="read-arrow" />
                   </span>
 
                   {/* Brand Leaf Watermark Icon */}

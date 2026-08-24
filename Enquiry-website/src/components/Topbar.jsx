@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { FiSearch } from 'react-icons/fi'
 import { FaCommentDots } from 'react-icons/fa'
+import { MessageSquareMore } from 'lucide-react'
 import { useEnquiryModal } from '../context/EnquiryModalContext'
 
 const Topbar = () => {
@@ -19,8 +20,8 @@ const Topbar = () => {
     <div className="topbar">
       <div className="topbar-content">
         
-        {/* Left: Promo Text */}
-        <div className="topbar-promo">
+        {/* Left: Promo Text (Desktop Only) */}
+        <div className="topbar-promo desktop-only">
           <a 
             href="#" 
             className="promo-link"
@@ -33,7 +34,7 @@ const Topbar = () => {
           </a>
         </div>
 
-        {/* Center: Brand Logo */}
+        {/* Brand Logo (Left on Mobile, Center on Desktop) */}
         <div className="topbar-logo" onClick={() => window.location.href = '/'}>
           <div className="logo-graphics">
             <FaCommentDots className="logo-icon" />
@@ -41,8 +42,8 @@ const Topbar = () => {
           <span className="logo-text">QuickEnquiry</span>
         </div>
 
-        {/* Right: Search Box */}
-        <div className="topbar-search-container">
+        {/* Right: Search Box (Desktop Only) */}
+        <div className="topbar-search-container desktop-only">
           <form className="search-form" onSubmit={handleSearch}>
             <input 
               type="text" 
@@ -56,6 +57,16 @@ const Topbar = () => {
             </button>
           </form>
         </div>
+
+        {/* Right: Send Enquiry Button (Mobile Only) */}
+        <button 
+          type="button" 
+          className="topbar-mobile-enquiry-btn mobile-only" 
+          onClick={openEnquiryModal}
+        >
+          <MessageSquareMore size={15} className="enquiry-icon" />
+          <span>Send Enquiry</span>
+        </button>
 
       </div>
     </div>

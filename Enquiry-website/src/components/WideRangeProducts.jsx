@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MessageSquare } from 'lucide-react'
-import { FaWhatsapp, FaStar } from 'react-icons/fa'
+import { FaWhatsapp, FaStar, FaFilePdf } from 'react-icons/fa'
 import { FiArrowRight, FiArrowLeft, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import productsData from '../ProductsData.json'
 import { useEnquiryModal } from '../context/EnquiryModalContext'
@@ -178,38 +178,40 @@ const WideRangeProducts = () => {
               className="wide-range-mobile-card"
               onClick={() => handleCardClick(product)}
             >
-              {/* Top Split Section: Left Image, Right Details */}
-              <div className="mobile-card-top">
-                <div className="mobile-card-img-container">
-                  <img 
-                    src={product.image} 
-                    alt={product.name} 
-                    className="mobile-card-img" 
-                    loading="lazy"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "/premium_spices.png";
-                    }}
-                  />
-                </div>
-
-                <div className="mobile-card-info">
-                  <span className="mobile-card-category">{product.category}</span>
-                  <h3 className="mobile-card-title">{product.name}</h3>
-                  
-                  {/* Rating Stars Row */}
-                  <div className="mobile-card-rating">
-                    <div className="stars-group">
-                      {[...Array(5)].map((_, i) => (
-                        <FaStar key={i} size={13} color="#f59e0b" />
-                      ))}
-                    </div>
-                    <span className="rating-count">({product.reviewsCount || 127})</span>
-                  </div>
+              {/* Full Width Top Image with Floating PDF Badge */}
+              <div className="mobile-card-img-container">
+                <img 
+                  src={product.image} 
+                  alt={product.name} 
+                  className="mobile-card-img" 
+                  loading="lazy"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/premium_spices.png";
+                  }}
+                />
+                <div className="mobile-card-pdf-badge" title="Catalog PDF Available">
+                  <FaFilePdf size={16} color="#e11d48" />
                 </div>
               </div>
 
-              {/* Bottom Action Row (Below both Image & Details) */}
+              {/* Product Info Section Below Image */}
+              <div className="mobile-card-info">
+                <span className="mobile-card-category">{product.category}</span>
+                <h3 className="mobile-card-title">{product.name}</h3>
+                
+                {/* Rating Stars Row */}
+                <div className="mobile-card-rating">
+                  <div className="stars-group">
+                    {[...Array(5)].map((_, i) => (
+                      <FaStar key={i} size={13} color="#f59e0b" />
+                    ))}
+                  </div>
+                  <span className="rating-count">({product.reviewsCount || 127})</span>
+                </div>
+              </div>
+
+              {/* Bottom Action Buttons Row */}
               <div className="mobile-card-actions">
                 <button 
                   type="button" 

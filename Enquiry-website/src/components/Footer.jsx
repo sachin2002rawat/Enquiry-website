@@ -77,46 +77,49 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Column 2: CATEGORY & Certifications */}
-          <div className="footer-col">
-            <h4 className="footer-col-title">CATEGORY</h4>
-            <ul className="footer-links-list">
-              <li><a href="#category">Edible Oils</a></li>
-              <li><a href="#category">Mix Masala</a></li>
-              <li><a href="#category">Soya Chunks</a></li>
-              <li><a href="#category">Pure Spices</a></li>
-            </ul>
+          {/* Wrapper for CATEGORY & OTHER LINKS (side-by-side on mobile, contents on desktop) */}
+          <div className="footer-links-row">
+            {/* Column 2: CATEGORY */}
+            <div className="footer-col footer-col-category">
+              <h4 className="footer-col-title">CATEGORY</h4>
+              <ul className="footer-links-list">
+                <li><a href="#category">Edible Oils</a></li>
+                <li><a href="#category">Mix Masala</a></li>
+                <li><a href="#category">Soya Chunks</a></li>
+                <li><a href="#category">Pure Spices</a></li>
+              </ul>
+            </div>
 
-            {/* Quality & Food Safety Certification Badges */}
-            <div className="footer-cert-badges">
-              {/* ISO Emblem badge */}
-              <div className="cert-badge emblem-badge">
-                <span className="emblem-text">ISO 22000</span>
-              </div>
-              {/* FSSAI badge */}
-              <div className="cert-badge fssai-badge">
-                <span className="fssai-text">fssai</span>
-              </div>
-              {/* Trusted Partner Shield */}
-              <div className="cert-badge shield-badge">
-                <FiShield size={16} className="shield-icon" />
-                <div className="shield-text">
-                  <span className="shield-sub">Appoint Distributors</span>
-                  <span className="shield-main">TRUSTED PARTNER</span>
-                </div>
-              </div>
+            {/* Column 3: OTHER LINKS */}
+            <div className="footer-col footer-col-links">
+              <h4 className="footer-col-title">OTHER LINKS</h4>
+              <ul className="footer-links-list">
+                <li><a href="#links">Help & Support</a></li>
+                <li><a href="#links">Blog & Articles</a></li>
+                <li><a href="#links">Privacy Policy</a></li>
+                <li><a href="#links">T&C's</a></li>
+              </ul>
             </div>
           </div>
 
-          {/* Column 3: OTHER LINKS */}
-          <div className="footer-col">
-            <h4 className="footer-col-title">OTHER LINKS</h4>
-            <ul className="footer-links-list">
-              <li><a href="#links">Help & Support</a></li>
-              <li><a href="#links">Blog & Articles</a></li>
-              <li><a href="#links">Privacy Policy</a></li>
-              <li><a href="#links">T&C's</a></li>
-            </ul>
+          {/* Quality & Food Safety Certification Badges */}
+          <div className="footer-cert-badges">
+            {/* ISO Emblem badge */}
+            <div className="cert-badge emblem-badge">
+              <span className="emblem-text">ISO 22000</span>
+            </div>
+            {/* FSSAI badge */}
+            <div className="cert-badge fssai-badge">
+              <span className="fssai-text">fssai</span>
+            </div>
+            {/* Trusted Partner Shield */}
+            <div className="cert-badge shield-badge">
+              <FiShield size={16} className="shield-icon" />
+              <div className="shield-text">
+                <span className="shield-sub">Appoint Distributors</span>
+                <span className="shield-main">TRUSTED PARTNER</span>
+              </div>
+            </div>
           </div>
 
           {/* Column 4: CONNECT WITH US */}

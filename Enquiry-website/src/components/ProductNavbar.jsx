@@ -37,16 +37,6 @@ const ProductNavbar = () => {
 
   return (
     <header className="product-navbar-wrapper" style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
-      {/* Mobile Top Logo Bar (Above Header in Mobile Viewport) */}
-      <div className="product-nav-mobile-logo-bar mobile-only">
-        <Link to="/" className="mobile-logo-link">
-          <div className="logo-graphics">
-            <FaCommentDots className="logo-icon" />
-          </div>
-          <span className="logo-text">QuickEnquiry</span>
-        </Link>
-      </div>
-
       <div className="product-navbar-bar">
         
         {/* Left: Home Navbar Logo (QuickEnquiry) - Desktop Only */}
@@ -59,7 +49,7 @@ const ProductNavbar = () => {
           </Link>
         </div>
 
-        {/* Categories Glass Pill Button (Desktop) / Send Enquiry (Mobile Left Side) */}
+        {/* Categories Glass Pill Button (Desktop) / Category Icon Only (Mobile) */}
         <div className="product-nav-categories-wrapper">
           <button 
             type="button" 
@@ -70,13 +60,14 @@ const ProductNavbar = () => {
             <span>Categories</span>
           </button>
 
+          {/* Mobile Left: Category Icon Only */}
           <button 
             type="button" 
-            className="product-nav-enquiry-btn mobile-only"
-            onClick={handleEnquiryClick}
+            className="mobile-categories-btn mobile-only" 
+            onClick={handleCategoriesClick}
+            aria-label="Categories"
           >
-            <MessageSquareMore size={16} className="enquiry-icon" />
-            <span>Send Enquiry</span>
+            <LayoutGrid size={20} />
           </button>
         </div>
 

@@ -41,7 +41,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-content">
-        {/* Left: Categories Button (Desktop) / Send Enquiry Button (Mobile Left Side) */}
+        {/* Left: Categories Button (Desktop) / Category Icon Only (Mobile) */}
         <div className="nav-categories-wrapper">
           <button 
             type="button" 
@@ -52,14 +52,14 @@ const Navbar = () => {
             <span>Categories</span>
           </button>
 
-          {/* Send Enquiry Button (Mobile Left) */}
+          {/* Mobile Left: Category Icon Only */}
           <button 
             type="button" 
-            className="enquiry-btn mobile-only" 
-            onClick={handleEnquiryClick}
+            className="mobile-categories-btn mobile-only" 
+            onClick={handleCategoriesClick}
+            aria-label="Categories"
           >
-            <MessageSquareMore size={18} className="enquiry-btn-icon" />
-            <span>Send Enquiry</span>
+            <LayoutGrid size={20} />
           </button>
         </div>
 

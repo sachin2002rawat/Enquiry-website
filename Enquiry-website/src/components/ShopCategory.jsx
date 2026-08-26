@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FiArrowRight, FiArrowLeft } from 'react-icons/fi'
+import { FaFilePdf } from 'react-icons/fa'
 import { Store } from 'lucide-react'
 
 import productsData from '../ProductsData.json'
@@ -21,52 +22,6 @@ const ShopCategory = () => {
     } else {
       navigate('/product')
     }
-  }
-
-  // Sizing styles matching wide range products section (3 large cards layout)
-  const cardStyle = {
-    height: '460px',
-    padding: '20px',
-    borderRadius: '24px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    boxSizing: 'border-box',
-    cursor: 'pointer'
-  }
-
-  const imgContainerStyle = {
-    width: '100%',
-    height: '75%',
-    borderRadius: '18px',
-    overflow: 'hidden',
-    backgroundColor: '#FAF5EE',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }
-
-  const imgStyle = {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    borderRadius: '18px',
-  }
-
-  const titleStyle = {
-    width: '100%',
-    height: '25%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    fontSize: '22px',
-    fontWeight: '700',
-    color: '#12213d',
-    margin: '0',
-    padding: '12px 6px 4px 6px',
-    lineHeight: '1.3',
   }
 
   // Move carousel to the right (take first card, move to the end)
@@ -105,8 +60,6 @@ const ShopCategory = () => {
           </div>
         </div>
          
-        
-            
         {/* Right Side: View All Button */}
         <button 
           className="view-all-btn"  
@@ -127,7 +80,7 @@ const ShopCategory = () => {
           <FiArrowLeft size={20} />
         </button>
 
-        {/* Category Cards Section (3 Large Cards visible per slide) */}
+        {/* Category Cards Section */}
         <div className="shop-category-list">
           {categories.slice(0, 3).map((category) => {
             const displayName = category.name || category.title || 'Product';
@@ -135,32 +88,27 @@ const ShopCategory = () => {
               <div          
                 key={category.id} 
                 className="category-card"  
-                style={cardStyle}
                 onClick={() => handleCategoryClick(category)}
               >
-                {/* Container for the category image (covers 75% of card height) */}
-                <div 
-                  className="category-card-img-container" 
-                  style={imgContainerStyle}
-                >
+                {/* Container for the category image */}
+                <div className="category-card-img-container">
                   <img 
                     src={category.image} 
                     alt={displayName} 
                     className="category-card-img" 
-                    style={imgStyle}
                     loading="lazy"
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.src = '/premium_spices.png';
                     }}
                   />
+                  <div className="category-card-pdf-badge" title="Catalog PDF Available">
+                    <FaFilePdf size={16} color="#e11d48" />
+                  </div>
                 </div>
 
                 {/* Category/Product Name below image */}
-                <h3 
-                  className="category-card-title" 
-                  style={titleStyle}
-                >
+                <h3 className="category-card-title">
                   {displayName}
                 </h3>
               </div>

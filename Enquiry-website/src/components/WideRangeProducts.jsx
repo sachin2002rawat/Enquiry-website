@@ -134,7 +134,14 @@ const WideRangeProducts = () => {
               
               <h3 className="product-wide-title">{product.name}</h3>
               <span className="product-wide-category">{product.category}</span>
-              <p className="product-wide-description">{product.description}</p>
+              <div className="product-wide-rating">
+                <div className="stars-group">
+                  {[...Array(5)].map((_, i) => (
+                    <FaStar key={i} size={14} color="#f59e0b" />
+                  ))}
+                </div>
+                <span className="rating-count">({product.reviewsCount || 127})</span>
+              </div>
               
               <div className="product-wide-actions">
                 <button 
@@ -178,8 +185,9 @@ const WideRangeProducts = () => {
               className="wide-range-mobile-card"
               onClick={() => handleCardClick(product)}
             >
-              {/* Full Width Top Image with Floating PDF Badge */}
+              {/* Full Width Top Image with Floating Badges */}
               <div className="mobile-card-img-container">
+                <span className="mobile-card-badge">Best Seller</span>
                 <img 
                   src={product.image} 
                   alt={product.name} 

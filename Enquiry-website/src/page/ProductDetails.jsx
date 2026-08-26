@@ -13,7 +13,7 @@ const ProductDetails = () => {
 
   // Scroll to top whenever the product ID changes
   useEffect(() => {
-    window.scrollTo(0, 0)
+    window.scrollTo(0, 0)  
   }, [id])
 
   // Find matching product from ProductsData.json by slug, ID, or normalized product name
@@ -76,7 +76,7 @@ const ProductDetails = () => {
       <ProductHero product={activeProduct} />
       <SecondHero product={activeProduct} />
       <RelatedProduct />
-      <Footer />
+      <Footer /> 
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MessageSquare } from 'lucide-react'
-import { FaWhatsapp } from 'react-icons/fa'
+import { FaWhatsapp, FaFilePdf } from 'react-icons/fa'
 import { FiArrowRight, FiArrowLeft } from 'react-icons/fi'
 import productsList from '../../ProductsData.json'
 import { useEnquiryModal } from '../../context/EnquiryModalContext'
@@ -126,6 +126,9 @@ const PopularProduct = () => {
                       e.target.src = '/garam_masala.png';
                     }}
                   />
+                  <div className="popular-card-pdf-badge" title="Catalog PDF Available">
+                    <FaFilePdf size={16} color="#e11d48" />
+                  </div>
                 </div>
                 
                 {/* Center Column: Category label and bold Product Title */}

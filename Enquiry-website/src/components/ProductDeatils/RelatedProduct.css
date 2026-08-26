@@ -313,12 +313,54 @@
 /* Medium Mobile (max-width: 768px) */
 @media (max-width: 768px) {
   .rp-grid-track {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .rp-card {
+    width: 100%;
+    min-height: 520px;
+    padding: 18px;
+    border-radius: 24px;
     gap: 14px;
   }
 
+  .rp-img-container {
+    height: 440px;
+    width: 100%;
+    border-radius: 20px;
+  }
+
+  .rp-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+  }
+
+  .rp-card-title {
+    font-size: 1.35rem;
+  }
+
+  .rp-card-actions {
+    gap: 12px;
+    margin-top: 4px;
+  }
+
+  .rp-btn-enquire {
+    height: 48px;
+    border-radius: 9999px;
+    font-size: 0.95rem;
+  }
+
+  .rp-btn-whatsapp {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+  }
+
   .rp-title {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
   }
 }
 
@@ -329,12 +371,32 @@
   }
 
   .rp-container-wrapper {
-    padding: 0 24px;
+    padding: 0 16px;
   }
 
   .rp-grid-track {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 24px;
+  }
+
+  .rp-card {
+    width: 100%;
+    min-height: 520px;
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .rp-img-container {
+    height: 440px;
+    width: 100%;
+    border-radius: 20px;
+  }
+
+  .rp-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
   }
 
   .rp-side-arrow {

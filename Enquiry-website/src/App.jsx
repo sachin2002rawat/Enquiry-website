@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Home from './page/Home'
 import Product from './page/Product'
 import ProductDetails from './page/ProductDetails'
+import CategoryDetails from './page/CategoryDetails'
 import Enquirycompo from './components/Enquirycompo'
 import { EnquiryModalProvider } from './context/EnquiryModalContext'
 import useScrollReveal from './hooks/useScrollReveal'
@@ -26,6 +27,8 @@ const AppContent = () => {
         <Route path="/product" element={<Product />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/productDetail" element={<ProductDetails />} />
+        <Route path="/category/:id" element={<CategoryDetails />} />
+        <Route path="/category" element={<CategoryDetails />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:id" element={<BlogDetail />} />

@@ -20,19 +20,19 @@ import { FaWhatsapp } from 'react-icons/fa';
 // HARDCODED PRODUCT DATA (Freshers: Easy to read & update or replace later)
 // =========================================================================
 const HARDCODED_PRODUCT = {
-  title: "Yumii Masala Tofu (Soya Paneer) – 200g",
+  title: "Garam Masala Premium Blend",
   category: "PURE SPICES",
   rating: "4.8",
   reviewsCount: "127",
-  description: "Start your mornings right with Yumii's premium Masala Tofu — crafted from non-GMO soybeans with an authentic Indian masala blend. Rich in plant protein, cholesterol-free, and versatile for everyday cooking. Ideal for B2B distributors, retailers, and bulk buyers.",
-  sku: "YMT-200-2024",
-  netWeight: "200g / Pack",
+  description: "Premium aromatic Indian spice blend, handpicked and ground to perfection using traditional stone-grinding techniques. Rich in essential oils and authentic aroma.",
+  sku: "SKU-SP-001",
+  netWeight: "100g / Pack",
   minOrderQty: "50 Units",
   availability: "In Stock",
   images: [
-    "/tofu_pack.png",
-    "/masala_tofu.png",
-    "/tofu_pack.png"
+    "/garam_masala.png",
+    "/premium_spices.png",
+    "/coriander_powder.png"
   ]
 };
 
@@ -44,7 +44,7 @@ const ProductHero = ({ product }) => {
     rating: product?.rating ?? HARDCODED_PRODUCT.rating,
     reviewsCount: product?.reviewsCount ?? HARDCODED_PRODUCT.reviewsCount,
     description: product?.description || HARDCODED_PRODUCT.description,
-    sku: product?.sku || `SKU-${product?.id || '2024'}`,
+    sku: product?.sku || `SKU-${product?.id || '001'}`,
     netWeight: product?.netWeight || (product?.weight ? `${product.weight} / Pack` : HARDCODED_PRODUCT.netWeight),
     minOrderQty: product?.minOrderQty || HARDCODED_PRODUCT.minOrderQty,
     availability: product?.availability || HARDCODED_PRODUCT.availability,
@@ -93,13 +93,22 @@ const ProductHero = ({ product }) => {
 
   const currentMainImage = activeProduct.images[selectedImageIndex] || activeProduct.images[0];
 
+  // Dynamic theory paragraphs for product overview card
+  const displayTheoryParagraphs = Array.isArray(product?.fullDescription) && product.fullDescription.length > 0
+    ? product.fullDescription
+    : [
+        `Our ${activeProduct.title} is carefully crafted and sourced directly from certified organic farms, adhering to strict international food safety standards to deliver uncompromised aroma, vibrant natural color, and authentic taste.`,
+        `Processed in state-of-the-art FSSAI-certified facilities using low-temperature milling techniques that preserve natural essential volatile oils, key nutrients, and rich culinary notes.`,
+        `Free from synthetic colors, artificial preservatives, or chemical fillers. Ideal for home cooking, gourmet recipes, hotel kitchens, and B2B wholesale buyers.`
+      ];
+
   return (
     <section className="product-hero-section">
       <div className="ph-container-wrapper">
         <div className="ph-grid-container">
         
         {/* =================================================================
-           LEFT SIDE: PRODUCT GALLERY (MAIN IMAGE & THUMBNAILS)
+           LEFT SIDE: PRODUCT GALLERY (MAIN IMAGE & THUMBNAILS & THEORY CARD)
            ================================================================= */}
         <div className="ph-gallery-column">
           
@@ -202,6 +211,22 @@ const ProductHero = ({ product }) => {
             </div>
           </div>
 
+          {/* Detailed Product Overview & Sourcing Theory Card */}
+          <div className="ph-info-theory-card">
+            <div className="ph-info-header">
+              <span className="ph-info-badge">PRODUCT OVERVIEW & THEORY</span>
+              <h3 className="ph-info-title">About {activeProduct.title}</h3>
+            </div>
+
+            <div className="ph-info-body">
+              {displayTheoryParagraphs.map((paragraph, index) => (
+                <p key={index} className="ph-info-paragraph">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          </div>
+
         </div>
 
         {/* =================================================================
@@ -275,7 +300,7 @@ const ProductHero = ({ product }) => {
             <button 
               type="button" 
               className="ph-btn-enquiry" 
-              onClick={() => openEnquiryModal()}
+              onClick={() => openEnquiryModal(activeProduct.title)}
             >
               <Mail size={18} />
               <span>Send Enquiry</span>
@@ -286,7 +311,7 @@ const ProductHero = ({ product }) => {
               <button 
                 type="button" 
                 className="ph-btn-callback" 
-                onClick={() => alert("Callback requested!")}
+                onClick={() => alert(`Callback requested for ${activeProduct.title}!`)}
               >
                 <PhoneCall size={18} />
                 <span>Request A Callback</span>
@@ -295,7 +320,7 @@ const ProductHero = ({ product }) => {
               <button 
                 type="button" 
                 className="ph-btn-whatsapp"
-                onClick={() => window.open('https://wa.me/?text=Hi%20I%20want%20to%20enquire%20about%20Yumii%20Masala%20Tofu', '_blank')}
+                onClick={() => window.open(`https://wa.me/?text=Hi%20I%20want%20to%20enquire%20about%20${encodeURIComponent(activeProduct.title)}`, '_blank')}
               >
                 <FaWhatsapp size={20} />
                 <span>WhatsApp</span>

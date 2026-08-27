@@ -18,10 +18,10 @@ import { FaWhatsapp } from 'react-icons/fa';
 const HARDCODED_SECOND_HERO = {
   title: "Product Description",
   paragraphs: [
-    "The Yumii Masala Tofu (Soya Paneer) is a masterpiece of authentic Indian culinary heritage, crafted from 100% non-GMO organic soybeans blended with time-honored aromatic spices.",
-    "Each pack delivers a rich, savory taste profile with high-quality plant protein, zero cholesterol, and minimal fat. Perfectly pre-spiced to save cooking time for households, restaurants, and catering services.",
-    "Made with natural ingredients and free from artificial preservatives, our tofu retains its firm yet tender texture whether pan-fried, grilled, curried, or tossed in fresh salads.",
-    "Ideal for health-conscious consumers, fitness enthusiasts, vegans, and commercial buyers looking for dependable quality and authentic Indian flavor.",
+    "Our product is a masterpiece of authentic Indian culinary heritage, crafted from 100% natural, premium ingredients blended with time-honored aromatic spices.",
+    "Each pack delivers a rich, authentic taste profile with high quality, natural goodness, zero synthetic colors, and minimal artificial processing. Perfectly formulated for everyday cooking.",
+    "Made with natural ingredients and free from chemical preservatives, maintaining peak aroma, vibrant natural color, and essential volatile oils.",
+    "Ideal for home chefs, health-conscious consumers, hotel kitchens, and commercial buyers looking for dependable quality and authentic flavor.",
     "Sourced sustainably and packed using advanced freshness-seal technology to ensure maximum shelf life and flavor retention from our kitchen to yours."
   ],
   formTitle: "Buying Requirement Details",
@@ -190,7 +190,7 @@ const SecondHero = ({ product }) => {
             <button 
               type="button" 
               className="sh-contact-pill"
-              onClick={() => window.open('https://wa.me/?text=Hi%20I%20have%20an%20inquiry', '_blank')}
+              onClick={() => window.open(`https://wa.me/?text=Hi%20I%20have%20an%20inquiry%20about%20${encodeURIComponent(product?.name || 'your products')}`, '_blank')}
             >
               <FaWhatsapp size={15} className="sh-icon-wa" />
               <span>WHATSAPP</span>

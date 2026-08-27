@@ -4,10 +4,10 @@ import './ProductDetailNavbar.css';
 // Default static data matching the image design
 // Freshers: In the future, you can change these values or fetch them dynamically from JSON / API
 const defaultProductData = {
-  title: "Yumii Masala Tofu (Soya Paneer)",
+  title: "Garam Masala",
   category: "Pure Spices",
-  weight: "200g",
-  image: "/tofu_pack.png"
+  weight: "100g",
+  image: "/garam_masala.png"
 };
 
 const ProductDetailNavbar = ({ product = defaultProductData }) => {
@@ -15,8 +15,8 @@ const ProductDetailNavbar = ({ product = defaultProductData }) => {
   const currentProduct = product || defaultProductData;
   const displayTitle = currentProduct.name || currentProduct.title || "Product";
   const displayCategory = currentProduct.category || "Pure Spices";
-  const displayWeight = currentProduct.weight || "200g";
-  const displayImage = currentProduct.image || "/tofu_pack.png";
+  const displayWeight = currentProduct.weight || "100g";
+  const displayImage = currentProduct.image || "/garam_masala.png";
 
   return (
     <div className="product-detail-navbar">

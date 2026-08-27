@@ -5,19 +5,71 @@ import { MessageSquare } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { FiArrowRight, FiArrowLeft } from 'react-icons/fi';
 import productsData from '../../ProductsData.json';
+import { useEnquiryModal } from '../../context/EnquiryModalContext';
 
-const RelatedProduct = () => {
+const RelatedProduct = ({ currentProduct }) => {
   const navigate = useNavigate();
+  const { openEnquiryModal } = useEnquiryModal();
 
-  // Store products from ProductsData.json in state to support infinite carousel rotation
-  const [products, setProducts] = useState(productsData);
+  // Helper function to build related products list (at least 5 items)
+  const getRelatedProducts = (currProd) => {
+    if (!currProd) return productsData.slice(1, 7);
 
-  // Track whether mouse is hovering over carousel (pauses auto-rotation on hover)
+    const currCategory = (currProd.category || '').toUpperCase();
+    const currId = currProd.id;
+    const currSlug = (currProd.slug || '').toLowerCase();
+
+    // Helper functions for category grouping
+    const isSpiceCategory = (cat) => 
+      ['PURE SPICES', 'WHOLE SPICES', 'MIX MASALA'].includes(cat) || 
+      cat.includes('SPICE') || cat.includes('MASALA');
+
+    const isTofuCategory = (cat) => 
+      ['YUMII MASALA TOFU', 'SOYA CHUNKS'].includes(cat) || 
+      cat.includes('TOFU') || cat.includes('SOYA');
+
+    // Exclude current product itself
+    const candidateList = productsData.filter((item) => {
+      if (item.id === currId) return false;
+      if (item.slug && item.slug.toLowerCase() === currSlug) return false;
+      return true;
+    });
+
+    let relatedMatches = [];
+
+    if (isSpiceCategory(currCategory)) {
+      relatedMatches = candidateList.filter((item) => isSpiceCategory((item.category || '').toUpperCase()));
+    } else if (isTofuCategory(currCategory)) {
+      relatedMatches = candidateList.filter((item) => isTofuCategory((item.category || '').toUpperCase()));
+    } else {
+      relatedMatches = candidateList.filter((item) => (item.category || '').toUpperCase() === currCategory);
+    }
+
+    // Ensure at least 5 items are in the related list
+    if (relatedMatches.length < 5) {
+      const existingIds = new Set(relatedMatches.map((p) => p.id));
+      const fallbackItems = candidateList.filter((item) => !existingIds.has(item.id));
+      relatedMatches = [...relatedMatches, ...fallbackItems];
+    }
+
+    return relatedMatches;
+  };
+
+  // Store filtered products in state for infinite carousel rotation
+  const [products, setProducts] = useState(() => getRelatedProducts(currentProduct));
+
+  // Re-filter when currentProduct changes
+  useEffect(() => {
+    setProducts(getRelatedProducts(currentProduct));
+  }, [currentProduct]);
+
+  // Track whether mouse is hovering over carousel (pauses auto-rotation)
   const [isHovered, setIsHovered] = useState(false);
 
-  // Rotate carousel to the next product card (move first item to the end)
+  // Rotate carousel to the next product card
   const handleNext = () => {
     setProducts((prev) => {
+      if (prev.length <= 1) return prev;
       const copy = [...prev];
       const first = copy.shift();
       copy.push(first);
@@ -25,9 +77,10 @@ const RelatedProduct = () => {
     });
   };
 
-  // Rotate carousel to the previous product card (move last item to the front)
+  // Rotate carousel to the previous product card
   const handlePrev = () => {
     setProducts((prev) => {
+      if (prev.length <= 1) return prev;
       const copy = [...prev];
       const last = copy.pop();
       copy.unshift(last);
@@ -35,20 +88,20 @@ const RelatedProduct = () => {
     });
   };
 
-  // Auto-slide animation: cycles cards every 2.2 seconds for a faster, smoother experience
+  // Auto-slide animation: cycles cards every 2.8 seconds
   useEffect(() => {
-    if (isHovered) return; // Pause timer on hover
+    if (isHovered || products.length === 0) return;
 
     const interval = setInterval(() => {
       handleNext();
-    }, 2200);
+    }, 2800);
 
     return () => clearInterval(interval);
-  }, [isHovered]);
+  }, [isHovered, products]);
 
   const handleEnquire = (productName, e) => {
     if (e) e.stopPropagation();
-    alert(`Opening inquiry form for: ${productName}`);
+    openEnquiryModal(productName);
   };
 
   const handleWhatsApp = (productName, e) => {
@@ -61,6 +114,8 @@ const RelatedProduct = () => {
     navigate(`/product/${targetSlug}`);
   };
 
+  const activeCategoryTitle = currentProduct?.name || currentProduct?.category || 'Spices';
+
   return (
     <section className="related-product-section">
       <div className="rp-container-wrapper">
@@ -69,7 +124,7 @@ const RelatedProduct = () => {
         <div className="rp-header">
           
           <div className="rp-header-left">
-            <span className="rp-subtitle">— HANDPICKED FOR YOU</span>
+            <span className="rp-subtitle">— RELATED TO {activeCategoryTitle.toUpperCase()} ({products.length} PRODUCTS)</span>
             <h2 className="rp-title">
               Related <span className="rp-title-highlight">Products</span>
             </h2>
@@ -182,3 +237,4 @@ const RelatedProduct = () => {
 };
 
 export default RelatedProduct;
+

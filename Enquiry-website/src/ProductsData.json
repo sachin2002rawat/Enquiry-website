@@ -118,7 +118,7 @@
     "name": "Turmeric Powder",
     "category": "PURE SPICES",
     "description": "High-curcumin organic Indian turmeric powder for rich color and natural health benefits.",
-    "image": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80",
+    "image": "/turmeric_powder.png",
     "rating": 4.8,
     "reviewsCount": 164,
     "sku": "SKU-TP-005",
@@ -127,8 +127,8 @@
     "availability": "In Stock",
     "weight": "500g",
     "images": [
-      "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80",
-      "/premium_spices.png",
+      "/turmeric_powder.png",
+      "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80",
       "/garam_masala.png"
     ],
     "fullDescription": [
@@ -156,8 +156,8 @@
     "weight": "200g",
     "images": [
       "https://images.unsplash.com/photo-1599909541595-612a45053c98?auto=format&fit=crop&w=800&q=80",
-      "/premium_spices.png",
-      "/coriander_powder.png"
+      "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1509358271058-acd22cc93898?auto=format&fit=crop&w=800&q=80"
     ],
     "fullDescription": [
       "Hand-cleaned whole Cumin Seeds (Sabut Jeera) boasting a intense, nutty, and warm aromatic profile.",
@@ -174,7 +174,7 @@
     "name": "Red Chilli Powder",
     "category": "PURE SPICES",
     "description": "Vibrant and pungent red chilli powder made from sun-dried premium Indian red chillies.",
-    "image": "https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?auto=format&fit=crop&w=800&q=80",
+    "image": "/red_chilli_powder.png",
     "rating": 4.7,
     "reviewsCount": 145,
     "sku": "SKU-RC-007",
@@ -183,8 +183,8 @@
     "availability": "In Stock",
     "weight": "250g",
     "images": [
-      "https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?auto=format&fit=crop&w=800&q=80",
-      "/premium_spices.png",
+      "/red_chilli_powder.png",
+      "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80",
       "/garam_masala.png"
     ],
     "fullDescription": [

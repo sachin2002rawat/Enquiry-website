@@ -18,7 +18,7 @@ const ShopCategory = () => {
   const handleCategoryClick = (category) => {
     if (category) {
       const targetSlug = category.slug || category.id
-      navigate(`/product/${targetSlug}`)
+      navigate(`/category/${targetSlug}`)
     } else {
       navigate('/product')
     }

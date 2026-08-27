@@ -1,12 +1,17 @@
 import React, { useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import productsData from '../ProductsData.json'
+import categoryDataMap from '../CategoryProductsData.json'
 import ProductNavbar from '../components/ProductNavbar'
 import ProductDetailNavbar from '../components/ProductDeatils/ProductDetailNavbar'
 import ProductHero from '../components/ProductDeatils/ProductHero'
 import SecondHero from '../components/ProductDeatils/SecondHero'
 import RelatedProduct from '../components/ProductDeatils/RelatedProduct'
 import Footer from '../components/Footer'
+
+// Combine main catalog and category variant catalog into one search pool
+const categoryVariantProducts = Object.values(categoryDataMap).flatMap((group) => group.products || []);
+const combinedCatalog = [...productsData, ...categoryVariantProducts];
 
 const ProductDetails = () => {
   const { id } = useParams()
@@ -16,10 +21,10 @@ const ProductDetails = () => {
     window.scrollTo(0, 0)  
   }, [id])
 
-  // Find matching product from ProductsData.json by slug, ID, or normalized product name
+  // Find matching product by slug, ID, or normalized product name across combined catalog
   const paramLower = id ? id.toLowerCase().trim() : ''
   const product = id
-    ? productsData.find((p) => 
+    ? combinedCatalog.find((p) => 
         (p.slug && p.slug.toLowerCase() === paramLower) ||
         String(p.id) === String(id) ||
         p.name.toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-') === paramLower
@@ -74,8 +79,7 @@ const ProductDetails = () => {
       <ProductNavbar />
       <ProductDetailNavbar product={activeProduct} />   
       <ProductHero product={activeProduct} />
-      <SecondHero product={activeProduct} />
-      <RelatedProduct />
+      <RelatedProduct currentProduct={activeProduct} />
       <Footer /> 
     </div>
   )

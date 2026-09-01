@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { FiChevronLeft, FiChevronRight, FiPause } from 'react-icons/fi'
-import heroImages from '../HeroImage.json'
+import defaultHeroImages from '../HeroImage.json'
 
-const Hero = () => {
+const Hero = ({ data }) => {
+  const heroImages = data && data.length > 0 ? data : defaultHeroImages
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
   const timerRef = useRef(null)

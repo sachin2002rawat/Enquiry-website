@@ -1,15 +1,17 @@
 import React from 'react'
-import { Handshake, ClipboardCheck, Tag, Headphones } from 'lucide-react'
+import { Handshake, ClipboardCheck, Tag, Headphones, ShieldCheck, Sparkles, Heart, UserCheck } from 'lucide-react'
 import featureData from '../WhyChoose.json'
 
 const iconMap = {
-  1: Handshake,
-  2: ClipboardCheck,
-  3: Tag,
-  4: Headphones,
+  1: ShieldCheck,
+  2: Sparkles,
+  3: Heart,
+  4: UserCheck,
 }
 
-const Feature = () => {
+const Feature = ({ data }) => {
+  const activeDataset = data && data.length > 0 ? data : featureData
+
   return (
     <section className="why-choose-section">
       <div className="why-choose-container">
@@ -19,13 +21,13 @@ const Feature = () => {
           <span className="why-choose-tag">• WHY CHOOSE US •</span>
           <h2 className="why-choose-title">Why Choose Us</h2>
           <p className="why-choose-subtitle">
-            Our Commitment to Your Perfect Experience
+            Our Commitment to Your Perfect Beauty Experience
           </p>
         </div>
 
         {/* Outer Single White Capsule Frame Box */}
         <div className="why-choose-capsule-frame">
-          {featureData.map((item, index) => {
+          {activeDataset.map((item, index) => {
             const IconComponent = iconMap[item.id] || Handshake
 
             return (
@@ -56,7 +58,7 @@ const Feature = () => {
                 </div>
 
                 {/* Vertical Divider Line between items */}
-                {index < featureData.length - 1 && (
+                {index < activeDataset.length - 1 && (
                   <div className="why-choose-divider"></div>
                 )}
               </React.Fragment>
@@ -69,4 +71,4 @@ const Feature = () => {
   )
 }
 
-export default Feature
+export default React.memo(Feature)

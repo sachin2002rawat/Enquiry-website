@@ -1,8 +1,8 @@
 import React from 'react'
 
-const CompanySection = () => {
+const CompanySection = ({ isBeauty = false, partners }) => {
   // List of trusted retail & partner companies
-  const companyList = [
+  const defaultCompanies = [
     'Reliance Retail',
     'Big Basket',
     'D-Mart',
@@ -13,6 +13,20 @@ const CompanySection = () => {
     'Zepto',
     'Swiggy Instamart'
   ]
+
+  const beautyCompanies = [
+    'Sephora',
+    'Nykaa',
+    'Cult Beauty',
+    'Ulta Beauty',
+    'Tira Beauty',
+    'Tata CLiQ Palette',
+    'Purplle',
+    'Lookfantastic',
+    'Shoppers Stop Beauty'
+  ]
+
+  const companyList = partners || (isBeauty ? beautyCompanies : defaultCompanies)
 
   return (
     <section className="company-section">
@@ -49,4 +63,3 @@ const CompanySection = () => {
 }
 
 export default CompanySection
-

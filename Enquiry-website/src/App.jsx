@@ -1,6 +1,7 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Home from './page/Home'
+import Home2 from './page/home2'
 import Product from './page/Product'
 import ProductDetails from './page/ProductDetails'
 import CategoryDetails from './page/CategoryDetails'
@@ -21,6 +22,7 @@ const AppContent = () => {
     <>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/home2" element={<Home2 />} />
         <Route path="/about" element={<AboutEnquiryCompany />} />
         <Route path="/about-company" element={<AboutEnquiryCompany />} />
         <Route path="/enquiry" element={<Enquirycompo />} />

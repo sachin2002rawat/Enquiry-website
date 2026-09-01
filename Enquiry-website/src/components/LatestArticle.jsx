@@ -1,10 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { FiArrowRight, FiArrowLeft } from 'react-icons/fi'
 import productsData from '../ProductsData.json'
 
-const LatestArticle = () => {
+const LatestArticle = ({ data }) => {
+  const activeDataset = data && data.length > 0 ? data : productsData
   // Store products/articles in state for carousel rotation
-  const [products, setProducts] = useState(productsData)
+  const [products, setProducts] = useState(activeDataset)
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setProducts(data)
+    }
+  }, [data])
 
   const handleNext = () => {
     setProducts((prev) => {
@@ -93,7 +100,10 @@ const LatestArticle = () => {
                   decoding="async"
                   onError={(e) => {
                     e.target.onerror = null
-                    e.target.src = '/premium_spices.png'
+                    const isBeauty = article?.category && /SKIN|HAIR|FACE|BODY|COSMETICS|BEAUTY|SPA|HYDRATION/i.test(article.category)
+                    e.target.src = isBeauty
+                      ? 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80'
+                      : '/premium_spices.png'
                   }}
                 />
               </div>

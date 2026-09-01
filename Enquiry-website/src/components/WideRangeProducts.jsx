@@ -3,21 +3,28 @@ import { useNavigate } from 'react-router-dom'
 import { MessageSquare } from 'lucide-react'
 import { FaWhatsapp, FaStar, FaFilePdf } from 'react-icons/fa'
 import { FiArrowRight, FiArrowLeft, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
-import productsData from '../ProductsData.json'
+import defaultProductsData from '../ProductsData.json'
 import { useEnquiryModal } from '../context/EnquiryModalContext'
 
-const WideRangeProducts = () => {
+const WideRangeProducts = ({ data }) => {
+  const activeDataset = data && data.length > 0 ? data : defaultProductsData
   const navigate = useNavigate()
   const { openEnquiryModal } = useEnquiryModal()
 
   // State for Desktop Carousel Slider
-  const [products, setProducts] = useState(productsData)
+  const [products, setProducts] = useState(activeDataset)
+
+  React.useEffect(() => {
+    if (data && data.length > 0) {
+      setProducts(data)
+    }
+  }, [data])
 
   // State for Mobile Pagination List View (5 items per page)
   const [mobilePage, setMobilePage] = useState(1)
   const itemsPerPage = 5
 
-  const totalMobilePages = Math.ceil(productsData.length / itemsPerPage)
+  const totalMobilePages = Math.ceil(activeDataset.length / itemsPerPage)
 
   // Move carousel to the right on desktop
   const handleNextDesktop = () => {
@@ -67,7 +74,7 @@ const WideRangeProducts = () => {
   }
 
   // Current slice of products for mobile list (5 products per page)
-  const currentMobileProducts = productsData.slice(
+  const currentMobileProducts = activeDataset.slice(
     (mobilePage - 1) * itemsPerPage,
     mobilePage * itemsPerPage
   )
@@ -127,7 +134,10 @@ const WideRangeProducts = () => {
                   decoding="async"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = "/premium_spices.png";
+                    const isBeauty = product?.category && /SKIN|HAIR|FACE|BODY|COSMETICS|BEAUTY/i.test(product.category);
+                    e.target.src = isBeauty 
+                      ? "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80"
+                      : "/premium_spices.png";
                   }}
                 />
               </div>
@@ -194,9 +204,12 @@ const WideRangeProducts = () => {
                   className="mobile-card-img" 
                   loading="lazy"
                   onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "/premium_spices.png";
-                  }}
+                  e.target.onerror = null;
+                  const isBeauty = product?.category && /SKIN|HAIR|FACE|BODY|COSMETICS|BEAUTY/i.test(product.category);
+                  e.target.src = isBeauty 
+                    ? "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80"
+                    : "/premium_spices.png";
+                }}
                 />
                 <div className="mobile-card-pdf-badge" title="Catalog PDF Available">
                   <FaFilePdf size={16} color="#e11d48" />

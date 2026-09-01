@@ -304,13 +304,13 @@
         "rating": 4.7,
         "reviewsCount": 140,
         "description": "Vibrant Salem golden turmeric root powder ideal for daily curries and golden milk.",
-        "image": "https://images.unsplash.com/photo-1599909541595-612a45053c98?auto=format&fit=crop&w=800&q=80",
+        "image": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80",
         "sku": "SKU-TP-404",
         "netWeight": "500g / Pack",
         "minOrderQty": "20 Units",
         "availability": "In Stock",
         "weight": "500g",
-        "images": ["https://images.unsplash.com/photo-1599909541595-612a45053c98?auto=format&fit=crop&w=800&q=80", "/turmeric_powder.png"],
+        "images": ["https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80", "/turmeric_powder.png"],
         "hasPdf": true
       }
     ]
@@ -329,13 +329,13 @@
         "rating": 4.6,
         "reviewsCount": 82,
         "description": "Aromatic whole cumin seeds (Jeera) with high essential oil content and distinct warm aroma.",
-        "image": "https://images.unsplash.com/photo-1599909541595-612a45053c98?auto=format&fit=crop&w=800&q=80",
+        "image": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80",
         "sku": "SKU-CS-006",
         "netWeight": "200g / Pack",
         "minOrderQty": "50 Units",
         "availability": "In Stock",
         "weight": "200g",
-        "images": ["https://images.unsplash.com/photo-1599909541595-612a45053c98?auto=format&fit=crop&w=800&q=80"],
+        "images": ["https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80"],
         "hasPdf": true
       },
       {
@@ -383,13 +383,13 @@
         "rating": 4.7,
         "reviewsCount": 108,
         "description": "99.5% pure whole cumin seeds direct from Gujarat farms without synthetic oil polishing.",
-        "image": "https://images.unsplash.com/photo-1599909541595-612a45053c98?auto=format&fit=crop&w=800&q=80",
+        "image": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80",
         "sku": "SKU-CS-504",
         "netWeight": "500g / Pack",
         "minOrderQty": "20 Units",
         "availability": "In Stock",
         "weight": "500g",
-        "images": ["https://images.unsplash.com/photo-1599909541595-612a45053c98?auto=format&fit=crop&w=800&q=80"],
+        "images": ["https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80"],
         "hasPdf": true
       }
     ]

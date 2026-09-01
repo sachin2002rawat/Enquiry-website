@@ -3,7 +3,8 @@ import { FiArrowLeft, FiArrowRight } from 'react-icons/fi'
 import { Star } from 'lucide-react'
 import reviewsData from '../Review.json'
 
-const Review = () => {
+const Review = ({ data }) => {
+  const activeDataset = data && data.length > 0 ? data : reviewsData
   const [activeIndex, setActiveIndex] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
 
@@ -12,18 +13,18 @@ const Review = () => {
     if (isHovered) return
 
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % reviewsData.length)
+      setActiveIndex((prev) => (prev + 1) % activeDataset.length)
     }, 5500)
 
     return () => clearInterval(interval)
-  }, [isHovered])
+  }, [isHovered, activeDataset])
 
   const handleNext = () => {
-    setActiveIndex((prev) => (prev + 1) % reviewsData.length)
+    setActiveIndex((prev) => (prev + 1) % activeDataset.length)
   }
 
   const handlePrev = () => {
-    setActiveIndex((prev) => (prev - 1 + reviewsData.length) % reviewsData.length)
+    setActiveIndex((prev) => (prev - 1 + activeDataset.length) % activeDataset.length)
   }
 
   const handleCardClick = (index) => {
@@ -32,7 +33,7 @@ const Review = () => {
 
   // Coverflow 3D relative positioning helper
   const getCoverflowClass = (index) => {
-    const total = reviewsData.length
+    const total = activeDataset.length
     const diff = (index - activeIndex + total) % total
 
     if (diff === 0) return 'card-3d-center'
@@ -90,7 +91,7 @@ const Review = () => {
 
         {/* 3D Coverflow Track */}
         <div className="review-3d-track">
-          {reviewsData.map((review, index) => {
+          {activeDataset.map((review, index) => {
             const coverflowClass = getCoverflowClass(index)
 
             return (

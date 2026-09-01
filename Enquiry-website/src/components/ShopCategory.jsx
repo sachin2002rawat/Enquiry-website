@@ -6,10 +6,17 @@ import { Store } from 'lucide-react'
 
 import productsData from '../ProductsData.json'
 
-const ShopCategory = () => {
+const ShopCategory = ({ data }) => {
   const navigate = useNavigate()
+  const activeDataset = data && data.length > 0 ? data : productsData
   // Store the list of categories/products in state so we can rotate/reorder it
-  const [categories, setCategories] = useState(productsData)
+  const [categories, setCategories] = useState(activeDataset)
+
+  React.useEffect(() => {
+    if (data && data.length > 0) {
+      setCategories(data)
+    }
+  }, [data])
 
   const handleViewAll = () => {
     navigate('/product')

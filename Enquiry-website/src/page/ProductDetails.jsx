@@ -22,6 +22,7 @@ const ProductDetails = () => {
   }, [id])
 
   // Find matching product by slug, ID, or normalized product name across combined catalog
+  
   const paramLower = id ? id.toLowerCase().trim() : ''
   const product = id
     ? combinedCatalog.find((p) => 

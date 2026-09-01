@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { MessageSquare } from 'lucide-react'
 import { FaWhatsapp, FaFilePdf } from 'react-icons/fa'
 import { FiArrowRight, FiArrowLeft } from 'react-icons/fi'
-import productsList from '../../ProductsData.json'
+import defaultProductsList from '../../ProductsData.json'
 import { useEnquiryModal } from '../../context/EnquiryModalContext'
 
-const PopularProduct = () => {
+const PopularProduct = ({ data }) => {
+  const productsList = data && data.length > 0 ? data : defaultProductsList
   const navigate = useNavigate()
   const [activeIndex, setActiveIndex] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
@@ -123,7 +124,10 @@ const PopularProduct = () => {
                     decoding="async"
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = '/garam_masala.png';
+                      const isBeauty = product?.category && /SKIN|HAIR|FACE|BODY|COSMETICS|BEAUTY/i.test(product.category);
+                      e.target.src = isBeauty 
+                        ? "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80"
+                        : '/garam_masala.png';
                     }}
                   />
                   <div className="popular-card-pdf-badge" title="Catalog PDF Available">

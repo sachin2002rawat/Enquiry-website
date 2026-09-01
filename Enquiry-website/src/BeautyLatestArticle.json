@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "The Secret to Glass Skin: 20% Pure Vitamin C & Hyaluronic Acid Guide",
+    "category": "SKINCARE ROUTINE",
+    "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": 2,
+    "name": "How Damask Rose & Aloe Vera Deeply Hydrate Skin in Summer",
+    "category": "HYDRATION TIPS",
+    "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": 3,
+    "name": "Cold-Pressed Moroccan Argan Oil: The Ultimate Frizz Control Secret",
+    "category": "HAIR CARE ELIXIR",
+    "image": "https://images.unsplash.com/photo-1526947425960-945c6e72858f?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": 4,
+    "name": "Detoxify & Purify Pores: Deep Pore Cleansing with French Clay",
+    "category": "SPA TREATMENTS",
+    "image": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": 5,
+    "name": "Suede Matte Lipsticks: Long-Wear Hydration & Bold Pigment Guide",
+    "category": "COSMETICS",
+    "image": "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": 6,
+    "name": "Aromatherapy Rituals: Calming Nightly Skincare with Pure Lavender",
+    "category": "ESSENTIAL OILS",
+    "image": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=800&q=80"
+  }
+]

@@ -1,0 +1,187 @@
+[
+  {
+    "id": 201,
+    "slug": "radiance-vitamin-c-serum",
+    "collection": "Radiance Skin Care Collection",
+    "name": "Radiance Vitamin C Serum",
+    "category": "SKIN CARE",
+    "description": "Revitalizing brightening facial serum with 20% Pure Vitamin C & Hyaluronic Acid for luminous skin.",
+    "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&q=80",
+    "rating": 4.9,
+    "reviewsCount": 340,
+    "sku": "SKU-BEAUTY-201",
+    "netWeight": "30ml / Bottle",
+    "minOrderQty": "25 Units",
+    "availability": "In Stock",
+    "weight": "30ml",
+    "images": [
+      "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80"
+    ],
+    "fullDescription": [
+      "A high-potency Vitamin C serum formulated with pure L-Ascorbic Acid, Ferulic Acid, and Hyaluronic Acid to brighten dull skin, diminish dark spots, and protect against environmental stressors.",
+      "Lightweight and fast-absorbing formula penetrates deep into the dermal layers to stimulate collagen production and restore youthful radiance.",
+      "Free from parabens, sulfates, synthetic fragrances, and harsh chemicals. Suitable for all skin types including sensitive skin."
+    ]
+  },
+  {
+    "id": 202,
+    "slug": "rosewater-hydrating-moisturizer",
+    "collection": "Hydra-Rose Care Series",
+    "name": "Rosewater Hydrating Gel Cream",
+    "category": "SKIN CARE",
+    "description": "Ultra-lightweight gel moisturizer enriched with Damask Rose extract and Aloe Vera for 72h moisture.",
+    "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80",
+    "rating": 4.8,
+    "reviewsCount": 215,
+    "sku": "SKU-BEAUTY-202",
+    "netWeight": "50g / Jar",
+    "minOrderQty": "20 Units",
+    "availability": "In Stock",
+    "weight": "50g",
+    "images": [
+      "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80"
+    ],
+    "fullDescription": [
+      "Infused with steam-distilled Damask Rose water, this hydrating gel cream cools and soothes irritated skin while locking in long-lasting moisture.",
+      "Non-greasy, featherweight texture glides on smoothly and absorbs instantly, leaving a glowing, dew-kissed finish perfect under makeup or as a night treatment."
+    ]
+  },
+  {
+    "id": 203,
+    "slug": "organic-argan-hair-serum",
+    "collection": "Luxury Hair Care Elixirs",
+    "name": "Organic Argan Hair Elixir",
+    "category": "HAIR CARE",
+    "description": "Nourishing, frizz-control hair oil with cold-pressed Moroccan Argan Oil and Vitamin E.",
+    "image": "https://images.unsplash.com/photo-1526947425960-945c6e72858f?auto=format&fit=crop&w=800&q=80",
+    "rating": 4.9,
+    "reviewsCount": 185,
+    "sku": "SKU-BEAUTY-203",
+    "netWeight": "100ml / Bottle",
+    "minOrderQty": "30 Units",
+    "availability": "In Stock",
+    "weight": "100ml",
+    "images": [
+      "https://images.unsplash.com/photo-1526947425960-945c6e72858f?auto=format&fit=crop&w=800&q=80"
+    ],
+    "fullDescription": [
+      "Transform dull, dry, and frizzy hair into silky smooth tresses with our pure Moroccan Argan Hair Elixir.",
+      "Protects hair fibers against heat damage from styling tools, prevents split ends, and adds brilliant glossy shine without weighing hair down."
+    ]
+  },
+  {
+    "id": 204,
+    "slug": "tea-tree-foaming-cleanser",
+    "collection": "Pure Clarity Face Wash",
+    "name": "Tea Tree Foaming Cleanser",
+    "category": "FACE CARE",
+    "description": "Deep-cleansing facial foam with natural tea tree leaf oil & Salicylic Acid for clear, blemish-free skin.",
+    "image": "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&w=800&q=80",
+    "rating": 4.7,
+    "reviewsCount": 145,
+    "sku": "SKU-BEAUTY-204",
+    "netWeight": "150ml / Pump",
+    "minOrderQty": "40 Units",
+    "availability": "In Stock",
+    "weight": "150ml",
+    "images": [
+      "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&w=800&q=80"
+    ],
+    "fullDescription": [
+      "Gently eliminates excess sebum, dirt, and impurities from deep within pores while soothing active breakouts.",
+      "Infused with Australian Tea Tree Oil and Botanical extracts to leave skin feeling refreshed, purified, and balanced."
+    ]
+  },
+  {
+    "id": 205,
+    "slug": "velvet-matte-lipstick-nude",
+    "collection": "Glamour Color Cosmetics",
+    "name": "Velvet Matte Lipstick - Nude Blush",
+    "category": "COSMETICS",
+    "description": "Richly pigmented, non-drying matte lipstick with a comfortable suede-soft finish.",
+    "image": "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=800&q=80",
+    "rating": 4.8,
+    "reviewsCount": 290,
+    "sku": "SKU-BEAUTY-205",
+    "netWeight": "4g / Tube",
+    "minOrderQty": "50 Units",
+    "availability": "In Stock",
+    "weight": "4g",
+    "images": [
+      "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=800&q=80"
+    ],
+    "fullDescription": [
+      "Delivers intense color payoff in a single swipe with up to 12 hours of transfer-proof wear.",
+      "Formulated with hydrating jojoba oil and Vitamin E to keep lips hydrated and soft all day long."
+    ]
+  },
+  {
+    "id": 206,
+    "slug": "detoxifying-charcoal-clay-mask",
+    "collection": "Spa Botanical Clay Treatments",
+    "name": "Detoxifying French Clay Mask",
+    "category": "SKIN CARE",
+    "description": "Purifying face mask with French Green Clay, Activated Charcoal, and Kaolin to tighten pores.",
+    "image": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80",
+    "rating": 4.9,
+    "reviewsCount": 160,
+    "sku": "SKU-BEAUTY-206",
+    "netWeight": "100g / Jar",
+    "minOrderQty": "30 Units",
+    "availability": "In Stock",
+    "weight": "100g",
+    "images": [
+      "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80"
+    ],
+    "fullDescription": [
+      "Pulls out micro-pollutants and excess oils while minimizing pore appearance for a smooth, refined complexion.",
+      "Leaves skin feeling velvety soft, clean, and visibly revived."
+    ]
+  },
+  {
+    "id": 207,
+    "slug": "shea-butter-body-lotion",
+    "collection": "Velvet Body Care Essentials",
+    "name": "Shea Butter Deep Nourishing Lotion",
+    "category": "BODY CARE",
+    "description": "Intense hydration body moisturizer crafted with raw African Shea Butter and Sweet Almond Oil.",
+    "image": "https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&w=800&q=80",
+    "rating": 4.8,
+    "reviewsCount": 198,
+    "sku": "SKU-BEAUTY-207",
+    "netWeight": "250ml / Bottle",
+    "minOrderQty": "35 Units",
+    "availability": "In Stock",
+    "weight": "250ml",
+    "images": [
+      "https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&w=800&q=80"
+    ],
+    "fullDescription": [
+      "Deeply restores moisture barrier to dry, flakey skin, providing 48-hour continuous nourishment.",
+      "Delicately scented with natural vanilla blossom for a luxurious daily pampering ritual."
+    ]
+  },
+  {
+    "id": 208,
+    "slug": "pure-french-lavender-essential-oil",
+    "collection": "Aromatherapy Essential Oils",
+    "name": "Pure French Lavender Oil",
+    "category": "ESSENTIAL OILS",
+    "description": "100% pure therapeutic grade lavender essential oil for aromatherapy, massage, and calming skincare.",
+    "image": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=800&q=80",
+    "rating": 4.9,
+    "reviewsCount": 410,
+    "sku": "SKU-BEAUTY-208",
+    "netWeight": "15ml / Glass Dropper",
+    "minOrderQty": "50 Units",
+    "availability": "In Stock",
+    "weight": "15ml",
+    "images": [
+      "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=800&q=80"
+    ],
+    "fullDescription": [
+      "Distilled from hand-harvested French lavender blossoms. Promotes deep relaxation, restful sleep, and skin soothing."
+    ]
+  }
+]

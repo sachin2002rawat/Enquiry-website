@@ -14,6 +14,7 @@ import ProductNavbar from '../components/ProductNavbar'
 import Footer from '../components/Footer'
 import ScrollReveal from '../components/ScrollReveal'
 import productsData from '../ProductsData.json'
+import beautyArticles from '../BeautyLatestArticle.json'
 import { useEnquiryModal } from '../context/EnquiryModalContext'
 import './BlogDetail.css'
 
@@ -21,11 +22,14 @@ const BlogDetail = () => {
   const { id } = useParams()
   const { openModal } = useEnquiryModal()
 
-  // Find matching article/product by id or fallback to first product
-  const article = productsData.find(p => String(p.id) === String(id) || p.slug === id) || productsData[0]
+  // Combine beauty articles & product data for comprehensive lookup
+  const allArticles = [...beautyArticles, ...productsData]
+
+  // Find matching article/product by id or slug fallback
+  const article = allArticles.find(p => String(p.id) === String(id) || p.slug === id) || beautyArticles[0] || productsData[0]
 
   // Get 3 related articles
-  const relatedArticles = productsData.filter(p => p.id !== article.id).slice(0, 3)
+  const relatedArticles = allArticles.filter(p => p.id !== article.id).slice(0, 3)
 
   // Scroll to top on mount or ID change
   useEffect(() => {

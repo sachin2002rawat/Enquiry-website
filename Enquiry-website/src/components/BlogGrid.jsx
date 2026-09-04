@@ -2,9 +2,10 @@ import React, { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FiSearch, FiArrowRight, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import productsData from '../ProductsData.json'
+import beautyArticles from '../BeautyLatestArticle.json'
 import './BlogGrid.css'
 
-const categories = ['All', 'PURE SPICES', 'WHOLE SPICES', 'SOYA CHUNKS', 'PULSES', 'RICE', 'EDIBLE OILS', 'MIX MASALA']
+const categories = ['All', 'SKINCARE ROUTINE', 'HYDRATION TIPS', 'HAIR CARE ELIXIR', 'SPA TREATMENTS', 'COSMETICS', 'ESSENTIAL OILS', 'PURE SPICES', 'WHOLE SPICES', 'SOYA CHUNKS', 'PULSES', 'RICE']
 
 const ITEMS_PER_PAGE = 9 // Exactly 3 rows of 3 articles each
 
@@ -14,9 +15,11 @@ const BlogGrid = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
 
+  const allArticles = useMemo(() => [...beautyArticles, ...productsData], [])
+
   // 1. Filter articles based on Category tab and Search Query
   const filteredArticles = useMemo(() => {
-    return productsData.filter((item) => {
+    return allArticles.filter((item) => {
       const matchesSearch = 
         (item.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (item.description || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -25,7 +28,7 @@ const BlogGrid = () => {
       if (activeTab === 'All') return matchesSearch
       return matchesSearch && (item.category || '').toUpperCase() === activeTab.toUpperCase()
     })
-  }, [activeTab, searchQuery])
+  }, [allArticles, activeTab, searchQuery])
 
   // 2. Calculate pagination slices (9 items per page: 3 rows of 3)
   const totalArticles = filteredArticles.length

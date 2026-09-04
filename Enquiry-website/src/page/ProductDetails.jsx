@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import productsData from '../ProductsData.json'
 import categoryDataMap from '../CategoryProductsData.json'
+import beautyProductsData from '../BeautyProductsData.json'
 import ProductNavbar from '../components/ProductNavbar'
 import ProductDetailNavbar from '../components/ProductDeatils/ProductDetailNavbar'
 import ProductHero from '../components/ProductDeatils/ProductHero'
@@ -9,9 +10,9 @@ import SecondHero from '../components/ProductDeatils/SecondHero'
 import RelatedProduct from '../components/ProductDeatils/RelatedProduct'
 import Footer from '../components/Footer'
 
-// Combine main catalog and category variant catalog into one search pool
+// Combine main catalog, category variant catalog, and beauty catalog into one search pool
 const categoryVariantProducts = Object.values(categoryDataMap).flatMap((group) => group.products || []);
-const combinedCatalog = [...productsData, ...categoryVariantProducts];
+const combinedCatalog = [...productsData, ...categoryVariantProducts, ...beautyProductsData];
 
 const ProductDetails = () => {
   const { id } = useParams()

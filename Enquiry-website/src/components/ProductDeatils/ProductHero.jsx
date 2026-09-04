@@ -232,6 +232,7 @@ const ProductHero = ({ product }) => {
         {/* =================================================================
            RIGHT SIDE: PRODUCT DETAILS & ACTION BUTTONS
            ================================================================= */}
+        
         <div className="ph-details-card">
           
           {/* Category Tag */}
@@ -317,7 +318,7 @@ const ProductHero = ({ product }) => {
                 <span>Request A Callback</span>
               </button>
 
-              <button 
+              <button  
                 type="button" 
                 className="ph-btn-whatsapp"
                 onClick={() => window.open(`https://wa.me/?text=Hi%20I%20want%20to%20enquire%20about%20${encodeURIComponent(activeProduct.title)}`, '_blank')}
@@ -366,7 +367,7 @@ const ProductHero = ({ product }) => {
             >
               <X size={20} />
             </button>
-            <img src={selectedImage} alt="Enlarged View" className="ph-zoomed-img" />
+            <img src={currentMainImage} alt="Enlarged View" className="ph-zoomed-img" />
           </div>
         </div>
       )}

@@ -2737,7 +2737,36 @@ body {
   border-radius: 24px;
   overflow: hidden;
   box-shadow: 0 20px 48px rgba(47, 39, 32, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.6s ease;
+}
+
+/* Shiny mirror sweep light beam overlay */
+.about-image-card::after {
+  content: '';
+  position: absolute;
+  top: -60%;
+  left: -90%;
+  width: 75%;
+  height: 220%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 30%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0.98) 52%,
+    rgba(255, 255, 255, 0.8) 54%,
+    rgba(255, 255, 255, 0.15) 70%,
+    transparent 100%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .about-main-img {
@@ -2745,11 +2774,24 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: center;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.7s ease;
+}
+
+/* Hover State - Lift, Glow, Zoom Image, and Sweep Mirror Reflection */
+.about-image-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 30px 65px rgba(47, 39, 32, 0.22), 0 0 30px rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.95);
 }
 
 .about-image-card:hover .about-main-img {
-  transform: scale(1.04);
+  transform: scale(1.12);
+  filter: brightness(1.05) contrast(1.02);
+}
+
+.about-image-card:hover::after {
+  opacity: 1;
+  transform: rotate(25deg) translate(340%, 0);
 }
 
 /* Glassmorphism Badges */
@@ -2766,6 +2808,7 @@ body {
   gap: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   z-index: 3;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.5s ease;
 }
 
 .badge-top-left {
@@ -2776,6 +2819,16 @@ body {
 .badge-bottom-right {
   bottom: 24px;
   right: 24px;
+}
+
+.about-image-card:hover .badge-top-left {
+  transform: translateY(-5px) scale(1.04);
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.about-image-card:hover .badge-bottom-right {
+  transform: translateY(5px) scale(1.04);
+  background: rgba(255, 255, 255, 0.42);
 }
 
 .glass-icon-wrapper {
@@ -3026,164 +3079,121 @@ body {
   border-color: #b0c4de;
 }
 
-/* --- 3D COVERFLOW STAGE --- */
-.review-coverflow-wrapper {
+/* Non-stop Continuous Fast Marquee Moving Left-to-Right */
+.review-marquee-stage {
   position: relative;
   z-index: 2;
   width: 100%;
-  height: 440px;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 14px 0 36px 0;
+  mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+}
+
+.review-marquee-track {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 24px;
+  width: max-content;
+  animation: continuousMarqueeRight 16s linear infinite;
+  will-change: transform;
 }
 
-/* Particle sparkle wave beam behind cards */
-.review-sparkle-beam {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  height: 60px;
-  transform: translateY(-50%);
-  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.9) 0%, rgba(200, 220, 245, 0.4) 40%, transparent 80%);
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.85;
+.review-marquee-track:hover {
+  animation-play-state: paused;
 }
 
-/* 3D Track Perspective */
-.review-3d-track {
-  position: relative;
-  width: 100%;
-  max-width: 1200px;
-  height: 380px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  perspective: 1200px;
+@keyframes continuousMarqueeRight {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
 }
 
-/* --- INDIVIDUAL 3D GLASSMORPHIC CARD --- */
-.review-glass-card {
-  position: absolute;
-  width: 540px;
-  min-height: 330px;
-  background: rgba(255, 255, 255, 0.88);
+.review-marquee-card {
+  width: 360px;
+  flex: 0 0 360px;
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(255, 255, 255, 0.85);
-  border-radius: 28px;
-  padding: 32px 36px;
+  border: 1.5px solid #e3d8cc;
+  border-radius: 24px;
+  padding: 28px 24px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  cursor: pointer;
-  box-shadow: 0 14px 36px rgba(47, 39, 32, 0.08);
-  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease, border-color 0.5s ease;
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  user-select: none;
-}
-
-/* Rainbow prism light reflection on card edge */
-.card-prism-edge {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 28px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 215, 180, 0.15) 30%, rgba(180, 220, 255, 0.2) 60%, transparent 100%);
-  pointer-events: none;
-}
-
-/* --- COVERFLOW 3D POSITIONS --- */
-.review-glass-card.card-3d-center {
-  transform: translateX(0) translateZ(80px) rotateY(0deg) scale(1.05);
-  opacity: 1;
-  z-index: 10;
-  border-color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 20px 45px rgba(47, 39, 32, 0.12);
-}
-
-.review-glass-card.card-3d-prev {
-  transform: translateX(-340px) translateZ(-100px) rotateY(25deg) scale(0.85);
-  opacity: 0.75;
-  z-index: 5;
-}
-
-.review-glass-card.card-3d-next {
-  transform: translateX(340px) translateZ(-100px) rotateY(-25deg) scale(0.85);
-  opacity: 0.75;
-  z-index: 5;
-}
-
-.review-glass-card.card-3d-far-prev {
-  transform: translateX(-620px) translateZ(-220px) rotateY(38deg) scale(0.7);
-  opacity: 0.35;
-  z-index: 2;
-}
-
-.review-glass-card.card-3d-far-next {
-  transform: translateX(620px) translateZ(-220px) rotateY(-38deg) scale(0.7);
-  opacity: 0.35;
-  z-index: 2;
-}
-
-.review-glass-card.card-3d-hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.5);
-}
-
-/* Floating Quote Marks */
-.quote-mark {
-  position: absolute;
-  font-family: serif;
-  font-size: 72px;
-  line-height: 1;
-  color: rgba(18, 33, 61, 0.12);
-  pointer-events: none;
-}
-
-.quote-mark-left {
-  top: 16px;
-  left: 20px;
-}
-
-.quote-mark-right {
-  bottom: 20px;
-  right: 24px;
-}
-
-/* Card Content Details */
-.review-card-category {
-  font-family: var(--font-family);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: #64748b;
-  text-transform: uppercase;
-}
-
-.review-card-quote {
-  font-family: var(--font-family);
-  font-size: 16px;
-  font-style: italic;
-  line-height: 1.6;
-  color: #1e293b;
-  margin: 18px 0;
+  min-height: 285px;
+  box-shadow: 0 10px 30px rgba(47, 39, 32, 0.05);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.35s ease;
   position: relative;
-  z-index: 2;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
-.review-card-footer {
+.review-marquee-card:hover {
+  transform: translateY(-8px) scale(1.03);
+  border-color: #52b788;
+  box-shadow: 0 20px 40px rgba(82, 183, 136, 0.22), 0 0 20px rgba(82, 183, 136, 0.15);
+}
+
+.review-card-top-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 10px;
+  margin-bottom: 12px;
+}
+
+.review-card-category-tag {
+  font-family: var(--font-family);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #2d6a4f;
+  text-transform: uppercase;
+  background: rgba(82, 183, 136, 0.12);
+  padding: 4px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(82, 183, 136, 0.2);
+}
+
+.review-card-stars {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.card-quote-icon {
+  position: absolute;
+  top: 10px;
+  right: 18px;
+  font-family: serif;
+  font-size: 56px;
+  line-height: 1;
+  color: rgba(18, 33, 61, 0.08);
+  pointer-events: none;
+}
+
+.review-card-body-text {
+  font-family: var(--font-family);
+  font-size: 15px;
+  line-height: 1.65;
+  color: #334155;
+  font-style: italic;
+  margin: 10px 0 20px 0;
   position: relative;
   z-index: 2;
+}
+
+.review-card-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 16px;
 }
 
 .review-author-info {
@@ -3208,7 +3218,7 @@ body {
 
 .review-author-name {
   font-family: var(--font-family);
-  font-size: 16px;
+  font-size: 15.5px;
   font-weight: 700;
   color: #12213d;
   line-height: 1.2;
@@ -3221,82 +3231,48 @@ body {
   margin-top: 2px;
 }
 
-/* Frosted Stat Badge inside Card */
-.review-stat-badge {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+.review-verified-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
-  padding: 8px 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-}
-
-.stat-badge-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.stat-badge-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-badge-title {
-  font-family: var(--font-family);
-  font-size: 14px;
+  padding: 6px 12px;
+  font-size: 12px;
   font-weight: 700;
-  color: #12213d;
-  line-height: 1.1;
+  color: #1e293b;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
-.stat-badge-label {
-  font-family: var(--font-family);
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  color: #64748b;
-  margin-top: 1px;
+/* Beauty Theme Animated Review Cards */
+.review-marquee-card.beauty-review-card {
+  background: linear-gradient(160deg, #ffffff 0%, #fdfbf7 60%, #f7f3ed 100%);
+  border: 1.5px solid rgba(82, 183, 136, 0.25);
 }
 
-/* RESPONSIVE DESIGN FOR 3D COVERFLOW REVIEW */
+/* RESPONSIVE DESIGN FOR REVIEW SECTION */
 @media (max-width: 1024px) {
-  .review-glass-card {
-    width: 440px;
-    min-height: 310px;
-    padding: 24px 28px;
+  .review-carousel-stage {
+    padding: 0 20px;
   }
 
-  .review-glass-card.card-3d-prev {
-    transform: translateX(-260px) translateZ(-100px) rotateY(20deg) scale(0.85);
+  .review-cards-grid {
+    gap: 16px;
   }
 
-  .review-glass-card.card-3d-next {
-    transform: translateX(260px) translateZ(-100px) rotateY(-20deg) scale(0.85);
+  .review-grid-card {
+    flex: 0 0 calc((100% - 16px) / 2);
   }
 }
 
 @media (max-width: 640px) {
+  .review-grid-card {
+    flex: 0 0 100%;
+  }
+
   .review-title {
     font-size: 32px;
-  }
-
-  .review-glass-card {
-    width: 90%;
-    min-height: 290px;
-    padding: 20px;
-  }
-
-  .review-glass-card.card-3d-prev,
-  .review-glass-card.card-3d-next {
-    opacity: 0.15;
   }
 }
 
@@ -4195,24 +4171,45 @@ body {
 }
 
 /* Connect Column Details */
+.footer-col-connect {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 15px;
+  padding-top: 25px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-col-connect .footer-col-title {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
 .connect-top-icons {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   color: #a67c52;
 }
 
 .connect-info-list {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
 }
 
 .connect-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 10px;
   font-size: 15px;
   color: #e2e8f0;
   text-decoration: none;
@@ -6197,4 +6194,556 @@ img {
 .animate-on-scroll.is-visible {
   opacity: 1 !important;
   transform: translateY(0) translateX(0) scale(1) !important;
+}
+
+/* ==========================================================================
+   ANIMATED CARDS FOR HOME2 (BEAUTY & LUXURY THEME)
+   ========================================================================== */
+
+@keyframes beautyCardFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes beautyShimmerSweep {
+  0% {
+    transform: translateX(-100%) rotate(25deg);
+  }
+  100% {
+    transform: translateX(250%) rotate(25deg);
+  }
+}
+
+/* Home2 Animated Product Wide Card & Category Cards */
+.product-wide-card.beauty-animated-card,
+.category-card.beauty-animated-card {
+  position: relative;
+  background: linear-gradient(160deg, #ffffff 0%, #fdfbf7 60%, #f7f3ed 100%);
+  border: 1.5px solid rgba(82, 183, 136, 0.25);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(30, 41, 59, 0.06), 0 2px 8px rgba(82, 183, 136, 0.08);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: beautyCardFloat 6s ease-in-out infinite;
+  will-change: transform, box-shadow;
+}
+
+.product-wide-card.beauty-animated-card:nth-child(2),
+.category-card.beauty-animated-card:nth-child(2) {
+  animation-delay: -2s;
+}
+
+.product-wide-card.beauty-animated-card:nth-child(3),
+.category-card.beauty-animated-card:nth-child(3) {
+  animation-delay: -4s;
+}
+
+/* Hover State - Dynamic 3D Lift & Emerald Glowing Border */
+.product-wide-card.beauty-animated-card:hover,
+.category-card.beauty-animated-card:hover {
+  transform: translateY(-14px) scale(1.025);
+  border-color: #52b788;
+  box-shadow: 0 24px 50px rgba(82, 183, 136, 0.28), 0 0 25px rgba(82, 183, 136, 0.2);
+  animation-play-state: paused;
+}
+
+/* Image Container & Shimmer Effect */
+.beauty-animated-card .product-wide-img-container,
+.beauty-animated-card .category-card-img-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #f8fafc;
+}
+
+.beauty-animated-card .product-wide-img-container::after,
+.beauty-animated-card .category-card-img-container::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 60%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    transparent 100%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.beauty-animated-card:hover .product-wide-img-container::after,
+.beauty-animated-card:hover .category-card-img-container::after {
+  opacity: 1;
+  animation: beautyShimmerSweep 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.beauty-animated-card .product-wide-img,
+.beauty-animated-card .category-card-img {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.beauty-animated-card:hover .product-wide-img,
+.beauty-animated-card:hover .category-card-img {
+  transform: scale(1.08) rotate(0.8deg);
+}
+
+/* Animated Collection Tag */
+.beauty-animated-card .product-wide-tag {
+  background: linear-gradient(135deg, rgba(82, 183, 136, 0.12) 0%, rgba(45, 106, 79, 0.12) 100%);
+  color: #2d6a4f;
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-weight: 800;
+  letter-spacing: 0.9px;
+  display: inline-block;
+  margin: 0 auto 14px auto;
+  border: 1px solid rgba(82, 183, 136, 0.2);
+  transition: all 0.35s ease;
+}
+
+.beauty-animated-card:hover .product-wide-tag {
+  background: linear-gradient(135deg, #52b788 0%, #2d6a4f 100%);
+  color: #ffffff;
+  border-color: transparent;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(82, 183, 136, 0.35);
+}
+
+/* Title Hover Glow */
+.beauty-animated-card .product-wide-title,
+.beauty-animated-card .category-card-title {
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.beauty-animated-card:hover .product-wide-title,
+.beauty-animated-card:hover .category-card-title {
+  color: #1b4332;
+  transform: translateY(-1px);
+}
+
+/* Category Highlight */
+.beauty-animated-card .product-wide-category {
+  color: #52b788;
+  font-weight: 800;
+}
+
+/* Enquire Button Animation */
+.beauty-animated-card .enquire-now-btn {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: #ffffff;
+  border-radius: 12px;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.beauty-animated-card:hover .enquire-now-btn {
+  background: linear-gradient(135deg, #52b788 0%, #2d6a4f 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(82, 183, 136, 0.4);
+}
+
+/* WhatsApp Button Pulse & Bounce */
+.beauty-animated-card .whatsapp-btn {
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.beauty-animated-card:hover .whatsapp-btn {
+  transform: scale(1.12) rotate(8deg);
+  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.45);
+}
+
+/* Mobile Animated Card */
+.wide-range-mobile-card.beauty-animated-card {
+  border: 1.5px solid rgba(82, 183, 136, 0.3);
+  border-radius: 20px;
+  background: linear-gradient(160deg, #ffffff 0%, #fdfbf7 100%);
+  box-shadow: 0 10px 28px rgba(30, 41, 59, 0.08);
+  transition: all 0.35s ease;
+}
+
+.wide-range-mobile-card.beauty-animated-card:active {
+  transform: scale(0.98);
+}
+
+/* ==========================================================================
+   ANIMATED FAQ ACCORDION FOR HOME2 (BEAUTY THEME)
+   ========================================================================== */
+
+/* Animated FAQ Pill Card in Home2 */
+.faq-pill-card.beauty-faq-pill {
+  position: relative;
+  background: linear-gradient(145deg, #ffffff 0%, #fdfbf7 100%);
+  border: 1.5px solid rgba(82, 183, 136, 0.25);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(30, 41, 59, 0.04);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.4s ease,
+              background 0.4s ease;
+}
+
+/* Hover effect on FAQ pill in home2 */
+.faq-pill-card.beauty-faq-pill:hover {
+  transform: translateY(-4px) scale(1.01);
+  border-color: #52b788;
+  box-shadow: 0 12px 30px rgba(82, 183, 136, 0.2), 0 0 15px rgba(82, 183, 136, 0.1);
+}
+
+/* Opened state for Beauty FAQ pill */
+.faq-pill-card.beauty-faq-pill.open-pill {
+  background: linear-gradient(145deg, #ffffff 0%, #f4fbf7 100%);
+  border: 1.5px solid #52b788;
+  box-shadow: 0 14px 32px rgba(82, 183, 136, 0.22);
+  border-left: 6px solid #2d6a4f;
+}
+
+.beauty-faq-pill .faq-question-title {
+  font-weight: 600;
+  color: #1e293b;
+  transition: color 0.3s ease;
+}
+
+.beauty-faq-pill.open-pill .faq-question-title {
+  color: #2d6a4f;
+  font-weight: 700;
+}
+
+.beauty-faq-pill .faq-chevron {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(82, 183, 136, 0.12);
+  color: #2d6a4f;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, color 0.3s ease;
+}
+
+.beauty-faq-pill.open-pill .faq-chevron {
+  background: #52b788;
+  color: #ffffff;
+  transform: rotate(180deg);
+}
+
+/* Number badge (01, 02...) for Beauty FAQ items */
+.faq-number-badge {
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 800;
+  color: #2d6a4f;
+  background: rgba(82, 183, 136, 0.14);
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-right: 12px;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.beauty-faq-pill.open-pill .faq-number-badge {
+  background: #2d6a4f;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   ANIMATED ARTICLE CARDS FOR LATEST ARTICLES (BEAUTY THEME)
+   ========================================================================== */
+
+.article-card.beauty-animated-article-card {
+  position: relative;
+  background: linear-gradient(160deg, #ffffff 0%, #fdfbf7 60%, #f7f3ed 100%);
+  border: 1.5px solid rgba(82, 183, 136, 0.25);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(30, 41, 59, 0.06), 0 2px 8px rgba(82, 183, 136, 0.08);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow;
+}
+
+.beauty-animated-article-card:hover {
+  transform: translateY(-12px) scale(1.025);
+  border-color: #52b788;
+  box-shadow: 0 24px 50px rgba(82, 183, 136, 0.28), 0 0 25px rgba(82, 183, 136, 0.2);
+}
+
+.beauty-animated-article-card .article-date-ribbon {
+  background: linear-gradient(135deg, #52b788 0%, #2d6a4f 100%);
+  box-shadow: 0 4px 14px rgba(82, 183, 136, 0.35);
+  transition: all 0.3s ease;
+}
+
+.beauty-animated-article-card:hover .article-date-ribbon {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 18px rgba(82, 183, 136, 0.45);
+}
+
+.beauty-animated-article-card .article-img-container::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 60%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    transparent 100%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.beauty-animated-article-card:hover .article-img-container::after {
+  opacity: 1;
+  animation: beautyShimmerSweep 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.beauty-animated-article-card:hover .article-img {
+  transform: scale(1.08) rotate(0.6deg);
+}
+
+.beauty-animated-article-card .article-glass-panel {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1.5px solid rgba(82, 183, 136, 0.2);
+  transition: all 0.35s ease;
+}
+
+.beauty-animated-article-card:hover .article-glass-panel {
+  background: #ffffff;
+  border-color: #52b788;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(82, 183, 136, 0.2);
+}
+
+.beauty-animated-article-card:hover .article-title {
+  color: #1b4332;
+}
+
+.beauty-animated-article-card .read-more-link {
+  color: #2d6a4f;
+  font-weight: 700;
+}
+
+.beauty-animated-article-card:hover .read-more-link {
+  color: #52b788;
+}
+
+.beauty-animated-article-card .article-brand-watermark {
+  color: #52b788;
+  transition: transform 0.35s ease;
+}
+
+.beauty-animated-article-card:hover .article-brand-watermark {
+  transform: scale(1.2) rotate(15deg);
+}
+
+/* ==========================================================================
+   ANIMATED 4-CARD FLOATING GRID FOR WHY CHOOSE US (HOME2 BEAUTY THEME)
+   ========================================================================== */
+
+.beauty-why-choose-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  width: 100%;
+  padding: 10px 4px;
+}
+
+.beauty-feature-card {
+  position: relative;
+  background: linear-gradient(160deg, #ffffff 0%, #fdfbf7 60%, #f7f3ed 100%);
+  border: 1.5px solid rgba(82, 183, 136, 0.25);
+  border-radius: 28px;
+  padding: 36px 24px 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 12px 32px rgba(30, 41, 59, 0.06), 0 2px 8px rgba(82, 183, 136, 0.08);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.45s ease;
+  overflow: hidden;
+  will-change: transform, box-shadow;
+}
+
+/* Number Tag in Top Right Corner of Card */
+.beauty-card-index {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(82, 183, 136, 0.45);
+  letter-spacing: 1px;
+  transition: color 0.35s ease, transform 0.35s ease;
+}
+
+.beauty-feature-card:hover .beauty-card-index {
+  color: #2d6a4f;
+  transform: scale(1.15);
+}
+
+/* Diagonal Mirror Sweep Overlay on Hover */
+.beauty-feature-card-shine {
+  position: absolute;
+  top: -60%;
+  left: -80%;
+  width: 75%;
+  height: 220%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 30%,
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(255, 255, 255, 0.2) 70%,
+    transparent 100%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Card Hover Elevation & Emerald Glow */
+.beauty-feature-card:hover {
+  transform: translateY(-14px) scale(1.03);
+  border-color: #52b788;
+  box-shadow: 0 24px 50px rgba(82, 183, 136, 0.28), 0 0 25px rgba(82, 183, 136, 0.2);
+}
+
+.beauty-feature-card:hover .beauty-feature-card-shine {
+  opacity: 1;
+  transform: rotate(25deg) translate(340%, 0);
+}
+
+/* Icon Circle Animations inside Beauty Card */
+.beauty-feature-card .feature-icon-circle {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(82, 183, 136, 0.12) 0%, rgba(45, 106, 79, 0.12) 100%);
+  border: 1.5px solid rgba(82, 183, 136, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              background 0.4s ease, 
+              box-shadow 0.4s ease;
+}
+
+.beauty-feature-card .feature-lucide-icon {
+  color: #2d6a4f;
+  transition: color 0.35s ease, transform 0.35s ease;
+}
+
+.beauty-feature-card:hover .feature-icon-circle {
+  transform: scale(1.15) rotate(8deg);
+  background: linear-gradient(135deg, #52b788 0%, #2d6a4f 100%);
+  border-color: transparent;
+  box-shadow: 0 10px 25px rgba(82, 183, 136, 0.4);
+}
+
+.beauty-feature-card:hover .feature-lucide-icon {
+  color: #ffffff;
+  transform: scale(1.08);
+}
+
+/* Title & Accent Line Animations */
+.beauty-feature-card .feature-item-title {
+  font-family: serif, var(--font-family);
+  font-size: 20px;
+  font-weight: 600;
+  color: #143623;
+  margin-bottom: 4px;
+  transition: color 0.3s ease;
+}
+
+.beauty-feature-card:hover .feature-item-title {
+  color: #1b4332;
+}
+
+.beauty-feature-card .feature-item-dash {
+  width: 26px;
+  height: 3px;
+  background-color: rgba(82, 183, 136, 0.4);
+  border-radius: 2px;
+  margin: 10px auto 14px auto;
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.beauty-feature-card:hover .feature-item-dash {
+  width: 48px;
+  background-color: #52b788;
+  box-shadow: 0 0 10px rgba(82, 183, 136, 0.4);
+}
+
+/* Responsive Grid */
+@media (max-width: 1024px) {
+  .beauty-why-choose-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .beauty-why-choose-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+/* ==========================================================================
+   30 DEGREE 3D CARD ROTATION ON CLICK
+   ========================================================================== */
+
+.beauty-feature-card,
+.why-choose-item {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.6s ease,
+              background 0.6s ease;
+}
+
+.beauty-feature-card.is-rotated-30,
+.why-choose-item.is-rotated-30 {
+  transform: translateY(-12px) rotateY(30deg) rotateZ(3deg) scale(1.05) !important;
+  border-color: #52b788 !important;
+  box-shadow: -20px 28px 55px rgba(82, 183, 136, 0.35), 0 0 30px rgba(82, 183, 136, 0.2) !important;
+  background: linear-gradient(160deg, #ffffff 0%, #f0fdf4 100%) !important;
+}
+
+.beauty-feature-card.is-rotated-30 .feature-icon-circle,
+.why-choose-item.is-rotated-30 .feature-icon-circle {
+  transform: scale(1.2) rotate(15deg) !important;
+  background: linear-gradient(135deg, #52b788 0%, #2d6a4f 100%) !important;
+  border-color: transparent !important;
+  box-shadow: 0 10px 25px rgba(82, 183, 136, 0.45) !important;
+}
+
+.beauty-feature-card.is-rotated-30 .feature-lucide-icon,
+.why-choose-item.is-rotated-30 .feature-lucide-icon {
+  color: #ffffff !important;
+}
+
+.beauty-feature-card.is-rotated-30 .feature-item-title,
+.why-choose-item.is-rotated-30 .feature-item-title {
+  color: #1b4332 !important;
+}
+
+.beauty-feature-card.is-rotated-30 .feature-item-dash,
+.why-choose-item.is-rotated-30 .feature-item-dash {
+  width: 52px !important;
+  background-color: #52b788 !important;
+  box-shadow: 0 0 12px rgba(82, 183, 136, 0.5) !important;
 }

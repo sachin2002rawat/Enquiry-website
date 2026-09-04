@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { FiArrowRight, FiArrowLeft } from 'react-icons/fi'
 import productsData from '../ProductsData.json'
 
-const LatestArticle = ({ data }) => {
+const LatestArticle = ({ data, isBeauty = false }) => {
+  const navigate = useNavigate()
   const activeDataset = data && data.length > 0 ? data : productsData
   // Store products/articles in state for carousel rotation
   const [products, setProducts] = useState(activeDataset)
@@ -31,8 +33,12 @@ const LatestArticle = ({ data }) => {
     })
   }
 
-  const handleArticleClick = (title) => {
-    window.location.href = '/blog'
+  const handleArticleClick = (articleId) => {
+    if (articleId) {
+      navigate(`/blog/${articleId}`)
+    } else {
+      navigate('/blog')
+    }
   }
 
   return (
@@ -81,8 +87,8 @@ const LatestArticle = ({ data }) => {
           {products.slice(0, 3).map((article) => (
             <div 
               key={article.id} 
-              className="article-card"
-              onClick={() => handleArticleClick(article.name)}
+              className={`article-card ${isBeauty ? 'beauty-animated-article-card' : ''}`}
+              onClick={() => handleArticleClick(article.id)}
             >
               {/* Ribbon Bookmark Date Tag */}
               <div className="article-date-ribbon">

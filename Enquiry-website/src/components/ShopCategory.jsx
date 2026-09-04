@@ -6,7 +6,7 @@ import { Store } from 'lucide-react'
 
 import productsData from '../ProductsData.json'
 
-const ShopCategory = ({ data }) => {
+const ShopCategory = ({ data, isBeauty = false }) => {
   const navigate = useNavigate()
   const activeDataset = data && data.length > 0 ? data : productsData
   // Store the list of categories/products in state so we can rotate/reorder it
@@ -94,7 +94,7 @@ const ShopCategory = ({ data }) => {
             return (
               <div          
                 key={category.id} 
-                className="category-card"  
+                className={`category-card ${isBeauty ? 'beauty-animated-card' : ''}`}  
                 onClick={() => handleCategoryClick(category)}
               >
                 {/* Container for the category image */}

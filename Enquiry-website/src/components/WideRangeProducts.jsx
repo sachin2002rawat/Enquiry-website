@@ -6,7 +6,7 @@ import { FiArrowRight, FiArrowLeft, FiChevronLeft, FiChevronRight } from 'react-
 import defaultProductsData from '../ProductsData.json'
 import { useEnquiryModal } from '../context/EnquiryModalContext'
 
-const WideRangeProducts = ({ data }) => {
+const WideRangeProducts = ({ data, isBeauty = false }) => {
   const activeDataset = data && data.length > 0 ? data : defaultProductsData
   const navigate = useNavigate()
   const { openEnquiryModal } = useEnquiryModal()
@@ -119,7 +119,7 @@ const WideRangeProducts = ({ data }) => {
           {products.slice(0, 3).map((product) => (
             <div 
               key={product.id} 
-              className="product-wide-card"
+              className={`product-wide-card ${isBeauty ? 'beauty-animated-card' : ''}`}
               onClick={() => handleCardClick(product)}
               style={{ cursor: 'pointer' }}
             >
@@ -192,7 +192,7 @@ const WideRangeProducts = ({ data }) => {
           {currentMobileProducts.map((product) => (
             <div 
               key={product.id} 
-              className="wide-range-mobile-card"
+              className={`wide-range-mobile-card ${isBeauty ? 'beauty-animated-card' : ''}`}
               onClick={() => handleCardClick(product)}
             >
               {/* Full Width Top Image with Floating Badges */}

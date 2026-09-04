@@ -4,11 +4,14 @@ import ProductNavbar from '../components/ProductNavbar';
 import Footer from '../components/Footer';
 import categoryDataMap from '../CategoryProductsData.json';
 import productsData from '../ProductsData.json';
+import beautyProductsData from '../BeautyProductsData.json';
 import '../components/CategoryProductGrid.css';
 import { MessageSquare } from 'lucide-react';
 import { FaWhatsapp, FaStar, FaFilePdf } from 'react-icons/fa';
 import { FiArrowRight } from 'react-icons/fi';
 import { useEnquiryModal } from '../context/EnquiryModalContext';
+
+const combinedCatalog = [...productsData, ...beautyProductsData];
 
 const CategoryDetails = () => {
   const { id } = useParams();
@@ -34,34 +37,34 @@ const CategoryDetails = () => {
     }
   }
 
-  // Dynamic fallback: build a 4-card set from productsData if key not found in CategoryProductsData
+  // Dynamic fallback: build a 4-card set from combinedCatalog if key not found in CategoryProductsData
   let displayTitle = categoryGroup?.title || id?.replace(/-/g, ' ') || 'Garam Masala';
   let categoryProducts = categoryGroup?.products;
 
   if (!categoryProducts || categoryProducts.length === 0) {
     const formattedTitle = id
       ? id.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-      : 'Garam Masala';
+      : 'Beauty Care';
     displayTitle = formattedTitle;
 
     // Filter items matching title or category
-    const matched = productsData.filter(
+    const matched = combinedCatalog.filter(
       (p) =>
         (p.name || '').toLowerCase().includes(categoryKey.replace(/-/g, ' ')) ||
         (p.category || '').toLowerCase().includes(categoryKey.replace(/-/g, ' '))
     );
 
-    const fallbacks = matched.length >= 4 ? matched.slice(0, 4) : [...matched, ...productsData].slice(0, 4);
+    const fallbacks = matched.length >= 4 ? matched.slice(0, 4) : [...matched, ...combinedCatalog].slice(0, 4);
 
     categoryProducts = fallbacks.map((item, index) => ({
       id: item.id || index + 500,
       slug: item.slug || item.id,
       collection: `${formattedTitle.toUpperCase()} COLLECTION`,
       name: item.name,
-      category: item.category || 'PURE SPICES',
+      category: item.category || 'PRODUCTS',
       rating: item.rating || 4.8,
       reviewsCount: item.reviewsCount || 127,
-      description: item.description || `Premium quality ${item.name} packed with natural flavor and aroma.`,
+      description: item.description || `Premium quality ${item.name} packed with natural ingredients.`,
       image: item.image || '/garam_masala.png',
       hasPdf: true
     }));

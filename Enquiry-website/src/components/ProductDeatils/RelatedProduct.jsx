@@ -5,7 +5,10 @@ import { MessageSquare } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { FiArrowRight, FiArrowLeft } from 'react-icons/fi';
 import productsData from '../../ProductsData.json';
+import beautyProductsData from '../../BeautyProductsData.json';
 import { useEnquiryModal } from '../../context/EnquiryModalContext';
+
+const allProducts = [...productsData, ...beautyProductsData];
 
 const RelatedProduct = ({ currentProduct }) => {
   const navigate = useNavigate();
@@ -13,7 +16,7 @@ const RelatedProduct = ({ currentProduct }) => {
 
   // Helper function to build related products list (at least 5 items)
   const getRelatedProducts = (currProd) => {
-    if (!currProd) return productsData.slice(1, 7);
+    if (!currProd) return allProducts.slice(1, 7);
 
     const currCategory = (currProd.category || '').toUpperCase();
     const currId = currProd.id;
@@ -28,8 +31,12 @@ const RelatedProduct = ({ currentProduct }) => {
       ['YUMII MASALA TOFU', 'SOYA CHUNKS'].includes(cat) || 
       cat.includes('TOFU') || cat.includes('SOYA');
 
+    const isBeautyCategory = (cat) =>
+      ['SKIN CARE', 'HAIR CARE', 'FACE CARE', 'COSMETICS', 'BODY CARE', 'ESSENTIAL OILS'].includes(cat) ||
+      cat.includes('SKIN') || cat.includes('BEAUTY') || cat.includes('HAIR') || cat.includes('FACE');
+
     // Exclude current product itself
-    const candidateList = productsData.filter((item) => {
+    const candidateList = allProducts.filter((item) => {
       if (item.id === currId) return false;
       if (item.slug && item.slug.toLowerCase() === currSlug) return false;
       return true;
@@ -41,6 +48,8 @@ const RelatedProduct = ({ currentProduct }) => {
       relatedMatches = candidateList.filter((item) => isSpiceCategory((item.category || '').toUpperCase()));
     } else if (isTofuCategory(currCategory)) {
       relatedMatches = candidateList.filter((item) => isTofuCategory((item.category || '').toUpperCase()));
+    } else if (isBeautyCategory(currCategory)) {
+      relatedMatches = candidateList.filter((item) => isBeautyCategory((item.category || '').toUpperCase()));
     } else {
       relatedMatches = candidateList.filter((item) => (item.category || '').toUpperCase() === currCategory);
     }

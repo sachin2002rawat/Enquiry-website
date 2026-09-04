@@ -42,17 +42,17 @@ const Home2 = () => {
       <Navbar />
       <Hero data={beautyHeroImages} />
       <ScrollReveal variant="up"><CompanySection isBeauty={true} /></ScrollReveal>
-      <ScrollReveal variant="up"><WideRangeProducts data={beautyProductsData} /></ScrollReveal>
-      <ScrollReveal variant="up"><ShopCategory data={beautyProductsData} /></ScrollReveal>
+      <ScrollReveal variant="up"><WideRangeProducts data={beautyProductsData} isBeauty={true} /></ScrollReveal>
+      <ScrollReveal variant="up"><ShopCategory data={beautyProductsData} isBeauty={true} /></ScrollReveal>
       
       <Suspense fallback={<SectionLoader />}>
-        <ScrollReveal variant="up"><PopularProduct data={beautyProductsData} /></ScrollReveal>
+        <ScrollReveal variant="up"><PopularProduct data={beautyProductsData} isBeauty={true} /></ScrollReveal>
         {/* <ScrollReveal variant="up"><ContactUs /></ScrollReveal> */}
         <ScrollReveal variant="up"><AboutCompany isBeauty={true} /></ScrollReveal>
-        <ScrollReveal variant="up"><Review data={beautyReviews} /></ScrollReveal>
-        <ScrollReveal variant="up"><FAQ /></ScrollReveal>
-        <ScrollReveal variant="up"><LatestArticle data={beautyArticles} /></ScrollReveal>
-        <ScrollReveal variant="up"><Feature data={beautyFeatures} /></ScrollReveal>
+        <ScrollReveal variant="up"><Review data={beautyReviews} isBeauty={true} /></ScrollReveal>
+        <ScrollReveal variant="up"><FAQ isBeauty={true} /></ScrollReveal>
+        <ScrollReveal variant="up"><LatestArticle data={beautyArticles} isBeauty={true} /></ScrollReveal>
+        <ScrollReveal variant="up"><Feature data={beautyFeatures} isBeauty={true} /></ScrollReveal>
         <Footer />
       </Suspense>
     </div>

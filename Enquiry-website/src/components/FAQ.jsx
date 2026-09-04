@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi'
 import faqData from '../Faq.json'
 
-const FAQ = () => {
+const FAQ = ({ isBeauty = false }) => {
   // All FAQ items closed by default
   const [openId, setOpenId] = useState(null)
 
@@ -50,13 +50,14 @@ const FAQ = () => {
 
         {/* RIGHT COLUMN: Accordion Cards Stack */}
         <div className="faq-right-column">
-          {faqData.map((item) => {
+          {faqData.map((item, index) => {
             const isOpen = openId === item.id
 
             return (
               <div 
                 key={item.id} 
-                className={`faq-pill-card ${isOpen ? 'open-pill' : ''}`}
+                className={`faq-pill-card ${isOpen ? 'open-pill' : ''} ${isBeauty ? 'beauty-faq-pill' : ''}`}
+                style={isBeauty ? { animationDelay: `${index * 0.1}s` } : {}}
               >
                 {/* Accordion Question Header Bar */}
                 <button 
@@ -65,9 +66,16 @@ const FAQ = () => {
                   onClick={() => toggleFaq(item.id)}
                   aria-expanded={isOpen}
                 >
-                  <span className="faq-question-title">{item.question}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    {isBeauty && (
+                      <span className="faq-number-badge">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                    )}
+                    <span className="faq-question-title">{item.question}</span>
+                  </div>
                   <div className="faq-chevron">
-                    {isOpen ? <FiChevronUp size={22} /> : <FiChevronDown size={22} />}
+                    <FiChevronDown size={20} />
                   </div>
                 </button>
 

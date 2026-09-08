@@ -38,8 +38,9 @@ const ProductDetails = () => {
     return (
       <div>
         <ProductNavbar />
+        <nav/>
         <div style={{ 
-          textAlign: 'center', 
+          textAlign: 'center',
           padding: '100px 20px', 
           minHeight: '60vh', 
           display: 'flex', 

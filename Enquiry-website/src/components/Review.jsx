@@ -23,7 +23,7 @@ const Review = ({ data, isBeauty = false }) => {
         </div>
       </div>
 
-      {/* Non-Stop Infinite Fast Marquee Moving Left-to-Right */}
+      {/* Non-Stop Infinite Smooth Slow Marquee Moving Left-to-Right */}
       <div className="review-marquee-stage">
         <div className="review-marquee-track">
           {marqueeDataset.map((review, index) => (

@@ -18,6 +18,7 @@ const ContactUs = lazy(() => import('../components/ContactUs'))
 const AboutCompany = lazy(() => import('../components/AboutCompany'))
 const Review = lazy(() => import('../components/Review'))
 const FAQ = lazy(() => import('../components/FAQ'))
+const VideoReviewScroller = lazy(() => import('../components/VideoReviewScroller'))
 const LatestArticle = lazy(() => import('../components/LatestArticle'))
 const Feature = lazy(() => import('../components/Feature'))
 const Footer = lazy(() => import('../components/Footer'))
@@ -51,6 +52,7 @@ const Home2 = () => {
         <ScrollReveal variant="up"><AboutCompany isBeauty={true} /></ScrollReveal>
         <ScrollReveal variant="up"><Review data={beautyReviews} isBeauty={true} /></ScrollReveal>
         <ScrollReveal variant="up"><FAQ isBeauty={true} /></ScrollReveal>
+        <ScrollReveal variant="up"><VideoReviewScroller /></ScrollReveal>
         <ScrollReveal variant="up"><LatestArticle data={beautyArticles} isBeauty={true} /></ScrollReveal>
         <ScrollReveal variant="up"><Feature data={beautyFeatures} isBeauty={true} /></ScrollReveal>
         <Footer />

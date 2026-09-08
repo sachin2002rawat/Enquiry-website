@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { LayoutGrid, MessageSquareMore, Menu, X } from 'lucide-react'
 import { FiSearch } from 'react-icons/fi'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useEnquiryModal } from '../context/EnquiryModalContext'
 
 /**
@@ -9,7 +9,7 @@ import { useEnquiryModal } from '../context/EnquiryModalContext'
  * Renders full desktop bar on larger screens, and a sleek responsive hamburger menu on mobile devices.
  */
 const Navbar = () => {
-  const [activeLink, setActiveLink] = useState('Home')
+  const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const navigate = useNavigate()
@@ -17,11 +17,18 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Home', path: '/' },
+    { name: 'Home 2', path: '/home2' },
     { name: 'About Company', path: '/about-company' },
     { name: 'Enquiry', path: '#' },
     { name: 'Blog', path: '/blog' },
     { name: 'Contact Us', path: '/contact' }
   ]
+
+  const isLinkActive = (link) => {
+    if (link.path === '/') return location.pathname === '/'
+    if (link.path === '#') return false
+    return location.pathname === link.path || location.pathname.startsWith(link.path)
+  }
 
   const handleCategoriesClick = () => {
     alert('Categories dropdown clicked')
@@ -68,7 +75,7 @@ const Navbar = () => {
           {navLinks.map((link) => (
             <li 
               key={link.name} 
-              className={`nav-link-item ${activeLink === link.name ? 'active' : ''}`}
+              className={`nav-link-item ${isLinkActive(link) ? 'active' : ''}`}
             >
               <Link 
                 to={link.path} 
@@ -76,7 +83,6 @@ const Navbar = () => {
                   if (link.path === '#') {
                     e.preventDefault()
                   }
-                  setActiveLink(link.name)
                   if (link.name === 'Enquiry') {
                     openEnquiryModal()
                   }
@@ -134,7 +140,7 @@ const Navbar = () => {
             {navLinks.map((link) => (
               <li 
                 key={link.name} 
-                className={`mobile-nav-link-item ${activeLink === link.name ? 'active' : ''}`}
+                className={`mobile-nav-link-item ${isLinkActive(link) ? 'active' : ''}`}
               >
                 <Link 
                   to={link.path} 
@@ -142,7 +148,6 @@ const Navbar = () => {
                     if (link.path === '#') {
                       e.preventDefault()
                     }
-                    setActiveLink(link.name)
                     if (link.name === 'Enquiry') {
                       openEnquiryModal()
                     }

@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import { LayoutGrid, MessageSquareMore, User, Menu, X } from 'lucide-react'
 import { FaCommentDots } from 'react-icons/fa'
 import { FiSearch } from 'react-icons/fi'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useEnquiryModal } from '../context/EnquiryModalContext'
 
 const ProductNavbar = () => {
-  const [activeNav, setActiveNav] = useState('Home')
+  const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const navigate = useNavigate()
@@ -14,11 +14,18 @@ const ProductNavbar = () => {
 
   const navItems = [
     { name: 'Home', path: '/' },
+    { name: 'Home 2', path: '/home2' },
     { name: 'About Company', path: '/about-company' },
     { name: 'Enquiry', path: '#' },
     { name: 'Blog', path: '/blog' },
     { name: 'Contact Us', path: '/contact' },
   ]
+
+  const isLinkActive = (item) => {
+    if (item.path === '/') return location.pathname === '/'
+    if (item.path === '#') return false
+    return location.pathname === item.path || location.pathname.startsWith(item.path)
+  }
 
   const handleCategoriesClick = () => {
     alert('Categories dropdown clicked')
@@ -77,10 +84,9 @@ const ProductNavbar = () => {
             <React.Fragment key={item.name}>
               <Link
                 to={item.path}
-                className={`product-nav-link ${activeNav === item.name ? 'active' : ''}`}
+                className={`product-nav-link ${isLinkActive(item) ? 'active' : ''}`}
                 onClick={(e) => {
                   if (item.path === '#') e.preventDefault()
-                  setActiveNav(item.name)
                   if (item.name === 'Enquiry') {
                     openEnquiryModal()
                   }
@@ -145,10 +151,9 @@ const ProductNavbar = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`product-mobile-link ${activeNav === item.name ? 'active' : ''}`}
+                className={`product-mobile-link ${isLinkActive(item) ? 'active' : ''}`}
                 onClick={(e) => {
                   if (item.path === '#') e.preventDefault()
-                  setActiveNav(item.name)
                   if (item.name === 'Enquiry') {
                     openEnquiryModal()
                   }

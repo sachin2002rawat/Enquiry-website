@@ -22,6 +22,9 @@ const WideRangeProducts = ({ data, isBeauty = false }) => {
 
   // State for Mobile Pagination List View (5 items per page)
   const [mobilePage, setMobilePage] = useState(1)
+  const [touchStart, setTouchStart] = useState(null)
+  const [touchEnd, setTouchEnd] = useState(null)
+  const [isPageAnimating, setIsPageAnimating] = useState(false)
   const itemsPerPage = 5
 
   const totalMobilePages = Math.ceil(activeDataset.length / itemsPerPage)
@@ -46,14 +49,41 @@ const WideRangeProducts = ({ data, isBeauty = false }) => {
     })
   }
 
-  // Mobile page change handler
+  // Mobile page change handler with smooth animation reset
   const handleMobilePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalMobilePages) {
+    if (newPage >= 1 && newPage <= totalMobilePages && newPage !== mobilePage) {
+      setIsPageAnimating(true)
       setMobilePage(newPage)
+      setTimeout(() => setIsPageAnimating(false), 400)
       const section = document.querySelector('.wide-range-section')
       if (section) {
         section.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }
+    }
+  }
+
+  // Touch Swipe Gesture Handlers for Mobile Responsive Carousel/List
+  const minSwipeDistance = 40
+
+  const handleTouchStart = (e) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+
+    if (isLeftSwipe && mobilePage < totalMobilePages) {
+      handleMobilePageChange(mobilePage + 1)
+    } else if (isRightSwipe && mobilePage > 1) {
+      handleMobilePageChange(mobilePage - 1)
     }
   }
 
@@ -186,13 +216,19 @@ const WideRangeProducts = ({ data, isBeauty = false }) => {
         </button>
       </div>
 
-      {/* 3. Mobile Vertical List View with Pagination (Visible ONLY on Mobile screens <= 768px) */}
-      <div className="wide-range-mobile-list-wrapper mobile-only-list">
-        <div className="wide-range-mobile-list">
-          {currentMobileProducts.map((product) => (
+      {/* 3. Mobile Vertical List View with Touch Swipe & Pagination (Visible ONLY on Mobile screens <= 768px) */}
+      <div 
+        className="wide-range-mobile-list-wrapper mobile-only-list"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div className={`wide-range-mobile-list ${isPageAnimating ? 'page-transitioning' : ''}`}>
+          {currentMobileProducts.map((product, idx) => (
             <div 
-              key={product.id} 
+              key={`${product.id}-mobile-p${mobilePage}`} 
               className={`wide-range-mobile-card ${isBeauty ? 'beauty-animated-card' : ''}`}
+              style={{ animationDelay: `${idx * 0.08}s, ${idx * 0.4 + 0.5}s` }}
               onClick={() => handleCardClick(product)}
             >
               {/* Full Width Top Image with Floating Badges */}

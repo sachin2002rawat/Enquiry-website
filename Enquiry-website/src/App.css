@@ -1219,23 +1219,127 @@ body {
   }
 }
 
-/* Adjust grid for smaller tablets/mobile (show 1 large vertically tall card) */
+/* Adjust grid for smaller tablets/mobile (show 1 large vertically tall card with desktop-level animations) */
 @media (max-width: 768px) {
+  .carousel-arrow-btn {
+    width: 44px;
+    height: 44px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .carousel-arrow-btn:active {
+    transform: scale(1.15);
+    background-color: #3b82f6;
+    color: #ffffff;
+  }
+
+  .shop-category-carousel-wrapper {
+    position: relative;
+    padding: 0 4px;
+  }
+
   .category-card {
     flex: 0 0 100%;
     width: 100%;
     min-width: 0;
     height: 520px;
     padding: 18px;
+    background: linear-gradient(160deg, #ffffff 0%, #fdfbf7 100%);
+    border: 1.5px solid rgba(226, 232, 240, 0.9);
+    border-radius: 24px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    animation: mobileCardSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both,
+               mobileCardFloat 6s ease-in-out infinite 0.6s;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+    will-change: transform, box-shadow;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .category-card:hover,
+  .category-card:focus-within,
+  .category-card:active {
+    transform: translateY(-8px) scale(1.015);
+    border-color: #3b82f6;
+    box-shadow: 0 22px 48px rgba(59, 130, 246, 0.22), 0 0 20px rgba(59, 130, 246, 0.15);
+    animation-play-state: paused, paused;
+  }
+
+  .category-card.beauty-animated-card {
+    background: linear-gradient(160deg, #ffffff 0%, #fdfbf7 60%, #f7f3ed 100%);
+    border: 1.5px solid rgba(82, 183, 136, 0.3);
+    box-shadow: 0 12px 32px rgba(30, 41, 59, 0.06), 0 2px 8px rgba(82, 183, 136, 0.08);
+  }
+
+  .category-card.beauty-animated-card:hover,
+  .category-card.beauty-animated-card:focus-within,
+  .category-card.beauty-animated-card:active {
+    border-color: #52b788;
+    box-shadow: 0 22px 48px rgba(82, 183, 136, 0.3), 0 0 25px rgba(82, 183, 136, 0.2);
   }
 
   .category-card-img-container {
     height: 440px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+  }
+
+  .category-card-img-container::after {
+    content: '';
+    position: absolute;
+    top: -60%;
+    left: -60%;
+    width: 65%;
+    height: 220%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.65) 50%,
+      transparent 100%
+    );
+    transform: rotate(25deg);
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .category-card:hover .category-card-img-container::after,
+  .category-card:active .category-card-img-container::after {
+    opacity: 1;
+    animation: mobileShimmerSweep 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .category-card-img {
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .category-card:hover .category-card-img,
+  .category-card:active .category-card-img {
+    transform: scale(1.07) rotate(0.6deg);
+  }
+
+  .category-card-pdf-badge {
+    animation: pdfBadgeBounce 3s infinite ease-in-out;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .category-card-pdf-badge:hover,
+  .category-card-pdf-badge:active {
+    transform: scale(1.18) rotate(-8deg);
+    background: #ffe4e6;
   }
 
   .category-card-title {
     height: 70px;
     font-size: 24px;
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+
+  .category-card:hover .category-card-title,
+  .category-card:active .category-card-title {
+    color: #1b4332;
+    transform: translateY(-1px);
   }
 }
 
@@ -1633,23 +1737,41 @@ body {
 
   .wide-range-mobile-card {
     width: 100%;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: linear-gradient(160deg, #ffffff 0%, #fdfbf7 100%);
+    border: 1.5px solid rgba(226, 232, 240, 0.9);
     border-radius: 24px;
     padding: 16px;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
     display: flex;
     flex-direction: column;
     gap: 16px;
     box-sizing: border-box;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+    animation: mobileCardSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both,
+               mobileCardFloat 6s ease-in-out infinite 0.6s;
+    will-change: transform, box-shadow;
+    position: relative;
+    overflow: hidden;
   }
 
+  .wide-range-mobile-card:nth-child(1) { animation-delay: 0.05s, 0.65s; }
+  .wide-range-mobile-card:nth-child(2) { animation-delay: 0.15s, 1.15s; }
+  .wide-range-mobile-card:nth-child(3) { animation-delay: 0.25s, 1.65s; }
+  .wide-range-mobile-card:nth-child(4) { animation-delay: 0.35s, 2.15s; }
+  .wide-range-mobile-card:nth-child(5) { animation-delay: 0.45s, 2.65s; }
+
+  /* Interactive Hover & Touch Elevation for Mobile */
+  .wide-range-mobile-card:hover,
+  .wide-range-mobile-card:focus-within,
   .wide-range-mobile-card:active {
-    transform: scale(0.99);
+    transform: translateY(-8px) scale(1.015);
+    border-color: #3b82f6;
+    box-shadow: 0 22px 48px rgba(59, 130, 246, 0.22), 0 0 20px rgba(59, 130, 246, 0.15);
+    animation-play-state: paused, paused;
   }
 
+  /* Image Container & Shimmer Effect */
   .mobile-card-img-container {
     width: 100%;
     height: 460px;
@@ -1659,14 +1781,45 @@ body {
     background: #faf5ee;
   }
 
+  .mobile-card-img-container::after {
+    content: '';
+    position: absolute;
+    top: -60%;
+    left: -60%;
+    width: 65%;
+    height: 220%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.65) 50%,
+      transparent 100%
+    );
+    transform: rotate(25deg);
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .wide-range-mobile-card:hover .mobile-card-img-container::after,
+  .wide-range-mobile-card:active .mobile-card-img-container::after {
+    opacity: 1;
+    animation: mobileShimmerSweep 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
   .mobile-card-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
     border-radius: 20px;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  .wide-range-mobile-card:hover .mobile-card-img,
+  .wide-range-mobile-card:active .mobile-card-img {
+    transform: scale(1.07) rotate(0.6deg);
+  }
+
+  /* Animated Badges */
   .mobile-card-badge {
     position: absolute;
     top: 12px;
@@ -1681,14 +1834,23 @@ body {
     letter-spacing: 0.5px;
     text-transform: capitalize;
     z-index: 2;
+    animation: badgeShinePulse 3.5s infinite ease-in-out;
+    transition: all 0.3s ease;
+  }
+
+  .wide-range-mobile-card:hover .mobile-card-badge {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
   }
 
   .mobile-card-pdf-badge {
     position: absolute;
     top: 12px;
     right: 12px;
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     background: #ffffff;
     border: 1px solid #f1f5f9;
     border-radius: 50%;
@@ -1697,6 +1859,14 @@ body {
     justify-content: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     z-index: 2;
+    animation: pdfBadgeBounce 3s infinite ease-in-out;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .mobile-card-pdf-badge:hover,
+  .mobile-card-pdf-badge:active {
+    transform: scale(1.18) rotate(-8deg);
+    background: #ffe4e6;
   }
 
   .mobile-card-info {
@@ -1714,6 +1884,11 @@ body {
     color: #2563eb;
     text-transform: uppercase;
     letter-spacing: 0.6px;
+    transition: color 0.3s ease;
+  }
+
+  .wide-range-mobile-card:hover .mobile-card-category {
+    color: #1d4ed8;
   }
 
   .mobile-card-title {
@@ -1722,6 +1897,12 @@ body {
     color: #0f172a;
     margin: 0;
     line-height: 1.25;
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+
+  .wide-range-mobile-card:hover .mobile-card-title {
+    color: #1e293b;
+    transform: translateY(-1px);
   }
 
   .mobile-card-rating {
@@ -1753,7 +1934,7 @@ body {
   .mobile-enquire-btn {
     flex: 1;
     height: 48px;
-    background: #1e293b;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
     color: #ffffff;
     border: none;
     border-radius: 9999px;
@@ -1764,11 +1945,14 @@ body {
     justify-content: center;
     gap: 8px;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  .wide-range-mobile-card:hover .mobile-enquire-btn,
   .mobile-enquire-btn:active {
-    background: #0f172a;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(59, 130, 246, 0.4);
   }
 
   .mobile-whatsapp-btn {
@@ -1783,7 +1967,14 @@ body {
     justify-content: center;
     cursor: pointer;
     flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+    animation: whatsappPulseGlow 3s infinite ease-in-out;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .wide-range-mobile-card:hover .mobile-whatsapp-btn,
+  .mobile-whatsapp-btn:active {
+    transform: scale(1.15) rotate(12deg);
+    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.55);
   }
 
   .wide-range-mobile-pagination {
@@ -1796,8 +1987,8 @@ body {
   }
 
   .mobile-page-btn.nav-btn {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     border: 1px solid #cbd5e1;
     background: #ffffff;
@@ -1806,6 +1997,16 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .mobile-page-btn.nav-btn:not(:disabled):hover,
+  .mobile-page-btn.nav-btn:not(:disabled):active {
+    background: #3b82f6;
+    color: #ffffff;
+    border-color: #3b82f6;
+    transform: scale(1.1);
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
   }
 
   .mobile-page-btn.nav-btn:disabled {
@@ -6417,6 +6618,71 @@ img {
 .animate-on-scroll.is-visible {
   opacity: 1 !important;
   transform: translateY(0) translateX(0) scale(1) !important;
+}
+
+/* ==========================================================================
+   MOBILE CARD KEYFRAME ANIMATIONS
+   ========================================================================== */
+
+@keyframes mobileCardSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes mobileCardFloat {
+  0%, 100% {
+    transform: translateY(0);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+  }
+  50% {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 38px rgba(15, 23, 42, 0.12), 0 0 16px rgba(59, 130, 246, 0.12);
+  }
+}
+
+@keyframes mobileShimmerSweep {
+  0% {
+    transform: translateX(-100%) rotate(25deg);
+  }
+  100% {
+    transform: translateX(300%) rotate(25deg);
+  }
+}
+
+@keyframes badgeShinePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 6px 18px rgba(59, 130, 246, 0.35);
+  }
+}
+
+@keyframes pdfBadgeBounce {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.12) rotate(6deg);
+    box-shadow: 0 6px 18px rgba(225, 29, 72, 0.25);
+  }
+}
+
+@keyframes whatsappPulseGlow {
+  0%, 100% {
+    box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
+  }
+  50% {
+    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.6), 0 0 15px rgba(37, 211, 102, 0.3);
+  }
 }
 
 /* ==========================================================================

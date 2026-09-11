@@ -51,6 +51,46 @@ const ShopCategory = ({ data, isBeauty = false }) => {
     })
   }
 
+  // Touch Swipe Gesture Handlers for Mobile Responsive Category Carousel
+  const [touchStart, setTouchStart] = useState(null)
+  const [touchEnd, setTouchEnd] = useState(null)
+  const [isCardAnimating, setIsCardAnimating] = useState(false)
+  const minSwipeDistance = 40
+
+  const handleTouchStart = (e) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+
+    if (isLeftSwipe) {
+      handleNextWithAnim()
+    } else if (isRightSwipe) {
+      handlePrevWithAnim()
+    }
+  }
+
+  const handleNextWithAnim = () => {
+    setIsCardAnimating(true)
+    handleNext()
+    setTimeout(() => setIsCardAnimating(false), 400)
+  }
+
+  const handlePrevWithAnim = () => {
+    setIsCardAnimating(true)
+    handlePrev()
+    setTimeout(() => setIsCardAnimating(false), 400)
+  }
+
   return (
     <section className="shop-category-section">
       {/* 1. Header Section (Titles and View All Button) */}
@@ -81,20 +121,26 @@ const ShopCategory = ({ data, isBeauty = false }) => {
         {/* Left Arrow Button */}
         <button 
           className="carousel-arrow-btn prev" 
-          onClick={handlePrev} 
+          onClick={handlePrevWithAnim} 
           aria-label="Previous categories"
         >
           <FiArrowLeft size={20} />
         </button>
 
-        {/* Category Cards Section */}
-        <div className="shop-category-list">
-          {categories.slice(0, 3).map((category) => {
+        {/* Category Cards Section with Touch Swipe Gestures */}
+        <div 
+          className={`shop-category-list ${isCardAnimating ? 'category-page-transition' : ''}`}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          {categories.slice(0, 3).map((category, idx) => {
             const displayName = category.name || category.title || 'Product';
             return (
               <div          
-                key={category.id} 
+                key={`${category.id}-${idx}`} 
                 className={`category-card ${isBeauty ? 'beauty-animated-card' : ''}`}  
+                style={{ animationDelay: `${idx * 0.1}s, ${idx * 0.4 + 0.6}s` }}
                 onClick={() => handleCategoryClick(category)}
               >
                 {/* Container for the category image */}
@@ -126,7 +172,7 @@ const ShopCategory = ({ data, isBeauty = false }) => {
         {/* Right Arrow Button */}
         <button 
           className="carousel-arrow-btn next" 
-          onClick={handleNext} 
+          onClick={handleNextWithAnim} 
           aria-label="Next categories"
         >
           <FiArrowRight size={20} />

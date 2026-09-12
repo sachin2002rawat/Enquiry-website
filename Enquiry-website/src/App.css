@@ -1246,15 +1246,18 @@ body {
     color: #ffffff;
   }
 
-  .shop-category-carousel-wrapper {
-    position: relative;
-    padding: 0 4px;
+  .shop-category-list {
+    gap: 0 !important;
   }
 
+  .shop-category-list .category-card,
+  .shop-category-list.cards-3 .category-card,
+  .shop-category-list.cards-4 .category-card,
   .category-card {
-    flex: 0 0 100%;
-    width: 100%;
-    min-width: 0;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
     height: 520px;
     padding: 18px;
     background: linear-gradient(160deg, #ffffff 0%, #fdfbf7 100%);

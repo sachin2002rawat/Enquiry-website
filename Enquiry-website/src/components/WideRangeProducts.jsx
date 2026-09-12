@@ -6,7 +6,8 @@ import { FiArrowRight, FiArrowLeft, FiChevronLeft, FiChevronRight } from 'react-
 import defaultProductsData from '../ProductsData.json'
 import { useEnquiryModal } from '../context/EnquiryModalContext'
 
-const WideRangeProducts = ({ data, isBeauty = false }) => {
+const WideRangeProducts = ({ data, isBeauty = false, cardsToShow }) => {
+  const displayCount = cardsToShow || (isBeauty ? 4 : 3)
   const activeDataset = data && data.length > 0 ? data : defaultProductsData
   const navigate = useNavigate()
   const { openEnquiryModal } = useEnquiryModal()
@@ -145,8 +146,8 @@ const WideRangeProducts = ({ data, isBeauty = false }) => {
         </button>
 
         {/* Desktop Carousel Cards Track */}
-        <div className="wide-range-grid">
-          {products.slice(0, 3).map((product) => (
+        <div className={`wide-range-grid cards-${displayCount}`}>
+          {products.slice(0, displayCount).map((product) => (
             <div 
               key={product.id} 
               className={`product-wide-card ${isBeauty ? 'beauty-animated-card' : ''}`}

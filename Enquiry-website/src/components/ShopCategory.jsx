@@ -6,7 +6,8 @@ import { Store } from 'lucide-react'
 
 import productsData from '../ProductsData.json'
 
-const ShopCategory = ({ data, isBeauty = false }) => {
+const ShopCategory = ({ data, isBeauty = false, cardsToShow }) => {
+  const displayCount = cardsToShow || (isBeauty ? 4 : 3)
   const navigate = useNavigate()
   const activeDataset = data && data.length > 0 ? data : productsData
   // Store the list of categories/products in state so we can rotate/reorder it
@@ -80,12 +81,14 @@ const ShopCategory = ({ data, isBeauty = false }) => {
   }
 
   const handleNextWithAnim = () => {
+    if (isCardAnimating) return
     setIsCardAnimating(true)
     handleNext()
     setTimeout(() => setIsCardAnimating(false), 400)
   }
 
   const handlePrevWithAnim = () => {
+    if (isCardAnimating) return
     setIsCardAnimating(true)
     handlePrev()
     setTimeout(() => setIsCardAnimating(false), 400)
@@ -129,12 +132,12 @@ const ShopCategory = ({ data, isBeauty = false }) => {
 
         {/* Category Cards Section with Touch Swipe Gestures */}
         <div 
-          className={`shop-category-list ${isCardAnimating ? 'category-page-transition' : ''}`}
+          className={`shop-category-list cards-${displayCount} ${isCardAnimating ? 'category-page-transition' : ''}`}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          {categories.slice(0, 3).map((category, idx) => {
+          {categories.slice(0, displayCount).map((category, idx) => {
             const displayName = category.name || category.title || 'Product';
             return (
               <div          

@@ -943,7 +943,7 @@ body {
   width: 100%;
   max-width: var(--header-max-width);
   margin: 48px auto;
-  padding: 0 16px;
+  padding: 0 28px;
 }
 
 /* Header row (contains the title elements on the left, button on the right) */
@@ -1059,13 +1059,13 @@ body {
 }
 
 .carousel-arrow-btn.prev {
-  left: -24px;
-  /* Shifted left to overlay card edge */
+  left: -12px;
+  /* Positioned cleanly over card edge */
 }
 
 .carousel-arrow-btn.next {
-  right: -24px;
-  /* Shifted right to overlay card edge */
+  right: -12px;
+  /* Positioned cleanly over card edge */
 }
 
 .carousel-arrow-btn:hover {
@@ -1085,8 +1085,13 @@ body {
   box-sizing: border-box;
 }
 
-/* Individual Category Card styling (3 large cards layout - matching Wide Range of Products) */
-.category-card {
+.shop-category-list.cards-4 {
+  gap: 20px;
+}
+
+/* Individual Category Card styling (3 large cards layout for Home 1 default) */
+.category-card,
+.shop-category-list.cards-3 .category-card {
   flex: 0 0 calc((100% - 48px) / 3);
   /* Exactly 3 large cards fit container width on desktop */
   min-width: 280px;
@@ -1104,6 +1109,13 @@ body {
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 6px 16px rgba(47, 39, 32, 0.04);
   animation: cardFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shop-category-list.cards-4 .category-card {
+  flex: 0 0 calc((100% - 60px) / 4);
+  /* Exactly 4 cards fit container width on desktop */
+  min-width: 210px;
+  height: 520px;
 }
 
 /* Keyframe for cards shifting in the carousel */
@@ -1381,7 +1393,7 @@ body {
   width: 100%;
   max-width: var(--header-max-width);
   margin: 64px auto;
-  padding: 0 16px;
+  padding: 0 28px;
 }
 
 /* Header section containing labels and title */
@@ -1466,8 +1478,13 @@ body {
   padding: 12px 4px 24px 4px;
 }
 
-/* Individual Product Card (Large, structured layout - 3 cards per row, perfectly balanced view) */
-.product-wide-card {
+.wide-range-grid.cards-4 {
+  gap: 20px;
+}
+
+/* Individual Product Card (3 cards per row default layout for Home 1) */
+.product-wide-card,
+.wide-range-grid.cards-3 .product-wide-card {
   flex: 0 0 calc((100% - 48px) / 3);
   /* Exactly 3 large cards fit visible width on desktop */
   min-width: 290px;
@@ -1485,6 +1502,15 @@ body {
   box-shadow: 0 4px 16px rgba(47, 39, 32, 0.04);
   animation: cardFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   /* Animation when carousel cycles */
+}
+
+/* Individual Product Card (4 cards per row layout for Home 2) */
+.wide-range-grid.cards-4 .product-wide-card {
+  flex: 0 0 calc((100% - 60px) / 4);
+  /* Exactly 4 large cards fit visible width on desktop */
+  min-width: 210px;
+  padding: 20px 18px;
+  min-height: 530px;
 }
 
 /* Lift-up effect on hover */
@@ -1515,6 +1541,10 @@ body {
   margin-bottom: 14px;
 }
 
+.wide-range-grid.cards-4 .product-wide-img-container {
+  height: 290px;
+}
+
 /* Image styling */
 .product-wide-img {
   width: 100%;
@@ -1538,6 +1568,10 @@ body {
   text-transform: uppercase;
   margin-bottom: 10px;
   letter-spacing: 0.25px;
+}
+
+.wide-range-grid.cards-4 .product-wide-title {
+  font-size: 16.5px;
 }
 
 /* Category text left-aligned, blue/slate style */
@@ -6733,6 +6767,11 @@ img {
 .product-wide-card.beauty-animated-card:nth-child(3),
 .category-card.beauty-animated-card:nth-child(3) {
   animation-delay: -4s;
+}
+
+.product-wide-card.beauty-animated-card:nth-child(4),
+.category-card.beauty-animated-card:nth-child(4) {
+  animation-delay: -1.5s;
 }
 
 /* Hover State - Dynamic 3D Lift & Emerald Glowing Border */

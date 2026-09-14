@@ -68,7 +68,7 @@ const ProductBelowNavbar = () => {
             </div>
             <span className="p-badge-text"><strong>4</strong> Products</span>
           </div>
-
+                  
           {/* Badge 2: FSSAI Certified */}
           <div className="p-feature-badge-item">
             <div className="p-badge-icon-box">

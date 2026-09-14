@@ -2398,6 +2398,151 @@ body {
 }
 
 /* ==========================================================================
+   HOME 2 ONLY: VERTICALLY LARGE POPULAR PRODUCT CARDS
+   ========================================================================== */
+.popular-products-section.is-beauty .popular-carousel-wrapper {
+  height: 590px;
+  margin: 30px auto;
+}
+
+.popular-card-coverflow.beauty-card-vertical {
+  width: 340px;
+  height: 480px;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 22px;
+  border-radius: 24px;
+  gap: 14px;
+  background: #ffffff;
+  border: 1px solid #e8e2d8;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.popular-card-coverflow.beauty-card-vertical.card-center {
+  transform: translateX(0) scale(1.08);
+  opacity: 1;
+  z-index: 10;
+  border: 2.5px solid #00d2ff;
+  box-shadow: 0 0 35px rgba(0, 210, 255, 0.45), 0 14px 40px rgba(0, 0, 0, 0.1);
+}
+
+.popular-card-coverflow.beauty-card-vertical.card-prev {
+  transform: translateX(-260px) scale(0.82);
+  opacity: 0.65;
+  z-index: 5;
+  border: 2px solid rgba(0, 210, 255, 0.3);
+  box-shadow: 0 0 16px rgba(0, 210, 255, 0.15);
+}
+
+.popular-card-coverflow.beauty-card-vertical.card-next {
+  transform: translateX(260px) scale(0.82);
+  opacity: 0.65;
+  z-index: 5;
+  border: 2px solid rgba(0, 210, 255, 0.3);
+  box-shadow: 0 0 16px rgba(0, 210, 255, 0.15);
+}
+
+.popular-card-coverflow.beauty-card-vertical.card-far-prev {
+  transform: translateX(-470px) scale(0.62);
+  opacity: 0.3;
+  z-index: 2;
+}
+
+.popular-card-coverflow.beauty-card-vertical.card-far-next {
+  transform: translateX(470px) scale(0.62);
+  opacity: 0.3;
+  z-index: 2;
+}
+
+.popular-card-coverflow.beauty-card-vertical .popular-img-container {
+  width: 100%;
+  height: 270px;
+  background-color: #f7f3eb;
+  border-radius: 18px;
+  flex-shrink: 0;
+}
+
+.popular-card-coverflow.beauty-card-vertical .popular-img {
+  max-width: 88%;
+  max-height: 88%;
+  object-fit: contain;
+}
+
+.popular-card-coverflow.beauty-card-vertical .popular-details {
+  width: 100%;
+  align-items: center;
+  text-align: center;
+  margin-top: 4px;
+}
+
+.popular-card-coverflow.beauty-card-vertical .popular-card-category {
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  text-align: center;
+}
+
+.popular-card-coverflow.beauty-card-vertical .popular-card-name {
+  font-size: 19px;
+  text-align: center;
+}
+
+.popular-card-coverflow.beauty-card-vertical .popular-actions {
+  flex-direction: row;
+  gap: 10px;
+  width: 100%;
+}
+
+.popular-card-coverflow.beauty-card-vertical .popular-enquire-btn,
+.popular-card-coverflow.beauty-card-vertical .popular-bulk-btn {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 12px;
+  border-radius: 24px;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 992px) {
+  .popular-products-section.is-beauty .popular-carousel-wrapper {
+    height: 560px;
+  }
+
+  .popular-card-coverflow.beauty-card-vertical.card-prev {
+    transform: translateX(-210px) scale(0.78);
+  }
+
+  .popular-card-coverflow.beauty-card-vertical.card-next {
+    transform: translateX(210px) scale(0.78);
+  }
+
+  .popular-card-coverflow.beauty-card-vertical.card-far-prev {
+    transform: translateX(-370px) scale(0.55);
+  }
+
+  .popular-card-coverflow.beauty-card-vertical.card-far-next {
+    transform: translateX(370px) scale(0.55);
+  }
+}
+
+@media (max-width: 768px) {
+  .popular-products-section.is-beauty .popular-carousel-wrapper {
+    height: 540px;
+  }
+
+  .popular-card-coverflow.beauty-card-vertical {
+    width: 300px;
+    height: 460px;
+    left: 50%;
+    margin-left: -150px;
+  }
+
+  .popular-card-coverflow.beauty-card-vertical .popular-img-container {
+    height: 240px;
+  }
+}
+
+/* ==========================================================================
    RESPONSIVE DESIGN FOR POPULAR PRODUCTS
    ========================================================================== */
 

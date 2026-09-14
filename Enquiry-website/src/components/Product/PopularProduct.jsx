@@ -6,7 +6,7 @@ import { FiArrowRight, FiArrowLeft } from 'react-icons/fi'
 import defaultProductsList from '../../ProductsData.json'
 import { useEnquiryModal } from '../../context/EnquiryModalContext'
 
-const PopularProduct = ({ data }) => {
+const PopularProduct = ({ data, isBeauty = false }) => {
   const productsList = data && data.length > 0 ? data : defaultProductsList
   const navigate = useNavigate()
   const [activeIndex, setActiveIndex] = useState(0)
@@ -65,7 +65,7 @@ const PopularProduct = ({ data }) => {
   }
 
   return (
-    <section className="popular-products-section">
+    <section className={`popular-products-section ${isBeauty ? 'is-beauty' : ''}`}>
       {/* 1. Header Area (Trending subtitle, Gold-highlighted title, Description & Link) */}
       <div className="popular-header">
         <span className="popular-subtitle">— TRENDING NOW</span>
@@ -111,7 +111,7 @@ const PopularProduct = ({ data }) => {
             return (
               <div 
                 key={product.id} 
-                className={`popular-card-coverflow ${coverflowClass}`}
+                className={`popular-card-coverflow ${coverflowClass} ${isBeauty ? 'beauty-card-vertical' : ''}`}
                 onClick={() => handleCardClick(index, product)}
               >
                 {/* Left Column: Product Image with soft square background */}

@@ -12,7 +12,8 @@ import {
   FiUploadCloud,
   FiLink,
   FiImage,
-  FiCheckCircle
+  FiCheckCircle,
+  FiDroplet
 } from 'react-icons/fi'
 
 const HomepageSettings = ({
@@ -296,6 +297,148 @@ const HomepageSettings = ({
               />
               <span className="slider"></span>
             </label>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. TOP BAR & HEADER COLOR CUSTOMIZATION */}
+      <div className="admin-card">
+        <div className="admin-card-header">
+          <div className="card-title-group">
+            <FiDroplet className="card-title-icon" size={22} color="#6366F1" />
+            <div>
+              <h2 className="card-title">Homepage Top Bar Color Customization</h2>
+              <p className="card-subtitle">
+                Customize the background color, text color, and theme of the homepage top bar header.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Color Palette Presets */}
+        <div style={{ marginBottom: '20px' }}>
+          <label className="form-label" style={{ marginBottom: '8px' }}>
+            Quick Preset Color Themes:
+          </label>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {[
+              { name: 'Sky Blue', bg: '#E0F2FE', text: '#1E293B' },
+              { name: 'Fresh Mint', bg: '#ECFDF5', text: '#065F46' },
+              { name: 'Warm Amber', bg: '#FEF3C7', text: '#92400E' },
+              { name: 'Soft Rose', bg: '#FCE7F3', text: '#9D174D' },
+              { name: 'Royal Indigo', bg: '#EEF2FF', text: '#3730A3' },
+              { name: 'Dark Slate Navy', bg: '#0F172A', text: '#FFFFFF' },
+              { name: 'Pure White', bg: '#FFFFFF', text: '#1E293B' },
+              { name: 'Emerald Gradient', bg: 'linear-gradient(90deg, #dcfce7, #ecfdf5)', text: '#065F46' }
+            ].map((preset, idx) => (
+              <button
+                key={idx}
+                type="button"
+                className="btn-secondary"
+                style={{
+                  fontSize: '0.8rem',
+                  padding: '6px 12px',
+                  borderRadius: '8px',
+                  background: preset.bg,
+                  color: preset.text,
+                  borderColor:
+                    storeSettings.topbarBgColor === preset.bg ? '#6366F1' : 'var(--admin-card-border)',
+                  fontWeight: 700,
+                  boxShadow:
+                    storeSettings.topbarBgColor === preset.bg ? '0 0 0 2px #6366F1' : 'none'
+                }}
+                onClick={() => {
+                  const updated = {
+                    ...storeSettings,
+                    topbarBgColor: preset.bg,
+                    topbarTextColor: preset.text
+                  }
+                  setStoreSettings(updated)
+                  showToast(`Applied ${preset.name} Theme!`)
+                }}
+              >
+                {preset.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Custom Color Pickers */}
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label">Top Bar Background Color / Gradient</label>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <input
+                type="color"
+                value={storeSettings.topbarBgColor?.startsWith('#') ? storeSettings.topbarBgColor : '#E0F2FE'}
+                onChange={(e) =>
+                  setStoreSettings({ ...storeSettings, topbarBgColor: e.target.value })
+                }
+                style={{ width: '42px', height: '42px', padding: '0', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+              />
+              <input
+                type="text"
+                className="form-input"
+                value={storeSettings.topbarBgColor || '#E0F2FE'}
+                onChange={(e) =>
+                  setStoreSettings({ ...storeSettings, topbarBgColor: e.target.value })
+                }
+                placeholder="#E0F2FE or linear-gradient(...)"
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Top Bar Text & Link Color</label>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <input
+                type="color"
+                value={storeSettings.topbarTextColor || '#1E293B'}
+                onChange={(e) =>
+                  setStoreSettings({ ...storeSettings, topbarTextColor: e.target.value })
+                }
+                style={{ width: '42px', height: '42px', padding: '0', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+              />
+              <input
+                type="text"
+                className="form-input"
+                value={storeSettings.topbarTextColor || '#1E293B'}
+                onChange={(e) =>
+                  setStoreSettings({ ...storeSettings, topbarTextColor: e.target.value })
+                }
+                placeholder="#1E293B"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Live Topbar Color Preview Box */}
+        <div style={{ marginTop: '14px' }}>
+          <label className="form-label" style={{ marginBottom: '6px' }}>
+            Live Header Topbar Preview:
+          </label>
+          <div
+            style={{
+              padding: '12px 20px',
+              borderRadius: '10px',
+              background: storeSettings.topbarBgColor || '#E0F2FE',
+              color: storeSettings.topbarTextColor || '#1E293B',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              border: '1px solid var(--admin-card-border)',
+              transition: 'all 0.25s ease'
+            }}
+          >
+            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'inherit' }}>
+              *Welcome <span style={{ textDecoration: 'underline' }}>Enquiry Now</span> *
+            </span>
+            <div style={{ fontWeight: 800, fontSize: '1.05rem', color: 'inherit' }}>
+              QuickEnquiry
+            </div>
+            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'inherit' }}>
+              Search... 🔍
+            </span>
           </div>
         </div>
       </div>

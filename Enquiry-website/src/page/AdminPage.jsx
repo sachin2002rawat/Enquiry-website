@@ -48,6 +48,8 @@ const AdminPage = () => {
       return saved
         ? JSON.parse(saved)
         : {
+            topbarBgColor: '#E0F2FE',
+            topbarTextColor: '#1E293B',
             announcementText: 'Free Shipping on orders over ₹499 | Premium Stone Ground Spices',
             whatsappNumber: '+91 9876543210',
             contactEmail: 'info@enquirybrand.com',
@@ -55,6 +57,8 @@ const AdminPage = () => {
           }
     } catch {
       return {
+        topbarBgColor: '#E0F2FE',
+        topbarTextColor: '#1E293B',
         announcementText: 'Free Shipping on orders over ₹499 | Premium Stone Ground Spices',
         whatsappNumber: '+91 9876543210',
         contactEmail: 'info@enquirybrand.com',
@@ -89,7 +93,7 @@ const AdminPage = () => {
     }
   })
 
-  // Save updates to localStorage on change
+  // Save updates to localStorage on change & sync CSS Root variables
   useEffect(() => {
     localStorage.setItem(LOCAL_KEY_HERO, JSON.stringify(heroSlides))
   }, [heroSlides])
@@ -100,6 +104,12 @@ const AdminPage = () => {
 
   useEffect(() => {
     localStorage.setItem(LOCAL_KEY_SETTINGS, JSON.stringify(storeSettings))
+    if (storeSettings.topbarBgColor) {
+      document.documentElement.style.setProperty('--bg-topbar', storeSettings.topbarBgColor)
+    }
+    if (storeSettings.topbarTextColor) {
+      document.documentElement.style.setProperty('--topbar-text-color', storeSettings.topbarTextColor)
+    }
   }, [storeSettings])
 
   useEffect(() => {

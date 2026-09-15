@@ -29,7 +29,7 @@ const HomepageSettings = ({
   const [modalOpen, setModalOpen] = useState(false)
   const [editingSlide, setEditingSlide] = useState(null)
   const [imageSourceType, setImageSourceType] = useState('upload') // 'upload' | 'url'
-  const [uploadedFileName, setUploadedFileName] = useState('')
+  const [deleteSlideId, setDeleteSlideId] = useState(null)
   const [slideForm, setSlideForm] = useState({
     title: '',
     subtitle: '',
@@ -102,10 +102,12 @@ const HomepageSettings = ({
   const handleDeleteSlide = (id) => {
     if (heroSlides.length <= 1) {
       showToast('You must keep at least one Hero Slide!', 'warning')
+      setDeleteSlideId(null)
       return
     }
     const filtered = heroSlides.filter((slide) => slide.id !== id)
     setHeroSlides(filtered)
+    setDeleteSlideId(null)
     showToast('Hero slide deleted!')
   }
 
@@ -130,22 +132,21 @@ const HomepageSettings = ({
 
   return (
     <div className="homepage-settings-container">
-      {/* Top Header Controls */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
-        <button className="btn-primary" onClick={handleSaveAll}>
-          <FiSave size={16} /> Save Settings
-        </button>
-      </div>
 
       {/* 1. HERO SLIDER BANNER MANAGEMENT */}
       <div className="admin-card">
         <div className="admin-card-header">
           <div className="card-title-group">
-            <FiSliders className="card-title-icon" size={22} />
+            <div className="card-title-icon-wrapper">
+              <FiSliders className="card-title-icon" size={20} />
+            </div>
             <div>
-              <h2 className="card-title">Hero Carousel Slides</h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <h2 className="card-title">Hero Banner Carousel</h2>
+                <span className="live-count-badge">{heroSlides.length} Banners</span>
+              </div>
               <p className="card-subtitle">
-                Manage high-impact hero banner slides displayed at top of homepage.
+                Curate high-converting hero banners, promotional slides, and seasonal hero media.
               </p>
             </div>
           </div>
@@ -172,20 +173,72 @@ const HomepageSettings = ({
                 <div className="banner-title">{slide.title}</div>
                 <div className="banner-sub">{slide.subtitle}</div>
                 <div className="banner-actions">
-                  <button
-                    className="btn-icon"
-                    title="Edit Banner"
-                    onClick={() => handleEditSlideClick(slide)}
-                  >
-                    <FiEdit2 size={14} />
-                  </button>
-                  <button
-                    className="btn-icon delete"
-                    title="Delete Banner"
-                    onClick={() => handleDeleteSlide(slide.id)}
-                  >
-                    <FiTrash2 size={14} />
-                  </button>
+                  {deleteSlideId === slide.id ? (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        backgroundColor: '#FEF2F2',
+                        border: '1px solid #FCA5A5',
+                        borderRadius: '6px',
+                        padding: '3px 6px'
+                      }}
+                    >
+                      <span style={{ fontSize: '0.74rem', color: '#991B1B', fontWeight: 600 }}>
+                        Delete?
+                      </span>
+                      <button
+                        type="button"
+                        style={{
+                          backgroundColor: '#EF4444',
+                          color: '#FFFFFF',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '2px 8px',
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                          cursor: 'pointer'
+                        }}
+                        onClick={() => handleDeleteSlide(slide.id)}
+                      >
+                        Delete
+                      </button>
+                      <button
+                        type="button"
+                        style={{
+                          backgroundColor: '#FFFFFF',
+                          color: '#475569',
+                          border: '1px solid #CBD5E1',
+                          borderRadius: '4px',
+                          padding: '2px 6px',
+                          fontSize: '0.72rem',
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                        onClick={() => setDeleteSlideId(null)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        className="btn-icon"
+                        title="Edit Banner"
+                        onClick={() => handleEditSlideClick(slide)}
+                      >
+                        <FiEdit2 size={14} />
+                      </button>
+                      <button
+                        className="btn-icon delete"
+                        title="Delete Banner"
+                        onClick={() => setDeleteSlideId(slide.id)}
+                      >
+                        <FiTrash2 size={14} />
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -194,15 +247,17 @@ const HomepageSettings = ({
       </div>
 
 
-      {/* 3. SECTION VISIBILITY TOGGLES */}
+      {/* 2. SECTION VISIBILITY TOGGLES */}
       <div className="admin-card">
         <div className="admin-card-header">
           <div className="card-title-group">
-            <FiEye className="card-title-icon" size={22} />
+            <div className="card-title-icon-wrapper">
+              <FiEye className="card-title-icon" size={20} />
+            </div>
             <div>
-              <h2 className="card-title">Homepage Section Visibility</h2>
+              <h2 className="card-title">Section Visibility Controls</h2>
               <p className="card-subtitle">
-                Enable or disable dynamic sections displayed on the homepage.
+                Toggle dynamic homepage layout sections and storefront content blocks.
               </p>
             </div>
           </div>
@@ -305,11 +360,13 @@ const HomepageSettings = ({
       <div className="admin-card">
         <div className="admin-card-header">
           <div className="card-title-group">
-            <FiDroplet className="card-title-icon" size={22} color="#6366F1" />
+            <div className="card-title-icon-wrapper">
+              <FiDroplet className="card-title-icon" size={20} color="#6366F1" />
+            </div>
             <div>
-              <h2 className="card-title">Homepage Top Bar Color Customization</h2>
+              <h2 className="card-title">Header Topbar Styling & Theme</h2>
               <p className="card-subtitle">
-                Customize the background color, text color, and theme of the homepage top bar header.
+                Customize accent colors, brand gradients, and typography contrast for the main header.
               </p>
             </div>
           </div>
@@ -443,7 +500,36 @@ const HomepageSettings = ({
         </div>
       </div>
 
-      {/* HERO SLIDE ADD/EDIT MODAL */}
+      {/* BOTTOM ACTION SAVE BAR */}
+      <div
+        className="admin-card"
+        style={{
+          marginTop: '24px',
+          padding: '18px 24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          backgroundColor: '#FFFDF9',
+          border: '1px solid var(--admin-card-border)',
+          borderRadius: '16px',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
+          flexWrap: 'wrap',
+          gap: '14px'
+        }}
+      >
+        <div>
+          <div style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--admin-text-main)' }}>
+            Save Storefront Configuration
+          </div>
+          <div style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', marginTop: '2px' }}>
+            Apply and persist all changes made to hero banners, section visibility, and topbar theme colors.
+          </div>
+        </div>
+
+        <button className="btn-primary" onClick={handleSaveAll} style={{ padding: '10px 22px', fontSize: '0.9rem' }}>
+          <FiSave size={16} /> Save All Settings
+        </button>
+      </div>
       {modalOpen &&
         createPortal(
           <div className="modal-overlay" onClick={() => setModalOpen(false)}>

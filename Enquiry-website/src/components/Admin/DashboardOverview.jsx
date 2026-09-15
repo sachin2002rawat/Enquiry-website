@@ -4,7 +4,8 @@ import {
   FiPackage,
   FiSliders,
   FiCheckCircle,
-  FiArrowRight
+  FiArrowRight,
+  FiGrid
 } from 'react-icons/fi'
 import KpiDetailsModal from './KpiDetailsModal'
 
@@ -72,9 +73,42 @@ const DashboardOverview = ({
       </div>
 
       {/* TWO PRIMARY MODULE SHORTCUT CARDS */}
-      <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--admin-text-main)', marginBottom: '16px' }}>
-        Quick Management Modules
-      </h3>
+      <div className="section-header-modern" style={{ marginBottom: '20px', marginTop: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div
+              style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.05))',
+                border: '1px solid rgba(99, 102, 241, 0.25)',
+                color: '#6366F1',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.15rem',
+                boxShadow: '0 2px 8px rgba(99, 102, 241, 0.12)'
+              }}
+            >
+              <FiGrid />
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--admin-text-main)', margin: 0, letterSpacing: '-0.02em' }}>
+                  Quick Management Modules
+                </h3>
+                <span className="live-count-badge" style={{ backgroundColor: '#EEF2FF', color: '#4F46E5', border: '1px solid #C7D2FE' }}>
+                  2 Modules
+                </span>
+              </div>
+              <p style={{ fontSize: '0.83rem', color: 'var(--admin-text-muted)', margin: '2px 0 0 0', fontWeight: 500 }}>
+                Direct shortcuts to configure storefront banners and manage store products.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginBottom: '32px' }}>
         {/* Module 1: Homepage Settings */}

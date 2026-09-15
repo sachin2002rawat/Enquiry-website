@@ -146,8 +146,7 @@ const AdminPage = () => {
         <AdminHeader
           activeTab={activeTab}
           setIsOpen={setIsSidebarOpen}
-          searchFilter={searchFilter}
-          setSearchFilter={setSearchFilter}
+          showToast={showToast}
         />
 
         <main className="admin-content">

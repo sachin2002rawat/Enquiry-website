@@ -244,11 +244,16 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
       <div className="admin-card">
         <div className="admin-card-header">
           <div className="card-title-group">
-            <FiGrid className="card-title-icon" size={22} />
+            <div className="card-title-icon-wrapper">
+              <FiGrid className="card-title-icon" size={20} />
+            </div>
             <div>
-              <h2 className="card-title">Product Catalogue</h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <h2 className="card-title">Product Inventory & Catalogue</h2>
+                <span className="live-count-badge">{totalProducts} Items</span>
+              </div>
               <p className="card-subtitle">
-                View, filter, edit, and manage all your store products.
+                Real-time catalog management, stock monitoring, and item control.
               </p>
             </div>
           </div>
@@ -337,28 +342,79 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
                         </button>
                       </td>
                       <td>
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'flex-end',
-                            gap: '8px'
-                          }}
-                        >
-                          <button
-                            className="btn-icon"
-                            title="Edit Product"
-                            onClick={() => handleEditProduct(product)}
+                        {deleteId === product.id ? (
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'flex-end',
+                              gap: '6px',
+                              backgroundColor: '#FEF2F2',
+                              border: '1px solid #FCA5A5',
+                              borderRadius: '8px',
+                              padding: '4px 8px'
+                            }}
                           >
-                            <FiEdit2 size={14} />
-                          </button>
-                          <button
-                            className="btn-icon delete"
-                            title="Delete Product"
-                            onClick={() => setDeleteId(product.id)}
+                            <span style={{ fontSize: '0.78rem', color: '#991B1B', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                              Delete item?
+                            </span>
+                            <button
+                              type="button"
+                              style={{
+                                backgroundColor: '#EF4444',
+                                color: '#FFFFFF',
+                                border: 'none',
+                                borderRadius: '6px',
+                                padding: '4px 10px',
+                                fontSize: '0.75rem',
+                                fontWeight: 700,
+                                cursor: 'pointer'
+                              }}
+                              onClick={confirmDelete}
+                            >
+                              Delete
+                            </button>
+                            <button
+                              type="button"
+                              style={{
+                                backgroundColor: '#FFFFFF',
+                                color: '#475569',
+                                border: '1px solid #CBD5E1',
+                                borderRadius: '6px',
+                                padding: '4px 8px',
+                                fontSize: '0.75rem',
+                                fontWeight: 600,
+                                cursor: 'pointer'
+                              }}
+                              onClick={() => setDeleteId(null)}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'flex-end',
+                              gap: '8px'
+                            }}
                           >
-                            <FiTrash2 size={14} />
-                          </button>
-                        </div>
+                            <button
+                              className="btn-icon"
+                              title="Edit Product"
+                              onClick={() => handleEditProduct(product)}
+                            >
+                              <FiEdit2 size={14} />
+                            </button>
+                            <button
+                              className="btn-icon delete"
+                              title="Delete Product"
+                              onClick={() => setDeleteId(product.id)}
+                            >
+                              <FiTrash2 size={14} />
+                            </button>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   )
@@ -668,48 +724,6 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
           document.body
         )}
 
-      {/* DELETE CONFIRMATION MODAL */}
-      {deleteId &&
-        createPortal(
-          <div className="modal-overlay" onClick={() => setDeleteId(null)}>
-            <div
-              className="modal-content"
-              style={{ maxWidth: '420px' }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="modal-header">
-                <h3 className="modal-title" style={{ color: '#EF4444' }}>
-                  Confirm Deletion
-                </h3>
-                <button className="btn-icon" onClick={() => setDeleteId(null)} aria-label="Close">
-                  <FiX size={18} />
-                </button>
-              </div>
-              <div className="modal-body">
-                <p style={{ color: 'var(--admin-text-main)', margin: 0 }}>
-                  Are you sure you want to delete this product? This action cannot be undone.
-                </p>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={() => setDeleteId(null)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="btn-danger"
-                  onClick={() => confirmDelete(deleteId)}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>,
-          document.body
-        )}
     </div>
   )
 }

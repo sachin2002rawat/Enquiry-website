@@ -50,6 +50,7 @@ const Home = () => {
         <ScrollReveal variant="up"><Feature /></ScrollReveal>
         <Footer />
       </Suspense>
+      
     </div>
   )
 }

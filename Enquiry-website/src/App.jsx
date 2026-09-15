@@ -14,6 +14,7 @@ import Blog from './page/Blog'
 import BlogDetail from './page/BlogDetail'
 import AboutEnquiryCompany from './page/AboutEnquiryCompany'
 import WhatsAppButton from './components/Product/WhatsAppButton'
+import AdminPage from './page/AdminPage'
 
 const AppContent = () => {
   useScrollReveal()
@@ -35,6 +36,8 @@ const AppContent = () => {
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:id" element={<BlogDetail />} />
         <Route path="/blog-detail/:id" element={<BlogDetail />} />
+        <Route path="/admin" element={<AdminPage/>} />
+      
       </Routes>
       
       {/* Global Glassmorphic Enquiry Pop-up Modal */}

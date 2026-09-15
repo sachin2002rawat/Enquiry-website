@@ -55,7 +55,7 @@ const ProductNavbar = () => {
             <span className="logo-text">QuickEnquiry</span>
           </Link>
         </div>
-
+        
         {/* Categories Glass Pill Button (Desktop) / Category Icon Only (Mobile) */}
         <div className="product-nav-categories-wrapper">
           <button 

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react'
+import React, { Suspense, lazy, useState, useEffect } from 'react'
 import Topbar from '../components/Topbar'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
@@ -23,6 +23,8 @@ const LatestArticle = lazy(() => import('../components/LatestArticle'))
 const Feature = lazy(() => import('../components/Feature'))
 const Footer = lazy(() => import('../components/Footer'))
 
+const LOCAL_KEY_VISIBILITY = 'enquiry_admin_section_visibility'
+
 const SectionLoader = () => (
   <div style={{ minHeight: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
     <div style={{
@@ -37,24 +39,84 @@ const SectionLoader = () => (
 )
 
 const Home2 = () => {
+  // Read section visibility settings from LocalStorage
+  const [visibility, setVisibility] = useState(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_KEY_VISIBILITY)
+      return saved
+        ? JSON.parse(saved)
+        : {
+            heroSlider: true,
+            featuredProducts: true,
+            whyChoose: true,
+            reviews: true,
+            faq: true,
+            blogs: true
+          }
+    } catch {
+      return {
+        heroSlider: true,
+        featuredProducts: true,
+        whyChoose: true,
+        reviews: true,
+        faq: true,
+        blogs: true
+      }
+    }
+  })
+
+  useEffect(() => {
+    const handleSync = () => {
+      try {
+        const savedVis = localStorage.getItem(LOCAL_KEY_VISIBILITY)
+        if (savedVis) setVisibility(JSON.parse(savedVis))
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    window.addEventListener('storage', handleSync)
+    const interval = setInterval(handleSync, 800)
+
+    return () => {
+      window.removeEventListener('storage', handleSync)
+      clearInterval(interval)
+    }
+  }, [])
+
   return (
     <div className="header-wrapper">
       <Topbar />
       <Navbar />
-      <Hero data={beautyHeroImages} />
+      {visibility.heroSlider !== false && <Hero data={beautyHeroImages} />}
       <ScrollReveal variant="up"><CompanySection isBeauty={true} /></ScrollReveal>
-      <ScrollReveal variant="up"><WideRangeProducts data={beautyProductsData} isBeauty={true} /></ScrollReveal>
+      {visibility.featuredProducts !== false && (
+        <ScrollReveal variant="up"><WideRangeProducts data={beautyProductsData} isBeauty={true} /></ScrollReveal>
+      )}
       <ScrollReveal variant="up"><ShopCategory data={beautyProductsData} isBeauty={true} /></ScrollReveal>
       
       <Suspense fallback={<SectionLoader />}>
-        <ScrollReveal variant="up"><PopularProduct data={beautyProductsData} isBeauty={true} /></ScrollReveal>
-        {/* <ScrollReveal variant="up"><ContactUs /></ScrollReveal> */}
-        <ScrollReveal variant="up"><AboutCompany isBeauty={true} /></ScrollReveal>
-        <ScrollReveal variant="up"><Review data={beautyReviews} isBeauty={true} /></ScrollReveal>
-        <ScrollReveal variant="up"><FAQ isBeauty={true} /></ScrollReveal>
-        <ScrollReveal variant="up"><VideoReviewScroller /></ScrollReveal>
-        <ScrollReveal variant="up"><LatestArticle data={beautyArticles} isBeauty={true} /></ScrollReveal>
-        <ScrollReveal variant="up"><Feature data={beautyFeatures} isBeauty={true} /></ScrollReveal>
+        {visibility.featuredProducts !== false && (
+          <ScrollReveal variant="up"><PopularProduct data={beautyProductsData} isBeauty={true} /></ScrollReveal>
+        )}
+        {visibility.whyChoose !== false && (
+          <ScrollReveal variant="up"><AboutCompany isBeauty={true} /></ScrollReveal>
+        )}
+        {visibility.reviews !== false && (
+          <ScrollReveal variant="up"><Review data={beautyReviews} isBeauty={true} /></ScrollReveal>
+        )}
+        {visibility.faq !== false && (
+          <ScrollReveal variant="up"><FAQ isBeauty={true} /></ScrollReveal>
+        )}
+        {visibility.reviews !== false && (
+          <ScrollReveal variant="up"><VideoReviewScroller /></ScrollReveal>
+        )}
+        {visibility.blogs !== false && (
+          <ScrollReveal variant="up"><LatestArticle data={beautyArticles} isBeauty={true} /></ScrollReveal>
+        )}
+        {visibility.whyChoose !== false && (
+          <ScrollReveal variant="up"><Feature data={beautyFeatures} isBeauty={true} /></ScrollReveal>
+        )}
         <Footer />
       </Suspense>
     </div>

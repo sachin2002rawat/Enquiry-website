@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { LayoutGrid, MessageSquareMore, User, Menu, X } from 'lucide-react'
 import { FaCommentDots } from 'react-icons/fa'
 import { FiSearch } from 'react-icons/fi'
@@ -11,6 +11,34 @@ const ProductNavbar = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const navigate = useNavigate()
   const { openEnquiryModal } = useEnquiryModal()
+
+  const loadSettings = () => {
+    try {
+      const saved = localStorage.getItem('enquiry_admin_store_settings')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        return {
+          logoType: parsed.logoType || 'icon',
+          logoText: parsed.logoText || 'QuickEnquiry',
+          logoUrl: parsed.logoUrl || '',
+          logoIconColor: parsed.logoIconColor || ''
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return { logoType: 'icon', logoText: 'QuickEnquiry', logoUrl: '', logoIconColor: '' }
+  }
+
+  const [navSettings, setNavSettings] = useState(loadSettings)
+
+  useEffect(() => {
+    const handleStorage = () => {
+      setNavSettings(loadSettings())
+    }
+    window.addEventListener('storage', handleStorage)
+    return () => window.removeEventListener('storage', handleStorage)
+  }, [])
 
   const navItems = [
     { name: 'Home', path: '/' },
@@ -49,10 +77,26 @@ const ProductNavbar = () => {
         {/* Left: Home Navbar Logo (QuickEnquiry) - Desktop Only */}
         <div className="product-nav-logo desktop-only">
           <Link to="/" className="logo-link">
-            <div className="logo-graphics">
-              <FaCommentDots className="logo-icon" />
-            </div>
-            <span className="logo-text">QuickEnquiry</span>
+            {navSettings.logoUrl ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <img
+                  src={navSettings.logoUrl}
+                  alt={navSettings.logoText || 'QuickEnquiry'}
+                  className="topbar-logo-img"
+                  style={{ maxHeight: '38px', objectFit: 'contain' }}
+                />
+                {navSettings.logoText && (
+                  <span className="logo-text">{navSettings.logoText}</span>
+                )}
+              </div>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="logo-graphics">
+                  <FaCommentDots className="logo-icon" />
+                </div>
+                <span className="logo-text">{navSettings.logoText || 'QuickEnquiry'}</span>
+              </div>
+            )}
           </Link>
         </div>
         

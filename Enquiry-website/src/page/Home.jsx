@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react'
+import React, { Suspense, lazy, useState, useEffect } from 'react'
 import Topbar from '../components/Topbar'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
@@ -17,6 +17,9 @@ const LatestArticle = lazy(() => import('../components/LatestArticle'))
 const Feature = lazy(() => import('../components/Feature'))
 const Footer = lazy(() => import('../components/Footer'))
 
+const LOCAL_KEY_VISIBILITY = 'enquiry_admin_section_visibility'
+const LOCAL_KEY_HERO = 'enquiry_admin_hero_slides'
+
 const SectionLoader = () => (
   <div style={{ minHeight: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
     <div style={{
@@ -31,29 +34,118 @@ const SectionLoader = () => (
 )
 
 const Home = () => {
+  // Read section visibility settings from LocalStorage
+  const [visibility, setVisibility] = useState(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_KEY_VISIBILITY)
+      return saved
+        ? JSON.parse(saved)
+        : {
+            heroSlider: true,
+            featuredProducts: true,
+            whyChoose: true,
+            reviews: true,
+            faq: true,
+            blogs: true
+          }
+    } catch {
+      return {
+        heroSlider: true,
+        featuredProducts: true,
+        whyChoose: true,
+        reviews: true,
+        faq: true,
+        blogs: true
+      }
+    }
+  })
+
+  // Read admin hero slides if customized
+  const [heroSlides, setHeroSlides] = useState(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_KEY_HERO)
+      return saved ? JSON.parse(saved) : null
+    } catch {
+      return null
+    }
+  })
+
+  // Sync state in real time with localStorage changes from Admin tab
+  useEffect(() => {
+    const handleSync = () => {
+      try {
+        const savedVis = localStorage.getItem(LOCAL_KEY_VISIBILITY)
+        if (savedVis) setVisibility(JSON.parse(savedVis))
+
+        const savedHero = localStorage.getItem(LOCAL_KEY_HERO)
+        if (savedHero) setHeroSlides(JSON.parse(savedHero))
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    window.addEventListener('storage', handleSync)
+    const interval = setInterval(handleSync, 800)
+
+    return () => {
+      window.removeEventListener('storage', handleSync)
+      clearInterval(interval)
+    }
+  }, [])
+
   return (
     <div className="header-wrapper">
       <Topbar />
       <Navbar />
-      <Hero />
+
+      {/* Hero Carousel Banner Section */}
+      {visibility.heroSlider !== false && <Hero data={heroSlides} />}
+
       <ScrollReveal variant="up"><CompanySection /></ScrollReveal>
-      <ScrollReveal variant="up"><WideRangeProducts /></ScrollReveal>
+
+      {/* Featured Products Section */}
+      {visibility.featuredProducts !== false && (
+        <ScrollReveal variant="up"><WideRangeProducts /></ScrollReveal>
+      )}
+
       <ScrollReveal variant="up"><ShopCategory /></ScrollReveal>
       
       <Suspense fallback={<SectionLoader />}>
-        <ScrollReveal variant="up"><PopularProduct /></ScrollReveal>
-        {/* <ScrollReveal variant="up"><ContactUs /></ScrollReveal> */}
-        <ScrollReveal variant="up"><AboutCompany /></ScrollReveal>
-        <ScrollReveal variant="up"><Review /></ScrollReveal>
-        <ScrollReveal variant="up"><FAQ /></ScrollReveal>
-        <ScrollReveal variant="up"><LatestArticle /></ScrollReveal>
-        <ScrollReveal variant="up"><Feature /></ScrollReveal>
+        {/* Popular Products */}
+        {visibility.featuredProducts !== false && (
+          <ScrollReveal variant="up"><PopularProduct /></ScrollReveal>
+        )}
+
+        {/* Why Choose Us Section */}
+        {visibility.whyChoose !== false && (
+          <ScrollReveal variant="up"><AboutCompany /></ScrollReveal>
+        )}
+
+        {/* Customer Reviews Section */}
+        {visibility.reviews !== false && (
+          <ScrollReveal variant="up"><Review /></ScrollReveal>
+        )}
+
+        {/* FAQ Accordion Section */}
+        {visibility.faq !== false && (
+          <ScrollReveal variant="up"><FAQ /></ScrollReveal>
+        )}
+
+        {/* Latest Articles / Blog Grid Section */}
+        {visibility.blogs !== false && (
+          <ScrollReveal variant="up"><LatestArticle /></ScrollReveal>
+        )}
+
+        {/* Why Choose Feature Highlight */}
+        {visibility.whyChoose !== false && (
+          <ScrollReveal variant="up"><Feature /></ScrollReveal>
+        )}
+
         <Footer />
       </Suspense>
-
     </div>
   )
-} 
+}
 
 export default Home
 

@@ -107,6 +107,17 @@ body {
   padding: 2px 0;
 }
 
+.topbar-logo-img {
+  max-height: 42px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.topbar-logo:hover .topbar-logo-img {
+  transform: scale(1.05);
+}
+
 .logo-graphics {
   display: flex;
   align-items: center;

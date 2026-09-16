@@ -8,38 +8,41 @@ const Topbar = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const { openEnquiryModal } = useEnquiryModal()
 
-  // Read saved topbar theme colors from localStorage
-  const [topbarTheme, setTopbarTheme] = useState(() => {
+  // Helper to load settings from localStorage
+  const loadSettings = () => {
     try {
       const saved = localStorage.getItem('enquiry_admin_store_settings')
       if (saved) {
         const parsed = JSON.parse(saved)
         return {
           bg: parsed.topbarBgColor || null,
-          text: parsed.topbarTextColor || null
+          text: parsed.topbarTextColor || null,
+          logoType: parsed.logoType || 'icon',
+          logoText: parsed.logoText || 'QuickEnquiry',
+          logoUrl: parsed.logoUrl || '',
+          logoIconColor: parsed.logoIconColor || ''
         }
       }
     } catch {
       // ignore
     }
-    return { bg: null, text: null }
-  })
+    return {
+      bg: null,
+      text: null,
+      logoType: 'icon',
+      logoText: 'QuickEnquiry',
+      logoUrl: '',
+      logoIconColor: ''
+    }
+  }
+
+  // Read saved topbar theme & logo settings from localStorage
+  const [topbarTheme, setTopbarTheme] = useState(loadSettings)
 
   // Listen for storage changes from Admin
   useEffect(() => {
     const handleStorageChange = () => {
-      try {
-        const saved = localStorage.getItem('enquiry_admin_store_settings')
-        if (saved) {
-          const parsed = JSON.parse(saved)
-          setTopbarTheme({
-            bg: parsed.topbarBgColor || null,
-            text: parsed.topbarTextColor || null
-          })
-        }
-      } catch {
-        // ignore
-      }
+      setTopbarTheme(loadSettings())
     }
 
     window.addEventListener('storage', handleStorageChange)
@@ -81,12 +84,30 @@ const Topbar = () => {
 
         {/* Brand Logo (Left on Mobile, Center on Desktop) */}
         <div className="topbar-logo" onClick={() => (window.location.href = '/')}>
-          <div className="logo-graphics">
-            <FaCommentDots className="logo-icon" />
-          </div>
-          <span className="logo-text" style={{ color: topbarTheme.text || 'inherit' }}>
-            QuickEnquiry
-          </span>
+          {topbarTheme.logoUrl ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <img
+                src={topbarTheme.logoUrl}
+                alt={topbarTheme.logoText || 'QuickEnquiry'}
+                className="topbar-logo-img"
+                style={{ maxHeight: '40px', objectFit: 'contain' }}
+              />
+              {topbarTheme.logoText && (
+                <span className="logo-text" style={{ color: topbarTheme.text || 'inherit' }}>
+                  {topbarTheme.logoText}
+                </span>
+              )}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div className="logo-graphics">
+                <FaCommentDots className="logo-icon" />
+              </div>
+              <span className="logo-text" style={{ color: topbarTheme.text || 'inherit' }}>
+                {topbarTheme.logoText || 'QuickEnquiry'}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Right: Search Box (Desktop Only) */}

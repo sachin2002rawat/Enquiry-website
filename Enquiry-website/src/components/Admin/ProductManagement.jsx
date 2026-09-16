@@ -248,7 +248,7 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
               <FiGrid className="card-title-icon" size={20} />
             </div>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div className="card-title-row">
                 <h2 className="card-title">Product Inventory & Catalogue</h2>
                 <span className="live-count-badge">{totalProducts} Items</span>
               </div>

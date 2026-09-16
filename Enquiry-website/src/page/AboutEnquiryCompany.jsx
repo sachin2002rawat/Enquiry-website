@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Trophy, Target, Eye, Star, CheckCircle2, ShieldCheck, Lightbulb, Heart, BarChart3 } from 'lucide-react'
 import { FiArrowRight, FiChevronDown } from 'react-icons/fi'
@@ -10,6 +10,29 @@ import './AboutEnquiryCompany.css'
 
 const AboutEnquiryCompany = () => {
   const { openEnquiryModal } = useEnquiryModal()
+
+  // Helper to load store/company settings from localStorage
+  const loadCompanySettings = () => {
+    try {
+      const saved = localStorage.getItem('enquiry_admin_store_settings')
+      if (saved) {
+        return JSON.parse(saved)
+      }
+    } catch {
+      // fallback
+    }
+    return {}
+  }
+
+  const [companySettings, setCompanySettings] = useState(loadCompanySettings)
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setCompanySettings(loadCompanySettings())
+    }
+    window.addEventListener('storage', handleStorageChange)
+    return () => window.removeEventListener('storage', handleStorageChange)
+  }, [])
 
   return (
     <div className="about-page-wrapper">
@@ -28,18 +51,25 @@ const AboutEnquiryCompany = () => {
           {/* Top Pill Badge */}
           <div className="about-clean-badge">
             <span className="badge-dot"></span>
-            <span>ABOUT QUICKENQUIRY</span>
+            <span>{companySettings.aboutBadge || 'ABOUT QUICKENQUIRY'}</span>
           </div>
 
           {/* Main Headline */}
           <h1 className="about-clean-title">
-            Empowering Businesses with <br />
-            <span className="gradient-text">Seamless Product Enquiry & Trade</span>
+            {companySettings.aboutTitle ? (
+              companySettings.aboutTitle
+            ) : (
+              <>
+                Empowering Businesses with <br />
+                <span className="gradient-text">Seamless Product Enquiry & Trade</span>
+              </>
+            )}
           </h1>
 
           {/* Subtitle / Value Proposition */}
           <p className="about-clean-desc">
-            QuickEnquiry is a premier B2B and B2C digital enquiry platform dedicated to connecting buyers directly with verified manufacturers, suppliers, and distributors across food products, spices, staples, and consumer essentials.
+            {companySettings.aboutDesc ||
+              'QuickEnquiry is a premier B2B and B2C digital enquiry platform dedicated to connecting buyers directly with verified manufacturers, suppliers, and distributors across food products, spices, staples, and consumer essentials.'}
           </p>
 
           {/* Action Row */}
@@ -62,20 +92,20 @@ const AboutEnquiryCompany = () => {
           {/* Stats Bar Cards */}
           <div className="about-stats-grid">
             <div className="about-stat-card">
-              <div className="stat-card-number">12<span className="accent">+</span></div>
-              <div className="stat-card-label">Years Market Trust</div>
+              <div className="stat-card-number">{companySettings.statYears || '12+'}</div>
+              <div className="stat-card-label">{companySettings.statYearsLabel || 'Years Market Trust'}</div>
             </div>
             <div className="about-stat-card">
-              <div className="stat-card-number">50<span className="accent">k+</span></div>
-              <div className="stat-card-label">Enquiries Fulfilled</div>
+              <div className="stat-card-number">{companySettings.statEnquiries || '50k+'}</div>
+              <div className="stat-card-label">{companySettings.statEnquiriesLabel || 'Enquiries Fulfilled'}</div>
             </div>
             <div className="about-stat-card">
-              <div className="stat-card-number">98<span className="accent">.6%</span></div>
-              <div className="stat-card-label">Customer Satisfaction</div>
+              <div className="stat-card-number">{companySettings.statSatisfaction || '98.6%'}</div>
+              <div className="stat-card-label">{companySettings.statSatisfactionLabel || 'Customer Satisfaction'}</div>
             </div>
             <div className="about-stat-card">
-              <div className="stat-card-number">100<span className="accent">+</span></div>
-              <div className="stat-card-label">Product Categories</div>
+              <div className="stat-card-number">{companySettings.statCategories || '100+'}</div>
+              <div className="stat-card-label">{companySettings.statCategoriesLabel || 'Product Categories'}</div>
             </div>
           </div>
 
@@ -92,7 +122,10 @@ const AboutEnquiryCompany = () => {
           <div className="relationship-image-col">
             <div className="relationship-image-wrapper">
               <img 
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80" 
+                src={
+                  companySettings.storyImageUrl ||
+                  'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80'
+                } 
                 alt="Building Excellence - Team Collaboration" 
                 className="relationship-main-img"
               />
@@ -101,7 +134,7 @@ const AboutEnquiryCompany = () => {
                   <Trophy size={20} />
                 </div>
                 <div className="trust-badge-text">
-                  <span className="trust-number">12+</span>
+                  <span className="trust-number">{companySettings.statYears || '12+'}</span>
                   <span className="trust-label">YEARS OF TRUST</span>
                 </div>
               </div>
@@ -110,16 +143,18 @@ const AboutEnquiryCompany = () => {
 
           {/* Right Side: Text Content & Action Buttons */}
           <div className="relationship-content-col">
-            <span className="relationship-subtitle">— BUILDING EXCELLENCE</span>
+            <span className="relationship-subtitle">{companySettings.storySubtitle || '— BUILDING EXCELLENCE'}</span>
             
-            <h2 className="relationship-title">One Relationship at a Time</h2>
+            <h2 className="relationship-title">{companySettings.storyTitle || 'One Relationship at a Time'}</h2>
             
             <p className="relationship-paragraph">
-              Founded with a clear vision and unwavering commitment, we have grown into a trusted partner for thousands of clients across the country. Our work is guided by integrity, innovation, and a deep respect for the people we are serve.
+              {companySettings.storyParagraph1 ||
+                'Founded with a clear vision and unwavering commitment, we have grown into a trusted partner for thousands of clients across the country. Our work is guided by integrity, innovation, and a deep respect for the people we serve.'}
             </p>
             
             <p className="relationship-paragraph">
-              From our very first day, we believed that exceptional service is not a luxury — it is a standard. Every project we take on, every relationship we build, is approached with the same dedication and care that has been the cornerstone of our success.
+              {companySettings.storyParagraph2 ||
+                'From our very first day, we believed that exceptional service is not a luxury — it is a standard. Every project we take on, every relationship we build, is approached with the same dedication and care that has been the cornerstone of our success.'}
             </p>
 
             {/* Action Buttons Row */}
@@ -177,9 +212,15 @@ const AboutEnquiryCompany = () => {
         <section className="about-dna-values-section">
         {/* Header Title */}
         <div className="dna-values-header">
-          <span className="dna-subtitle">— OUR DNA —</span>
+          <span className="dna-subtitle">{companySettings.dnaSubtitle || '— OUR DNA —'}</span>
           <h2 className="dna-title">
-            The Values That <span className="dna-title-accent">Define Us</span>
+            {companySettings.dnaTitle ? (
+              companySettings.dnaTitle
+            ) : (
+              <>
+                The Values That <span className="dna-title-accent">Define Us</span>
+              </>
+            )}
           </h2>
         </div>
 
@@ -190,9 +231,10 @@ const AboutEnquiryCompany = () => {
             <div className="dna-icon-wrapper">
               <ShieldCheck size={24} />
             </div>
-            <h3 className="dna-card-title">Integrity</h3>
+            <h3 className="dna-card-title">{companySettings.dnaCard1Title || 'Integrity'}</h3>
             <p className="dna-card-desc">
-              We say what we mean and do what we say. Honesty is the foundation of every relationship we build.
+              {companySettings.dnaCard1Desc ||
+                'We say what we mean and do what we say. Honesty is the foundation of every relationship we build.'}
             </p>
           </div>
 
@@ -201,9 +243,10 @@ const AboutEnquiryCompany = () => {
             <div className="dna-icon-wrapper">
               <Lightbulb size={24} />
             </div>
-            <h3 className="dna-card-title">Innovation</h3>
+            <h3 className="dna-card-title">{companySettings.dnaCard2Title || 'Innovation'}</h3>
             <p className="dna-card-desc">
-              We embrace change, challenge convention, and constantly seek better ways to serve our clients.
+              {companySettings.dnaCard2Desc ||
+                'We embrace change, challenge convention, and constantly seek better ways to serve our clients.'}
             </p>
           </div>
 
@@ -212,9 +255,10 @@ const AboutEnquiryCompany = () => {
             <div className="dna-icon-wrapper">
               <Heart size={24} />
             </div>
-            <h3 className="dna-card-title">Empathy</h3>
+            <h3 className="dna-card-title">{companySettings.dnaCard3Title || 'Empathy'}</h3>
             <p className="dna-card-desc">
-              We understand that behind every enquiry is a person. Compassion shapes every interaction we have.
+              {companySettings.dnaCard3Desc ||
+                'We understand that behind every enquiry is a person. Compassion shapes every interaction we have.'}
             </p>
           </div>
 
@@ -223,9 +267,10 @@ const AboutEnquiryCompany = () => {
             <div className="dna-icon-wrapper">
               <BarChart3 size={24} />
             </div>
-            <h3 className="dna-card-title">Excellence</h3>
+            <h3 className="dna-card-title">{companySettings.dnaCard4Title || 'Excellence'}</h3>
             <p className="dna-card-desc">
-              Good enough is never enough. We hold ourselves to the highest standard in every single task.
+              {companySettings.dnaCard4Desc ||
+                'Good enough is never enough. We hold ourselves to the highest standard in every single task.'}
             </p>
           </div>
         </div>
@@ -265,7 +310,8 @@ const AboutEnquiryCompany = () => {
             <span className="mv-card-tag">OUR MISSION</span>
 
             <p className="mv-card-paragraph">
-              Our mission is to deliver exceptional, personalised services that solve real problems, create genuine value, and help each client grow with confidence. We are here not just to meet expectations — but to exceed them at every turn.
+              {companySettings.missionText ||
+                'Our mission is to deliver exceptional, personalised services that solve real problems, create genuine value, and help each client grow with confidence. We are here not just to meet expectations — but to exceed them at every turn.'}
             </p>
 
             <ul className="mv-check-list">
@@ -299,11 +345,12 @@ const AboutEnquiryCompany = () => {
             <span className="mv-card-tag">OUR VISION</span>
 
             <h3 className="mv-card-heading">
-              A Future Where Quality Is Never Compromised
+              {companySettings.visionHeading || 'A Future Where Quality Is Never Compromised'}
             </h3>
 
             <p className="mv-card-paragraph">
-              We envision a world where every individual and organisation has access to world-class service — regardless of size or scale. Our vision drives us to innovate relentlessly, lead with integrity, and set new standards in everything we do.
+              {companySettings.visionText ||
+                'We envision a world where every individual and organisation has access to world-class service — regardless of size or scale. Our vision drives us to innovate relentlessly, lead with integrity, and set new standards in everything we do.'}
             </p>
                 
             <ul className="mv-check-list">

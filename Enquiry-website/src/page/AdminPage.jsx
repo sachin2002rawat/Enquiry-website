@@ -3,6 +3,7 @@ import AdminSidebar from '../components/Admin/AdminSidebar'
 import AdminHeader from '../components/Admin/AdminHeader'
 import DashboardOverview from '../components/Admin/DashboardOverview'
 import HomepageSettings from '../components/Admin/HomepageSettings'
+import CompanySettings from '../components/Admin/CompanySettings'
 import ProductManagement from '../components/Admin/ProductManagement'
 import defaultHeroImages from '../HeroImage.json'
 import defaultProducts from '../ProductsData.json'
@@ -53,7 +54,11 @@ const AdminPage = () => {
             announcementText: 'Free Shipping on orders over ₹499 | Premium Stone Ground Spices',
             whatsappNumber: '+91 9876543210',
             contactEmail: 'info@enquirybrand.com',
-            tagline: '100% Organic & Stone Ground Spices'
+            tagline: '100% Organic & Stone Ground Spices',
+            logoType: 'icon',
+            logoText: 'QuickEnquiry',
+            logoUrl: '',
+            logoIconColor: '#86d2a3'
           }
     } catch {
       return {
@@ -62,7 +67,11 @@ const AdminPage = () => {
         announcementText: 'Free Shipping on orders over ₹499 | Premium Stone Ground Spices',
         whatsappNumber: '+91 9876543210',
         contactEmail: 'info@enquirybrand.com',
-        tagline: '100% Organic & Stone Ground Spices'
+        tagline: '100% Organic & Stone Ground Spices',
+        logoType: 'icon',
+        logoText: 'QuickEnquiry',
+        logoUrl: '',
+        logoIconColor: '#86d2a3'
       }
     }
   })
@@ -104,6 +113,7 @@ const AdminPage = () => {
 
   useEffect(() => {
     localStorage.setItem(LOCAL_KEY_SETTINGS, JSON.stringify(storeSettings))
+    window.dispatchEvent(new Event('storage'))
     if (storeSettings.topbarBgColor) {
       document.documentElement.style.setProperty('--bg-topbar', storeSettings.topbarBgColor)
     }
@@ -131,6 +141,15 @@ const AdminPage = () => {
 
   return (
     <div className="admin-container">
+      {/* Mobile Sidebar Backdrop Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="admin-sidebar-backdrop"
+          onClick={() => setIsSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Sidebar Navigation */}
       <AdminSidebar
         activeTab={activeTab}
@@ -166,6 +185,14 @@ const AdminPage = () => {
               setStoreSettings={setStoreSettings}
               sectionVisibility={sectionVisibility}
               setSectionVisibility={setSectionVisibility}
+              showToast={showToast}
+            />
+          )}
+
+          {activeTab === 'company' && (
+            <CompanySettings
+              storeSettings={storeSettings}
+              setStoreSettings={setStoreSettings}
               showToast={showToast}
             />
           )}

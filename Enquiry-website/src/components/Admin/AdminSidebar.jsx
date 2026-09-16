@@ -3,6 +3,7 @@ import {
   FiGrid,
   FiHome,
   FiPackage,
+  FiBriefcase,
   FiX,
   FiChevronLeft,
   FiChevronRight
@@ -20,6 +21,7 @@ const AdminSidebar = ({
   const navItems = [
     { id: 'overview', label: 'Dashboard Overview', icon: FiGrid },
     { id: 'homepage', label: 'Homepage Settings', icon: FiHome },
+    { id: 'company', label: 'Company Settings', icon: FiBriefcase },
     { id: 'product', label: 'Product Management', icon: FiPackage }
   ]
 

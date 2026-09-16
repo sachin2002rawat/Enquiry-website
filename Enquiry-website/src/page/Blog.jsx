@@ -7,6 +7,7 @@ import ScrollReveal from '../components/ScrollReveal'
 
 const Blog = () => {
   return (
+    
     <div className="blog-page">
       {/* Existing Header/Navbar */}
       <ProductNavbar />

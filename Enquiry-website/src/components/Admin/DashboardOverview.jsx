@@ -5,7 +5,8 @@ import {
   FiSliders,
   FiCheckCircle,
   FiArrowRight,
-  FiGrid
+  FiGrid,
+  FiBriefcase
 } from 'react-icons/fi'
 import KpiDetailsModal from './KpiDetailsModal'
 
@@ -94,11 +95,11 @@ const DashboardOverview = ({
               <FiGrid />
             </div>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--admin-text-main)', margin: 0, letterSpacing: '-0.02em' }}>
+              <div className="card-title-row">
+                <h3 className="card-title">
                   Quick Management Modules
                 </h3>
-                <span className="live-count-badge" style={{ backgroundColor: '#EEF2FF', color: '#4F46E5', border: '1px solid #C7D2FE' }}>
+                <span className="live-count-badge">
                   2 Modules
                 </span>
               </div>
@@ -110,7 +111,7 @@ const DashboardOverview = ({
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginBottom: '32px' }}>
+      <div className="admin-modules-grid">
         {/* Module 1: Homepage Settings */}
         <div
           className="admin-card interactive-module-card"
@@ -188,6 +189,46 @@ const DashboardOverview = ({
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#059669', fontWeight: 600, fontSize: '0.9rem' }}>
             Open Product Management <FiArrowRight className="module-arrow-icon" />
+          </div>
+        </div>
+
+        {/* Module 3: Company Settings */}
+        <div
+          className="admin-card interactive-module-card"
+          style={{ marginBottom: 0, cursor: 'pointer' }}
+          onClick={() => setActiveTab('company')}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '14px' }}>
+            <div
+              className="module-icon-box"
+              style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '14px',
+                background: 'rgba(245, 158, 11, 0.1)',
+                color: '#D97706',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.45rem'
+              }}
+            >
+              <FiBriefcase />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--admin-text-main)', margin: 0 }}>
+                Company Settings
+              </h3>
+              <span style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)' }}>
+                About Page & Brand Profile
+              </span>
+            </div>
+          </div>
+          <p style={{ color: 'var(--admin-text-muted)', fontSize: '0.88rem', lineHeight: 1.5, marginBottom: '20px' }}>
+            Control About Page hero title, trust milestone stats, story text, team image, mission statement, and vision.
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#D97706', fontWeight: 600, fontSize: '0.9rem' }}>
+            Open Company Settings <FiArrowRight className="module-arrow-icon" />
           </div>
         </div>
       </div>

@@ -16,13 +16,48 @@ import AboutEnquiryCompany from './page/AboutEnquiryCompany'
 import WhatsAppButton from './components/Product/WhatsAppButton'
 import AdminPage from './page/AdminPage'
 
+const RootHomeRoute = () => {
+  const [activeHome, setActiveHome] = React.useState(() => {
+    try {
+      const saved = localStorage.getItem('enquiry_admin_store_settings')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        return parsed.activeHomepage || 'home1'
+      }
+    } catch {
+      // fallback
+    }
+    return 'home1'
+  })
+
+  React.useEffect(() => {
+    const handleStorageChange = () => {
+      try {
+        const saved = localStorage.getItem('enquiry_admin_store_settings')
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          setActiveHome(parsed.activeHomepage || 'home1')
+        }
+      } catch {
+        // fallback
+      }
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    return () => window.removeEventListener('storage', handleStorageChange)
+  }, [])
+
+  return activeHome === 'home2' ? <Home2 /> : <Home />
+}
+
 const AppContent = () => {
   useScrollReveal()
 
   return (
     <>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<RootHomeRoute />} />
+        <Route path="/home1" element={<Home />} />
         <Route path="/home2" element={<Home2 />} />
         <Route path="/about" element={<AboutEnquiryCompany />} />
         <Route path="/about-company" element={<AboutEnquiryCompany />} />

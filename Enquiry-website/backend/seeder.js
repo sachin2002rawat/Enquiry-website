@@ -1,3 +1,6 @@
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 import Product from './models/Product.js'
@@ -5,15 +8,22 @@ import CompanySettings from './models/CompanySettings.js'
 import HeroSlide from './models/HeroSlide.js'
 import connectDB from './config/db.js'
 
-// Import default JSON data
-import defaultProducts from '../src/ProductsData.json' assert { type: 'json' }
-import defaultHeroSlides from '../src/HeroImage.json' assert { type: 'json' }
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 dotenv.config()
-connectDB()
+
+// Safely load JSON files
+const productsJsonPath = path.join(__dirname, '../frontend/src/ProductsData.json')
+const heroSlidesJsonPath = path.join(__dirname, '../frontend/src/HeroImage.json')
+
+const defaultProducts = JSON.parse(fs.readFileSync(productsJsonPath, 'utf-8'))
+const defaultHeroSlides = JSON.parse(fs.readFileSync(heroSlidesJsonPath, 'utf-8'))
 
 const importData = async () => {
   try {
+    await connectDB()
+
     // Clear existing collections
     await Product.deleteMany({})
     await CompanySettings.deleteMany({})
@@ -22,10 +32,10 @@ const importData = async () => {
     console.log('🧹 Existing collections cleared...')
 
     // Seed Products
-    const formattedProducts = defaultProducts.map((p) => ({
+    const formattedProducts = defaultProducts.map((p, index) => ({
       name: p.name,
       category: p.category || 'PURE SPICES',
-      sku: p.sku || `SKU-${p.id}`,
+      sku: p.sku || `SKU-${p.id || index + 1}`,
       weight: p.weight || '100g',
       netWeight: p.netWeight || '100g / Pack',
       minOrderQty: p.minOrderQty || '50 Units',
@@ -34,7 +44,7 @@ const importData = async () => {
       description: p.description || '',
       rating: p.rating || 4.8,
       reviewsCount: p.reviewsCount || 15,
-      slug: p.slug || (p.name ? p.name.toLowerCase().replace(/\s+/g, '-') : `product-${p.id}`)
+      slug: p.slug || (p.name ? p.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '') : `product-${p.id || index + 1}`)
     }))
 
     await Product.insertMany(formattedProducts)
@@ -42,10 +52,11 @@ const importData = async () => {
 
     // Seed Hero Slides
     const formattedSlides = defaultHeroSlides.map((s) => ({
-      image: s.image,
+      image: s.url || s.image || '',
+      url: s.url || s.image || '',
       title: s.title,
       subtitleBadge: s.subtitleBadge || 'PREMIUM QUALITY',
-      description: s.description || '',
+      description: s.subtitle || s.description || '',
       ctaText: s.ctaText || 'Explore Catalogue',
       ctaLink: s.ctaLink || '/product'
     }))

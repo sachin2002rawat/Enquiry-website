@@ -6,6 +6,10 @@ const heroSlideSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    url: {
+      type: String,
+      default: ''
+    },
     title: {
       type: String,
       required: true

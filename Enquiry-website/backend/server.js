@@ -8,6 +8,7 @@ import productRoutes from './routes/productRoutes.js'
 import settingsRoutes from './routes/settingsRoutes.js'
 import enquiryRoutes from './routes/enquiryRoutes.js'
 import heroRoutes from './routes/heroRoutes.js'
+import uploadRoutes from './routes/uploadRoutes.js'
 
 // Load Environment Variables
 dotenv.config()
@@ -36,6 +37,7 @@ app.use('/api/products', productRoutes)
 app.use('/api/settings', settingsRoutes)
 app.use('/api/enquiries', enquiryRoutes)
 app.use('/api/hero-slides', heroRoutes)
+app.use('/api/upload', uploadRoutes)
 
 // 404 Route Handler
 app.use((req, res, next) => {

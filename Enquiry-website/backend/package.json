@@ -10,15 +10,24 @@
     "seed": "node seeder.js"
   },
   "dependencies": {
+    "cloudinary": "^1.41.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "mongoose": "^8.3.1"
+    "mongoose": "^8.3.1",
+    "multer": "^2.4.0",
+    "multer-storage-cloudinary": "^4.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
   },
-  "keywords": ["mern", "express", "mongodb", "node", "enquiry-website"],
+  "keywords": [
+    "mern",
+    "express",
+    "mongodb",
+    "node",
+    "enquiry-website"
+  ],
   "author": "QuickEnquiry Team",
   "license": "ISC"
 }

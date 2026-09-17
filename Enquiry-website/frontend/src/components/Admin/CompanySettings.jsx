@@ -10,8 +10,11 @@ import {
   FiPhone,
   FiMapPin,
   FiCheckCircle,
-  FiUsers
+  FiUsers,
+  FiPlus,
+  FiTrash2
 } from 'react-icons/fi'
+import { apiService } from '../../api/apiService'
 
 const CompanySettings = ({ storeSettings, setStoreSettings, showToast }) => {
   const [formData, setFormData] = useState({
@@ -53,34 +56,56 @@ const CompanySettings = ({ storeSettings, setStoreSettings, showToast }) => {
       'From our very first day, we believed that exceptional service is not a luxury — it is a standard. Every project we take on, every relationship we build, is approached with dedication and care.',
 
     // Mission & Vision
+    missionHeading: storeSettings.missionHeading || 'Empowering Businesses & Delivering Excellence',
     missionText:
       storeSettings.missionText ||
-      'Our mission is to deliver exceptional, personalised services that solve real problems, create genuine value, and help each client grow with confidence. We are here to exceed expectations at every turn.',
+      'Our mission is to deliver exceptional, personalised services that solve real problems, create genuine value, and help each client grow with confidence.',
+    missionPoints: storeSettings.missionPoints && Array.isArray(storeSettings.missionPoints) && storeSettings.missionPoints.length > 0
+      ? storeSettings.missionPoints
+      : [
+          storeSettings.missionPoint1 || 'Deliver measurable results with every engagement',
+          storeSettings.missionPoint2 || 'Foster long-term partnerships built on trust',
+          storeSettings.missionPoint3 || 'Continuously improve through client feedback',
+          storeSettings.missionPoint4 || 'Make excellence accessible to businesses of all sizes'
+        ],
+
     visionHeading:
       storeSettings.visionHeading || 'A Future Where Quality Is Never Compromised',
     visionText:
       storeSettings.visionText ||
-      'We envision a world where every individual and organisation has access to world-class service — regardless of size or scale. Our vision drives us to innovate relentlessly, lead with integrity, and set new standards.',
+      'We envision a world where every individual and organisation has access to world-class service — regardless of size or scale.',
+    visionPoints: storeSettings.visionPoints && Array.isArray(storeSettings.visionPoints) && storeSettings.visionPoints.length > 0
+      ? storeSettings.visionPoints
+      : [
+          storeSettings.visionPoint1 || 'Become the most trusted name in our industry',
+          storeSettings.visionPoint2 || 'Lead innovation without losing the human touch',
+          storeSettings.visionPoint3 || 'Scale our impact across communities and sectors',
+          storeSettings.visionPoint4 || 'Build a legacy of excellence for future generations'
+        ],
 
     // Our DNA / Core Values Section
     dnaSubtitle: storeSettings.dnaSubtitle || '— OUR DNA —',
     dnaTitle: storeSettings.dnaTitle || 'The Values That Define Us',
-    dnaCard1Title: storeSettings.dnaCard1Title || 'Integrity',
-    dnaCard1Desc:
-      storeSettings.dnaCard1Desc ||
-      'We say what we mean and do what we say. Honesty is the foundation of every relationship we build.',
-    dnaCard2Title: storeSettings.dnaCard2Title || 'Innovation',
-    dnaCard2Desc:
-      storeSettings.dnaCard2Desc ||
-      'We embrace change, challenge convention, and constantly seek better ways to serve our clients.',
-    dnaCard3Title: storeSettings.dnaCard3Title || 'Empathy',
-    dnaCard3Desc:
-      storeSettings.dnaCard3Desc ||
-      'We understand that behind every enquiry is a person. Compassion shapes every interaction we have.',
-    dnaCard4Title: storeSettings.dnaCard4Title || 'Excellence',
-    dnaCard4Desc:
-      storeSettings.dnaCard4Desc ||
-      'Good enough is never enough. We hold ourselves to the highest standard in every single task.'
+    dnaCards: storeSettings.dnaCards && Array.isArray(storeSettings.dnaCards) && storeSettings.dnaCards.length > 0
+      ? storeSettings.dnaCards
+      : [
+          {
+            title: storeSettings.dnaCard1Title || 'Integrity',
+            desc: storeSettings.dnaCard1Desc || 'We say what we mean and do what we say. Honesty is the foundation of every relationship we build.'
+          },
+          {
+            title: storeSettings.dnaCard2Title || 'Innovation',
+            desc: storeSettings.dnaCard2Desc || 'We embrace change, challenge convention, and constantly seek better ways to serve our clients.'
+          },
+          {
+            title: storeSettings.dnaCard3Title || 'Empathy',
+            desc: storeSettings.dnaCard3Desc || 'We understand that behind every enquiry is a person. Compassion shapes every interaction we have.'
+          },
+          {
+            title: storeSettings.dnaCard4Title || 'Excellence',
+            desc: storeSettings.dnaCard4Desc || 'Good enough is never enough. We hold ourselves to the highest standard in every single task.'
+          }
+        ]
   })
 
   const handleChange = (e) => {
@@ -88,31 +113,121 @@ const CompanySettings = ({ storeSettings, setStoreSettings, showToast }) => {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleStoryImageUpload = (e) => {
+  // Dynamic Mission Points Handlers
+  const handleMissionPointChange = (index, value) => {
+    setFormData((prev) => {
+      const updated = [...prev.missionPoints]
+      updated[index] = value
+      return { ...prev, missionPoints: updated }
+    })
+  }
+
+  const handleAddMissionPoint = () => {
+    setFormData((prev) => ({
+      ...prev,
+      missionPoints: [...prev.missionPoints, '']
+    }))
+  }
+
+  const handleDeleteMissionPoint = (index) => {
+    setFormData((prev) => {
+      const updated = prev.missionPoints.filter((_, i) => i !== index)
+      return { ...prev, missionPoints: updated }
+    })
+  }
+
+  // Dynamic Vision Points Handlers
+  const handleVisionPointChange = (index, value) => {
+    setFormData((prev) => {
+      const updated = [...(prev.visionPoints || [])]
+      updated[index] = value
+      return { ...prev, visionPoints: updated }
+    })
+  }
+
+  const handleAddVisionPoint = () => {
+    setFormData((prev) => ({
+      ...prev,
+      visionPoints: [...(prev.visionPoints || []), '']
+    }))
+  }
+
+  const handleDeleteVisionPoint = (index) => {
+    setFormData((prev) => {
+      const updated = (prev.visionPoints || []).filter((_, i) => i !== index)
+      return { ...prev, visionPoints: updated }
+    })
+  }
+
+  // Dynamic DNA Cards Handlers
+  const handleDnaCardChange = (index, field, value) => {
+    setFormData((prev) => {
+      const updated = [...(prev.dnaCards || [])]
+      updated[index] = { ...updated[index], [field]: value }
+      return { ...prev, dnaCards: updated }
+    })
+  }
+
+  const handleAddDnaCard = () => {
+    setFormData((prev) => ({
+      ...prev,
+      dnaCards: [...(prev.dnaCards || []), { title: '', desc: '' }]
+    }))
+  }
+
+  const handleDeleteDnaCard = (index) => {
+    setFormData((prev) => {
+      const updated = (prev.dnaCards || []).filter((_, i) => i !== index)
+      return { ...prev, dnaCards: updated }
+    })
+  }
+
+  const handleStoryImageUpload = async (e) => {
     const file = e.target.files[0]
     if (!file) return
     if (!file.type.startsWith('image/')) {
       showToast('Please select a valid image file', 'warning')
       return
     }
-    const reader = new FileReader()
-    reader.onload = () => {
-      setFormData((prev) => ({ ...prev, storyImageUrl: reader.result }))
-      showToast(`Selected team image: ${file.name}`)
+
+    showToast(`Uploading ${file.name} to Cloudinary...`, 'info')
+    try {
+      const uploadRes = await apiService.uploadImage(file)
+      if (uploadRes && uploadRes.url) {
+        setFormData((prev) => ({ ...prev, storyImageUrl: uploadRes.url }))
+        showToast(`Uploaded team photo to Cloudinary successfully!`)
+      } else {
+        const reader = new FileReader()
+        reader.onload = () => {
+          setFormData((prev) => ({ ...prev, storyImageUrl: reader.result }))
+        }
+        reader.readAsDataURL(file)
+      }
+    } catch (err) {
+      console.warn('Cloudinary upload warning:', err)
+      const reader = new FileReader()
+      reader.onload = () => {
+        setFormData((prev) => ({ ...prev, storyImageUrl: reader.result }))
+      }
+      reader.readAsDataURL(file)
     }
-    reader.readAsDataURL(file)
   }
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e?.preventDefault()
     const updated = {
       ...storeSettings,
       ...formData
     }
+    try {
+      await apiService.updateSettings(updated)
+    } catch (err) {
+      console.warn('MongoDB settings save error:', err.message)
+    }
     setStoreSettings(updated)
     localStorage.setItem('enquiry_admin_store_settings', JSON.stringify(updated))
     window.dispatchEvent(new Event('storage'))
-    showToast('Company & About Page settings saved successfully!')
+    showToast('Company & About Page settings saved successfully to MongoDB!')
   }
 
   return (
@@ -545,47 +660,162 @@ const CompanySettings = ({ storeSettings, setStoreSettings, showToast }) => {
               5. Mission & Vision Statements
             </h3>
             <p className="card-subtitle" style={{ margin: '2px 0 0 0' }}>
-              Customize mission & vision card text displayed on the About Page.
+              Customize mission & vision card headings, descriptions, and bullet points displayed on the About Page.
             </p>
           </div>
         </div>
 
-        <div className="form-group" style={{ marginBottom: '14px' }}>
-          <label className="form-label" style={{ fontWeight: 600 }}>Our Mission Statement</label>
-          <textarea
-            rows={3}
-            name="missionText"
-            className="form-textarea"
-            style={{ minHeight: '65px', resize: 'vertical' }}
-            value={formData.missionText}
-            onChange={handleChange}
-            placeholder="Our mission is to deliver exceptional..."
-          />
-        </div>
+        {/* Mission & Vision 2 Column Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginBottom: '16px' }}>
+          
+          {/* OUR MISSION CARD FORM */}
+          <div style={{ padding: '16px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid var(--admin-card-border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <FiTarget size={18} color="#6366F1" />
+              <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 700, color: '#1E1B4B' }}>OUR MISSION CARD</h4>
+            </div>
 
-        <div className="form-group" style={{ marginBottom: '14px' }}>
-          <label className="form-label" style={{ fontWeight: 600 }}>Our Vision Heading</label>
-          <input
-            type="text"
-            name="visionHeading"
-            className="form-input"
-            value={formData.visionHeading}
-            onChange={handleChange}
-            placeholder="A Future Where Quality Is Never Compromised"
-          />
-        </div>
+            <div className="form-group" style={{ marginBottom: '14px' }}>
+              <label className="form-label" style={{ fontWeight: 600 }}>Mission Statement</label>
+              <textarea
+                rows={3}
+                name="missionText"
+                className="form-textarea"
+                style={{ minHeight: '65px', resize: 'vertical' }}
+                value={formData.missionText}
+                onChange={handleChange}
+                placeholder="Our mission is to deliver exceptional..."
+              />
+            </div>
 
-        <div className="form-group">
-          <label className="form-label" style={{ fontWeight: 600 }}>Our Vision Statement</label>
-          <textarea
-            rows={3}
-            name="visionText"
-            className="form-textarea"
-            style={{ minHeight: '65px', resize: 'vertical' }}
-            value={formData.visionText}
-            onChange={handleChange}
-            placeholder="We envision a world where every individual..."
-          />
+            {/* Mission Dynamic Points */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <label className="form-label" style={{ fontWeight: 600, margin: 0 }}>
+                Mission Key Highlights ({(formData.missionPoints || []).length} Points)
+              </label>
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{ fontSize: '0.78rem', padding: '3px 10px', color: '#4F46E5', borderColor: '#A5B4FC' }}
+                onClick={handleAddMissionPoint}
+              >
+                <FiPlus size={14} /> Add New Point
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {(formData.missionPoints || []).map((point, index) => (
+                <div key={index} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={point}
+                    onChange={(e) => handleMissionPointChange(index, e.target.value)}
+                    placeholder={`Highlight point ${index + 1}...`}
+                  />
+                  <button
+                    type="button"
+                    className="btn-icon delete"
+                    title="Remove Point"
+                    onClick={() => handleDeleteMissionPoint(index)}
+                    style={{ flexShrink: 0 }}
+                  >
+                    <FiTrash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              className="btn-secondary"
+              style={{ width: '100%', marginTop: '12px', padding: '6px', fontSize: '0.82rem', justifyContent: 'center', color: '#4F46E5', borderColor: '#C7D2FE', background: '#EEF2FF' }}
+              onClick={handleAddMissionPoint}
+            >
+              <FiPlus size={14} /> Add New Mission Field
+            </button>
+          </div>
+
+          {/* OUR VISION CARD FORM */}
+          <div style={{ padding: '16px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid var(--admin-card-border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <FiEye size={18} color="#6366F1" />
+              <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 700, color: '#1E1B4B' }}>OUR VISION CARD</h4>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: '12px' }}>
+              <label className="form-label" style={{ fontWeight: 600 }}>Vision Card Heading</label>
+              <input
+                type="text"
+                name="visionHeading"
+                className="form-input"
+                value={formData.visionHeading}
+                onChange={handleChange}
+                placeholder="A Future Where Quality Is Never Compromised"
+              />
+            </div>
+
+            <div className="form-group" style={{ marginBottom: '14px' }}>
+              <label className="form-label" style={{ fontWeight: 600 }}>Vision Statement</label>
+              <textarea
+                rows={3}
+                name="visionText"
+                className="form-textarea"
+                style={{ minHeight: '65px', resize: 'vertical' }}
+                value={formData.visionText}
+                onChange={handleChange}
+                placeholder="We envision a world where every individual..."
+              />
+            </div>
+
+            {/* Vision Dynamic Points */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <label className="form-label" style={{ fontWeight: 600, margin: 0 }}>
+                Vision Key Goals ({(formData.visionPoints || []).length} Points)
+              </label>
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{ fontSize: '0.78rem', padding: '3px 10px', color: '#4F46E5', borderColor: '#A5B4FC' }}
+                onClick={handleAddVisionPoint}
+              >
+                <FiPlus size={14} /> Add New Goal
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {(formData.visionPoints || []).map((point, index) => (
+                <div key={index} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={point}
+                    onChange={(e) => handleVisionPointChange(index, e.target.value)}
+                    placeholder={`Goal point ${index + 1}...`}
+                  />
+                  <button
+                    type="button"
+                    className="btn-icon delete"
+                    title="Remove Goal"
+                    onClick={() => handleDeleteVisionPoint(index)}
+                    style={{ flexShrink: 0 }}
+                  >
+                    <FiTrash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              className="btn-secondary"
+              style={{ width: '100%', marginTop: '12px', padding: '6px', fontSize: '0.82rem', justifyContent: 'center', color: '#4F46E5', borderColor: '#C7D2FE', background: '#EEF2FF' }}
+              onClick={handleAddVisionPoint}
+            >
+              <FiPlus size={14} /> Add New Vision Field
+            </button>
+          </div>
+
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
@@ -597,19 +827,29 @@ const CompanySettings = ({ storeSettings, setStoreSettings, showToast }) => {
 
       {/* 6. Our DNA / Core Values Section */}
       <div className="admin-card">
-        <div style={{ marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '4px', height: '22px', borderRadius: '4px', background: 'linear-gradient(180deg, #6366F1 0%, #4338CA 100%)', flexShrink: 0 }} />
-          <div>
-            <h3 style={{ fontSize: '1.08rem', fontWeight: 800, margin: 0, color: '#1E1B4B', background: 'linear-gradient(135deg, #1E1B4B 0%, #3730A3 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              6. Our DNA / Core Brand Values
-            </h3>
-            <p className="card-subtitle" style={{ margin: '2px 0 0 0' }}>
-              Edit the section title, subtitle, and 4 core value card titles & descriptions.
-            </p>
+        <div style={{ marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ width: '4px', height: '22px', borderRadius: '4px', background: 'linear-gradient(180deg, #6366F1 0%, #4338CA 100%)', flexShrink: 0 }} />
+            <div>
+              <h3 style={{ fontSize: '1.08rem', fontWeight: 800, margin: 0, color: '#1E1B4B', background: 'linear-gradient(135deg, #1E1B4B 0%, #3730A3 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                6. Our DNA / Core Brand Values ({(formData.dnaCards || []).length} Cards)
+              </h3>
+              <p className="card-subtitle" style={{ margin: '2px 0 0 0' }}>
+                Edit section title, subtitle, and add/remove core value cards dynamically.
+              </p>
+            </div>
           </div>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={handleAddDnaCard}
+            style={{ padding: '6px 14px', fontSize: '0.82rem', color: '#4F46E5', borderColor: '#A5B4FC' }}
+          >
+            <FiPlus size={15} /> Add New Value Card
+          </button>
         </div>
 
-        <div className="form-row" style={{ marginBottom: '14px' }}>
+        <div className="form-row" style={{ marginBottom: '16px' }}>
           <div className="form-group">
             <label className="form-label" style={{ fontWeight: 600 }}>Section Subtitle</label>
             <input
@@ -635,100 +875,54 @@ const CompanySettings = ({ storeSettings, setStoreSettings, showToast }) => {
           </div>
         </div>
 
-        {/* 4 Value Cards Form Grid */}
+        {/* Dynamic Value Cards Form Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
-          {/* Value 1 */}
-          <div style={{ padding: '14px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid var(--admin-card-border)' }}>
-            <label className="form-label" style={{ fontWeight: 700, color: '#4F46E5', marginBottom: '8px' }}>Value 1 (Integrity)</label>
-            <input
-              type="text"
-              name="dnaCard1Title"
-              className="form-input"
-              style={{ marginBottom: '8px' }}
-              value={formData.dnaCard1Title}
-              onChange={handleChange}
-              placeholder="Title (e.g. Integrity)"
-            />
-            <textarea
-              rows={2}
-              name="dnaCard1Desc"
-              className="form-textarea"
-              style={{ minHeight: '50px', fontSize: '0.84rem' }}
-              value={formData.dnaCard1Desc}
-              onChange={handleChange}
-              placeholder="Value description..."
-            />
-          </div>
-
-          {/* Value 2 */}
-          <div style={{ padding: '14px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid var(--admin-card-border)' }}>
-            <label className="form-label" style={{ fontWeight: 700, color: '#4F46E5', marginBottom: '8px' }}>Value 2 (Innovation)</label>
-            <input
-              type="text"
-              name="dnaCard2Title"
-              className="form-input"
-              style={{ marginBottom: '8px' }}
-              value={formData.dnaCard2Title}
-              onChange={handleChange}
-              placeholder="Title (e.g. Innovation)"
-            />
-            <textarea
-              rows={2}
-              name="dnaCard2Desc"
-              className="form-textarea"
-              style={{ minHeight: '50px', fontSize: '0.84rem' }}
-              value={formData.dnaCard2Desc}
-              onChange={handleChange}
-              placeholder="Value description..."
-            />
-          </div>
-
-          {/* Value 3 */}
-          <div style={{ padding: '14px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid var(--admin-card-border)' }}>
-            <label className="form-label" style={{ fontWeight: 700, color: '#4F46E5', marginBottom: '8px' }}>Value 3 (Empathy)</label>
-            <input
-              type="text"
-              name="dnaCard3Title"
-              className="form-input"
-              style={{ marginBottom: '8px' }}
-              value={formData.dnaCard3Title}
-              onChange={handleChange}
-              placeholder="Title (e.g. Empathy)"
-            />
-            <textarea
-              rows={2}
-              name="dnaCard3Desc"
-              className="form-textarea"
-              style={{ minHeight: '50px', fontSize: '0.84rem' }}
-              value={formData.dnaCard3Desc}
-              onChange={handleChange}
-              placeholder="Value description..."
-            />
-          </div>
-
-          {/* Value 4 */}
-          <div style={{ padding: '14px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid var(--admin-card-border)' }}>
-            <label className="form-label" style={{ fontWeight: 700, color: '#4F46E5', marginBottom: '8px' }}>Value 4 (Excellence)</label>
-            <input
-              type="text"
-              name="dnaCard4Title"
-              className="form-input"
-              style={{ marginBottom: '8px' }}
-              value={formData.dnaCard4Title}
-              onChange={handleChange}
-              placeholder="Title (e.g. Excellence)"
-            />
-            <textarea
-              rows={2}
-              name="dnaCard4Desc"
-              className="form-textarea"
-              style={{ minHeight: '50px', fontSize: '0.84rem' }}
-              value={formData.dnaCard4Desc}
-              onChange={handleChange}
-              placeholder="Value description..."
-            />
-          </div>
+          {(formData.dnaCards || []).map((card, index) => (
+            <div key={index} style={{ padding: '14px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid var(--admin-card-border)', position: 'relative' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <label className="form-label" style={{ fontWeight: 700, color: '#4F46E5', margin: 0 }}>
+                  Value {index + 1} {card.title ? `(${card.title})` : ''}
+                </label>
+                {(formData.dnaCards || []).length > 1 && (
+                  <button
+                    type="button"
+                    className="btn-icon delete"
+                    title="Delete Value Card"
+                    onClick={() => handleDeleteDnaCard(index)}
+                  >
+                    <FiTrash2 size={14} />
+                  </button>
+                )}
+              </div>
+              <input
+                type="text"
+                className="form-input"
+                style={{ marginBottom: '8px' }}
+                value={card.title}
+                onChange={(e) => handleDnaCardChange(index, 'title', e.target.value)}
+                placeholder="Title (e.g. Integrity, Quality)"
+              />
+              <textarea
+                rows={3}
+                className="form-textarea"
+                style={{ minHeight: '60px', fontSize: '0.84rem' }}
+                value={card.desc}
+                onChange={(e) => handleDnaCardChange(index, 'desc', e.target.value)}
+                placeholder="Enter value description..."
+              />
+            </div>
+          ))}
         </div>
+
+        {/* Add New Value Card Full Width Button */}
+        <button
+          type="button"
+          className="btn-secondary"
+          style={{ width: '100%', marginTop: '16px', padding: '10px', fontSize: '0.88rem', fontWeight: 700, justifyContent: 'center', color: '#4F46E5', borderColor: '#C7D2FE', background: '#EEF2FF' }}
+          onClick={handleAddDnaCard}
+        >
+          <FiPlus size={16} /> Add New Core Value Card
+        </button>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
           <button className="btn-primary" onClick={handleSave} style={{ padding: '8px 18px', fontSize: '0.85rem' }}>

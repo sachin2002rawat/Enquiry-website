@@ -42,11 +42,11 @@ const ProductNavbar = () => {
 
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Home 2', path: '/home2' },
     { name: 'About Company', path: '/about-company' },
     { name: 'Enquiry', path: '#' },
     { name: 'Blog', path: '/blog' },
     { name: 'Contact Us', path: '/contact' },
+    { name: 'Admin', path: '/admin' }
   ]
 
   const isLinkActive = (item) => {

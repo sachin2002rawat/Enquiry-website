@@ -7,6 +7,7 @@ import CompanySettings from '../components/Admin/CompanySettings'
 import ProductManagement from '../components/Admin/ProductManagement'
 import defaultHeroImages from '../HeroImage.json'
 import defaultProducts from '../ProductsData.json'
+import { apiService } from '../api/apiService'
 import { FiCheckCircle, FiAlertCircle } from 'react-icons/fi'
 import './AdminPage.css'
 
@@ -42,6 +43,29 @@ const AdminPage = () => {
     }
   })
 
+  // Fetch initial data from MongoDB API if available
+  useEffect(() => {
+    const fetchBackendData = async () => {
+      try {
+        const dbProducts = await apiService.getProducts()
+        if (dbProducts && Array.isArray(dbProducts) && dbProducts.length > 0) {
+          setProducts(dbProducts)
+        }
+        const dbSettings = await apiService.getSettings()
+        if (dbSettings) {
+          setStoreSettings((prev) => ({
+            ...prev,
+            ...dbSettings,
+            activeHomepage: dbSettings.activeHomepage || prev.activeHomepage || 'home1'
+          }))
+        }
+      } catch (err) {
+        console.warn('[AdminPage] MongoDB API sync fallback to local storage:', err.message)
+      }
+    }
+    fetchBackendData()
+  }, [])
+
   // 3. General Store Settings State
   const [storeSettings, setStoreSettings] = useState(() => {
     try {
@@ -49,6 +73,7 @@ const AdminPage = () => {
       return saved
         ? JSON.parse(saved)
         : {
+            activeHomepage: 'home1',
             topbarBgColor: '#E0F2FE',
             topbarTextColor: '#1E293B',
             announcementText: 'Free Shipping on orders over ₹499 | Premium Stone Ground Spices',
@@ -62,6 +87,7 @@ const AdminPage = () => {
           }
     } catch {
       return {
+        activeHomepage: 'home1',
         topbarBgColor: '#E0F2FE',
         topbarTextColor: '#1E293B',
         announcementText: 'Free Shipping on orders over ₹499 | Premium Stone Ground Spices',

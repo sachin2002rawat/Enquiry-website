@@ -60,14 +60,33 @@ const Home = () => {
     }
   })
 
+  const isBeautySlideList = (slides) => {
+    if (!Array.isArray(slides) || slides.length === 0) return false
+    return slides.some(s => s && s.title && (
+      s.title.includes('Vitamin C') ||
+      s.title.includes('Rosewater') ||
+      s.title.includes('Argan') ||
+      s.title.includes('Lipstick') ||
+      s.title.includes('Detox Mask') ||
+      s.title.includes('Beauty') ||
+      s.title.includes('Elixir')
+    ))
+  }
+
   // Read admin hero slides if customized
   const [heroSlides, setHeroSlides] = useState(() => {
     try {
       const saved = localStorage.getItem(LOCAL_KEY_HERO)
-      return saved ? JSON.parse(saved) : null
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed) && !isBeautySlideList(parsed)) {
+          return parsed
+        }
+      }
     } catch {
-      return null
+      // fallback
     }
+    return defaultHeroImages
   })
 
   // Sync state in real time with localStorage changes from Admin tab
@@ -78,7 +97,12 @@ const Home = () => {
         if (savedVis) setVisibility(JSON.parse(savedVis))
 
         const savedHero = localStorage.getItem(LOCAL_KEY_HERO)
-        if (savedHero) setHeroSlides(JSON.parse(savedHero))
+        if (savedHero) {
+          const parsed = JSON.parse(savedHero)
+          if (Array.isArray(parsed)) {
+            setHeroSlides(isBeautySlideList(parsed) ? defaultHeroImages : parsed)
+          }
+        }
       } catch (e) {
         // ignore
       }

@@ -51,8 +51,21 @@ app.use((err, req, res, next) => {
   })
 })
 
-const PORT = process.env.PORT || 5000
+const DEFAULT_PORT = process.env.PORT || 5000
 
-app.listen(PORT, () => {
-  console.log(`🚀 [Server] Node.js Express server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`)
-})
+const startServer = (port) => {
+  const server = app
+    .listen(port, () => {
+      console.log(`🚀 [Server] Node.js Express server running on port ${port} in ${process.env.NODE_ENV || 'development'} mode`)
+    })
+    .on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.warn(`⚠️ [Warning] Port ${port} is already in use. Trying port ${Number(port) + 1}...`)
+        startServer(Number(port) + 1)
+      } else {
+        console.error('❌ Server startup error:', err)
+      }
+    })
+}
+
+startServer(DEFAULT_PORT)

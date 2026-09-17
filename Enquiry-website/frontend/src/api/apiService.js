@@ -95,6 +95,26 @@ export const apiService = {
       method: 'PUT',
       body: JSON.stringify({ slides })
     })
+  },
+
+  // Image Upload API (Cloudinary + Multer)
+  uploadImage: async (file) => {
+    try {
+      const formData = new FormData()
+      formData.append('image', file)
+
+      const res = await fetch(`${API_BASE_URL}/upload`, {
+        method: 'POST',
+        body: formData
+      })
+      if (!res.ok) {
+        throw new Error(`Upload failed: ${res.statusText}`)
+      }
+      return await res.json()
+    } catch (error) {
+      console.warn('[apiService] Cloudinary upload warning:', error.message)
+      return null
+    }
   }
 }
 

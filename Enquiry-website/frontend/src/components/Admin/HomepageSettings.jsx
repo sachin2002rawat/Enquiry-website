@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
 import { createPortal } from 'react-dom'
+import { apiService } from '../../api/apiService'
+import defaultHeroImages from '../../HeroImage.json'
+import beautyHeroImages from '../../BeautyHeroImage.json'
 import {
   FiSliders,
   FiPlus,
@@ -320,6 +323,24 @@ const HomepageSettings = ({
     }
   }
 
+  const handleSelectHomepage = (homepageKey) => {
+    const updated = { ...storeSettings, activeHomepage: homepageKey }
+    setStoreSettings(updated)
+    localStorage.setItem('enquiry_admin_store_settings', JSON.stringify(updated))
+
+    // Automatically switch active hero banner carousel images to match selected theme (Masala vs Beauty)
+    const themeSlides = homepageKey === 'home2' ? beautyHeroImages : defaultHeroImages
+    setHeroSlides(themeSlides)
+    localStorage.setItem('enquiry_admin_hero_slides', JSON.stringify(themeSlides))
+
+    window.dispatchEvent(new Event('storage'))
+    window.dispatchEvent(new CustomEvent('homepageChanged', { detail: homepageKey }))
+    apiService.updateSettings(updated)
+    apiService.updateHeroSlides(themeSlides)
+    const label = homepageKey === 'home2' ? 'Homepage 2 (Beauty Products)' : 'Homepage 1 (Masala Products)'
+    showToast(`Set ${label} as default active homepage!`)
+  }
+
   return (
     <div className="homepage-settings-container">
 
@@ -344,13 +365,7 @@ const HomepageSettings = ({
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
           {/* Option 1: Homepage 1 */}
           <div
-            onClick={() => {
-              const updated = { ...storeSettings, activeHomepage: 'home1' }
-              setStoreSettings(updated)
-              localStorage.setItem('enquiry_admin_store_settings', JSON.stringify(updated))
-              window.dispatchEvent(new Event('storage'))
-              showToast('Set Homepage 1 (Masala Products) as default homepage!')
-            }}
+            onClick={() => handleSelectHomepage('home1')}
             style={{
               padding: '18px 20px',
               borderRadius: '14px',
@@ -367,7 +382,7 @@ const HomepageSettings = ({
                   type="radio"
                   name="activeHomepage"
                   checked={(storeSettings.activeHomepage || 'home1') === 'home1'}
-                  onChange={() => {}}
+                  onChange={() => handleSelectHomepage('home1')}
                   style={{ width: '18px', height: '18px', accentColor: '#6366F1', cursor: 'pointer' }}
                 />
                 <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--admin-text-main)' }}>
@@ -387,13 +402,7 @@ const HomepageSettings = ({
 
           {/* Option 2: Homepage 2 */}
           <div
-            onClick={() => {
-              const updated = { ...storeSettings, activeHomepage: 'home2' }
-              setStoreSettings(updated)
-              localStorage.setItem('enquiry_admin_store_settings', JSON.stringify(updated))
-              window.dispatchEvent(new Event('storage'))
-              showToast('Set Homepage 2 (Beauty Products) as default homepage!')
-            }}
+            onClick={() => handleSelectHomepage('home2')}
             style={{
               padding: '18px 20px',
               borderRadius: '14px',
@@ -410,7 +419,7 @@ const HomepageSettings = ({
                   type="radio"
                   name="activeHomepage"
                   checked={(storeSettings.activeHomepage || 'home1') === 'home2'}
-                  onChange={() => {}}
+                  onChange={() => handleSelectHomepage('home2')}
                   style={{ width: '18px', height: '18px', accentColor: '#6366F1', cursor: 'pointer' }}
                 />
                 <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--admin-text-main)' }}>

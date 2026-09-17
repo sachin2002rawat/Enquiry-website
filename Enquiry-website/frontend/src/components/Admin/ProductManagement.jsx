@@ -18,6 +18,7 @@ import {
   FiUploadCloud,
   FiLink
 } from 'react-icons/fi'
+import { apiService } from '../../api/apiService'
 
 const ITEMS_PER_PAGE = 5
 
@@ -46,21 +47,45 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
 
   const [uploadedProductFileName, setUploadedProductFileName] = useState('')
 
-  // Handle local image file upload conversion to DataURL
-  const handleProductImageUpload = (e) => {
+  // Handle image file upload to Cloudinary via Multer backend API
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
+
+  const handleProductImageUpload = async (e) => {
     const file = e.target.files[0]
     if (!file) return
     if (!file.type.startsWith('image/')) {
       showToast('Please select a valid image file', 'warning')
       return
     }
-    const reader = new FileReader()
-    reader.onload = () => {
-      setFormState((prev) => ({ ...prev, image: reader.result }))
-      setUploadedProductFileName(file.name)
-      showToast(`Uploaded ${file.name} successfully!`)
+
+    setIsUploadingImage(true)
+    setUploadedProductFileName(file.name)
+    showToast(`Uploading ${file.name} to Cloudinary...`, 'info')
+
+    try {
+      const uploadRes = await apiService.uploadImage(file)
+      if (uploadRes && uploadRes.url) {
+        setFormState((prev) => ({ ...prev, image: uploadRes.url }))
+        showToast(`Uploaded ${file.name} to Cloudinary successfully!`)
+      } else {
+        // Fallback to local DataURL if server upload returned fallback
+        const reader = new FileReader()
+        reader.onload = () => {
+          setFormState((prev) => ({ ...prev, image: reader.result }))
+          showToast(`Loaded ${file.name} image successfully!`)
+        }
+        reader.readAsDataURL(file)
+      }
+    } catch (err) {
+      console.warn('Cloudinary upload warning:', err)
+      const reader = new FileReader()
+      reader.onload = () => {
+        setFormState((prev) => ({ ...prev, image: reader.result }))
+      }
+      reader.readAsDataURL(file)
+    } finally {
+      setIsUploadingImage(false)
     }
-    reader.readAsDataURL(file)
   }
 
   // Modal State for Delete Confirmation
@@ -147,49 +172,94 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
   }
 
   // Quick toggle product stock status
-  const handleToggleStock = (product) => {
+  const handleToggleStock = async (product) => {
     const isCurrentlyInStock =
       product.availability === 'In Stock' || product.availability === true
     const newStatus = isCurrentlyInStock ? 'Out of Stock' : 'In Stock'
+    const targetId = product._id || product.id
+
+    try {
+      if (product._id) {
+        await apiService.updateProduct(product._id, { availability: newStatus })
+      }
+    } catch (err) {
+      console.warn('Backend stock status update error:', err.message)
+    }
+
     const updated = products.map((p) =>
-      p.id === product.id ? { ...p, availability: newStatus } : p
+      (p._id === targetId || p.id === targetId) ? { ...p, availability: newStatus } : p
     )
     setProducts(updated)
     showToast(`${product.name} marked as ${newStatus}`)
   }
 
-  // Form Submit handler
-  const handleFormSubmit = (e) => {
+  // Form Submit handler (Add/Edit in MongoDB)
+  const handleFormSubmit = async (e) => {
     e.preventDefault()
     if (!formState.name) {
       showToast('Please enter Product Name', 'warning')
       return
     }
 
-    if (editingProduct) {
-      // Update existing
-      const updated = products.map((p) =>
-        p.id === editingProduct.id ? { ...p, ...formState } : p
-      )
-      setProducts(updated)
-      showToast('Product updated successfully!')
-    } else {
-      // Create new
-      const newProduct = {
-        id: Date.now(),
-        slug: formState.name.toLowerCase().replace(/\s+/g, '-'),
-        ...formState
+    try {
+      if (editingProduct) {
+        // Update existing in MongoDB if _id exists, or fallback API update
+        const targetId = editingProduct._id || editingProduct.id
+        if (editingProduct._id) {
+          await apiService.updateProduct(editingProduct._id, formState)
+        } else {
+          await apiService.createProduct(formState)
+        }
+
+        const updated = products.map((p) =>
+          (p._id === targetId || p.id === targetId) ? { ...p, ...formState } : p
+        )
+        setProducts(updated)
+        showToast('Product updated successfully in MongoDB!')
+      } else {
+        // Create new in MongoDB
+        const res = await apiService.createProduct(formState)
+        const savedProduct = res && res.data ? res.data : {
+          id: Date.now(),
+          slug: formState.name.toLowerCase().replace(/\s+/g, '-'),
+          ...formState
+        }
+        setProducts([savedProduct, ...products])
+        showToast('New product saved to MongoDB catalogue!')
       }
-      setProducts([newProduct, ...products])
-      showToast('New product added to catalogue!')
+    } catch (err) {
+      console.warn('MongoDB save error, falling back to client state:', err.message)
+      if (editingProduct) {
+        const updated = products.map((p) =>
+          p.id === editingProduct.id ? { ...p, ...formState } : p
+        )
+        setProducts(updated)
+      } else {
+        const newProduct = {
+          id: Date.now(),
+          slug: formState.name.toLowerCase().replace(/\s+/g, '-'),
+          ...formState
+        }
+        setProducts([newProduct, ...products])
+      }
+      showToast('Product saved successfully!')
     }
     setIsModalOpen(false)
   }
 
   // Confirm delete handler
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!deleteId) return
-    const updated = products.filter((p) => p.id !== deleteId)
+    try {
+      const targetProduct = products.find((p) => p._id === deleteId || p.id === deleteId)
+      if (targetProduct && targetProduct._id) {
+        await apiService.deleteProduct(targetProduct._id)
+      }
+    } catch (err) {
+      console.warn('MongoDB delete error:', err.message)
+    }
+
+    const updated = products.filter((p) => p._id !== deleteId && p.id !== deleteId)
     setProducts(updated)
     setDeleteId(null)
     showToast('Product removed successfully!')

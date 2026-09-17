@@ -9,6 +9,7 @@ import Enquirycompo from './components/Enquirycompo'
 import { EnquiryModalProvider } from './context/EnquiryModalContext'
 import useScrollReveal from './hooks/useScrollReveal'
 import './App.css'
+import { apiService } from './api/apiService'
 import Contact from './page/Contact'
 import Blog from './page/Blog'
 import BlogDetail from './page/BlogDetail'
@@ -31,20 +32,51 @@ const RootHomeRoute = () => {
   })
 
   React.useEffect(() => {
+    // 1. Fetch latest activeHomepage from backend database on mount
+    const fetchLatestSettings = async () => {
+      try {
+        const dbSettings = await apiService.getSettings()
+        if (dbSettings && dbSettings.activeHomepage) {
+          setActiveHome(dbSettings.activeHomepage)
+        }
+      } catch (err) {
+        // fallback to local storage state
+      }
+    }
+    fetchLatestSettings()
+
+    // 2. Local Storage & Custom Event Sync
     const handleStorageChange = () => {
       try {
         const saved = localStorage.getItem('enquiry_admin_store_settings')
         if (saved) {
           const parsed = JSON.parse(saved)
-          setActiveHome(parsed.activeHomepage || 'home1')
+          if (parsed.activeHomepage) {
+            setActiveHome(parsed.activeHomepage)
+          }
         }
       } catch {
         // fallback
       }
     }
 
+    const handleCustomChange = (e) => {
+      if (e.detail) {
+        setActiveHome(e.detail)
+      } else {
+        handleStorageChange()
+      }
+    }
+
     window.addEventListener('storage', handleStorageChange)
-    return () => window.removeEventListener('storage', handleStorageChange)
+    window.addEventListener('homepageChanged', handleCustomChange)
+    const interval = setInterval(handleStorageChange, 500)
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('homepageChanged', handleCustomChange)
+      clearInterval(interval)
+    }
   }, [])
 
   return activeHome === 'home2' ? <Home2 /> : <Home />

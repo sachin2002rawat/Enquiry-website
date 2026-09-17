@@ -6,6 +6,7 @@ import ProductNavbar from '../components/ProductNavbar'
 import Footer from '../components/Footer'
 import ScrollReveal from '../components/ScrollReveal'
 import { useEnquiryModal } from '../context/EnquiryModalContext'
+import { apiService } from '../api/apiService'
 import './AboutEnquiryCompany.css'
 
 const AboutEnquiryCompany = () => {
@@ -27,6 +28,18 @@ const AboutEnquiryCompany = () => {
   const [companySettings, setCompanySettings] = useState(loadCompanySettings)
 
   useEffect(() => {
+    const fetchDBSettings = async () => {
+      try {
+        const dbSettings = await apiService.getSettings()
+        if (dbSettings) {
+          setCompanySettings((prev) => ({ ...prev, ...dbSettings }))
+        }
+      } catch (err) {
+        // fallback
+      }
+    }
+    fetchDBSettings()
+
     const handleStorageChange = () => {
       setCompanySettings(loadCompanySettings())
     }
@@ -224,55 +237,42 @@ const AboutEnquiryCompany = () => {
           </h2>
         </div>
 
-        {/* 4 Cards Grid */}
+        {/* Dynamic Value Cards Grid */}
         <div className="dna-cards-grid">
-          {/* Card 1: Integrity */}
-          <div className="dna-card">
-            <div className="dna-icon-wrapper">
-              <ShieldCheck size={24} />
-            </div>
-            <h3 className="dna-card-title">{companySettings.dnaCard1Title || 'Integrity'}</h3>
-            <p className="dna-card-desc">
-              {companySettings.dnaCard1Desc ||
-                'We say what we mean and do what we say. Honesty is the foundation of every relationship we build.'}
-            </p>
-          </div>
-
-          {/* Card 2: Innovation */}
-          <div className="dna-card">
-            <div className="dna-icon-wrapper">
-              <Lightbulb size={24} />
-            </div>
-            <h3 className="dna-card-title">{companySettings.dnaCard2Title || 'Innovation'}</h3>
-            <p className="dna-card-desc">
-              {companySettings.dnaCard2Desc ||
-                'We embrace change, challenge convention, and constantly seek better ways to serve our clients.'}
-            </p>
-          </div>
-
-          {/* Card 3: Empathy */}
-          <div className="dna-card">
-            <div className="dna-icon-wrapper">
-              <Heart size={24} />
-            </div>
-            <h3 className="dna-card-title">{companySettings.dnaCard3Title || 'Empathy'}</h3>
-            <p className="dna-card-desc">
-              {companySettings.dnaCard3Desc ||
-                'We understand that behind every enquiry is a person. Compassion shapes every interaction we have.'}
-            </p>
-          </div>
-
-          {/* Card 4: Excellence */}
-          <div className="dna-card">
-            <div className="dna-icon-wrapper">
-              <BarChart3 size={24} />
-            </div>
-            <h3 className="dna-card-title">{companySettings.dnaCard4Title || 'Excellence'}</h3>
-            <p className="dna-card-desc">
-              {companySettings.dnaCard4Desc ||
-                'Good enough is never enough. We hold ourselves to the highest standard in every single task.'}
-            </p>
-          </div>
+          {(
+            companySettings.dnaCards && Array.isArray(companySettings.dnaCards) && companySettings.dnaCards.length > 0
+              ? companySettings.dnaCards
+              : [
+                  {
+                    title: companySettings.dnaCard1Title || 'Integrity',
+                    desc: companySettings.dnaCard1Desc || 'We say what we mean and do what we say. Honesty is the foundation of every relationship we build.'
+                  },
+                  {
+                    title: companySettings.dnaCard2Title || 'Innovation',
+                    desc: companySettings.dnaCard2Desc || 'We embrace change, challenge convention, and constantly seek better ways to serve our clients.'
+                  },
+                  {
+                    title: companySettings.dnaCard3Title || 'Empathy',
+                    desc: companySettings.dnaCard3Desc || 'We understand that behind every enquiry is a person. Compassion shapes every interaction we have.'
+                  },
+                  {
+                    title: companySettings.dnaCard4Title || 'Excellence',
+                    desc: companySettings.dnaCard4Desc || 'Good enough is never enough. We hold ourselves to the highest standard in every single task.'
+                  }
+                ]
+          ).map((card, idx) => {
+            const icons = [<ShieldCheck size={24} key="1" />, <Lightbulb size={24} key="2" />, <Heart size={24} key="3" />, <BarChart3 size={24} key="4" />]
+            const IconComp = icons[idx % icons.length]
+            return (
+              <div className="dna-card" key={idx}>
+                <div className="dna-icon-wrapper">
+                  {IconComp}
+                </div>
+                <h3 className="dna-card-title">{card.title}</h3>
+                <p className="dna-card-desc">{card.desc}</p>
+              </div>
+            )
+          })}
         </div>
       </section>
       </ScrollReveal>
@@ -309,28 +309,33 @@ const AboutEnquiryCompany = () => {
 
             <span className="mv-card-tag">OUR MISSION</span>
 
+            {companySettings.missionHeading && (
+              <h3 className="mv-card-heading">
+                {companySettings.missionHeading}
+              </h3>
+            )}
+
             <p className="mv-card-paragraph">
               {companySettings.missionText ||
-                'Our mission is to deliver exceptional, personalised services that solve real problems, create genuine value, and help each client grow with confidence. We are here not just to meet expectations — but to exceed them at every turn.'}
+                'Our mission is to deliver exceptional, personalised services that solve real problems, create genuine value, and help each client grow with confidence.'}
             </p>
 
             <ul className="mv-check-list">
-              <li>
-                <CheckCircle2 size={15} className="check-icon" />
-                <span>Deliver measurable results with every engagement</span>
-              </li>
-              <li>
-                <CheckCircle2 size={15} className="check-icon" />
-                <span>Foster long-term partnerships built on trust</span>
-              </li>
-              <li>
-                <CheckCircle2 size={15} className="check-icon" />
-                <span>Continuously improve through client feedback</span>
-              </li>
-              <li>
-                <CheckCircle2 size={15} className="check-icon" />
-                <span>Make excellence accessible to businesses of all sizes</span>
-              </li>
+              {(
+                companySettings.missionPoints && Array.isArray(companySettings.missionPoints) && companySettings.missionPoints.length > 0
+                  ? companySettings.missionPoints
+                  : [
+                      companySettings.missionPoint1 || 'Deliver measurable results with every engagement',
+                      companySettings.missionPoint2 || 'Foster long-term partnerships built on trust',
+                      companySettings.missionPoint3 || 'Continuously improve through client feedback',
+                      companySettings.missionPoint4 || 'Make excellence accessible to businesses of all sizes'
+                    ]
+              ).map((pointText, idx) => (
+                <li key={idx}>
+                  <CheckCircle2 size={15} className="check-icon" />
+                  <span>{pointText}</span>
+                </li>
+              ))}
             </ul>
 
             <div className="mv-card-bg-circle"></div>
@@ -350,26 +355,25 @@ const AboutEnquiryCompany = () => {
 
             <p className="mv-card-paragraph">
               {companySettings.visionText ||
-                'We envision a world where every individual and organisation has access to world-class service — regardless of size or scale. Our vision drives us to innovate relentlessly, lead with integrity, and set new standards in everything we do.'}
+                'We envision a world where every individual and organisation has access to world-class service — regardless of size or scale.'}
             </p>
                 
             <ul className="mv-check-list">
-              <li>
-                <CheckCircle2 size={15} className="check-icon" />
-                <span>Become the most trusted name in our industry</span>
-              </li>
-              <li>
-                <CheckCircle2 size={15} className="check-icon" />
-                <span>Lead innovation without losing the human touch</span>
-              </li>
-              <li>
-                <CheckCircle2 size={15} className="check-icon" />
-                <span>Scale our impact across communities and sectors</span>
-              </li>
-              <li>
-                <CheckCircle2 size={15} className="check-icon" />
-                <span>Build a legacy of excellence for future generations</span>
-              </li>
+              {(
+                companySettings.visionPoints && Array.isArray(companySettings.visionPoints) && companySettings.visionPoints.length > 0
+                  ? companySettings.visionPoints
+                  : [
+                      companySettings.visionPoint1 || 'Become the most trusted name in our industry',
+                      companySettings.visionPoint2 || 'Lead innovation without losing the human touch',
+                      companySettings.visionPoint3 || 'Scale our impact across communities and sectors',
+                      companySettings.visionPoint4 || 'Build a legacy of excellence for future generations'
+                    ]
+              ).map((pointText, idx) => (
+                <li key={idx}>
+                  <CheckCircle2 size={15} className="check-icon" />
+                  <span>{pointText}</span>
+                </li>
+              ))}
             </ul>
 
             <div className="mv-card-bg-circle"></div>

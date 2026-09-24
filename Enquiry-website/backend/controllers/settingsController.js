@@ -6,9 +6,11 @@ import CompanySettings from '../models/CompanySettings.js'
 export const getSettings = async (req, res) => {
   try {
     let settings = await CompanySettings.findOne()
+    
     if (!settings) {
       settings = await CompanySettings.create({})
     }
+
     res.status(200).json({ success: true, data: settings })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })

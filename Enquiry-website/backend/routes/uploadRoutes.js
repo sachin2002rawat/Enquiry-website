@@ -6,6 +6,7 @@ const router = express.Router()
 // @desc    Upload image to Cloudinary via Multer
 // @route   POST /api/upload
 // @access  Public
+
 router.post('/', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
@@ -24,7 +25,7 @@ router.post('/', upload.single('image'), async (req, res) => {
       try {
         const uploadResult = await cloudinary.uploader.upload(`data:${mime};base64,${b64}`, {
           folder: 'enquiry_products'
-        })
+        })    
         imageUrl = uploadResult.secure_url
       } catch (err) {
         console.warn('Direct Cloudinary upload warning, returning DataURL:', err.message)

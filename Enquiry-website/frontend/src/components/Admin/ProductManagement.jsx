@@ -16,7 +16,10 @@ import {
   FiChevronLeft,
   FiChevronRight,
   FiUploadCloud,
-  FiLink
+  FiLink,
+  FiEye,
+  FiStar,
+  FiArrowRight
 } from 'react-icons/fi'
 import { apiService } from '../../api/apiService'
 
@@ -88,8 +91,13 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
     }
   }
 
-  // Modal State for Delete Confirmation
-  const [deleteId, setDeleteId] = useState(null)
+  // Modal State for Delete Confirmation (tracks targeted product object)
+  const [deleteTarget, setDeleteTarget] = useState(null)
+
+  // Modal States for KPI Card Details Popup
+  const [activeKpiModal, setActiveKpiModal] = useState(null) // 'total' | 'inStock' | 'outOfStock' | 'categories' | null
+  const [kpiModalSearch, setKpiModalSearch] = useState('')
+  const [selectedProductDetail, setSelectedProductDetail] = useState(null)
 
   // Sync with global header search if present
   const activeSearch = searchTerm || globalSearch
@@ -132,6 +140,75 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
   ).length
   const outOfStockCount = totalProducts - inStockCount
   const categoryCount = categories.length - 1
+
+  // KPI Modal list calculation
+  const kpiModalProducts = useMemo(() => {
+    if (!activeKpiModal || activeKpiModal === 'categories') return []
+    let list = products
+    if (activeKpiModal === 'inStock') {
+      list = products.filter((p) => p.availability === 'In Stock' || p.availability === true)
+    } else if (activeKpiModal === 'outOfStock') {
+      list = products.filter((p) => p.availability !== 'In Stock' && p.availability !== true)
+    }
+    if (kpiModalSearch.trim()) {
+      const q = kpiModalSearch.toLowerCase()
+      list = list.filter(
+        (p) =>
+          (p.name && p.name.toLowerCase().includes(q)) ||
+          (p.category && p.category.toLowerCase().includes(q)) ||
+          (p.sku && p.sku.toLowerCase().includes(q))
+      )
+    }
+    return list
+  }, [products, activeKpiModal, kpiModalSearch])
+
+  // Category breakdown calculation for KPI Categories Modal
+  const categoryBreakdown = useMemo(() => {
+    if (activeKpiModal !== 'categories') return []
+    const map = {}
+    products.forEach((p) => {
+      const cat = p.category || 'GENERAL'
+      if (!map[cat]) {
+        map[cat] = { name: cat, count: 0, products: [] }
+      }
+      map[cat].count += 1
+      if (map[cat].products.length < 5) {
+        map[cat].products.push(p)
+      }
+    })
+    let list = Object.values(map)
+    if (kpiModalSearch.trim()) {
+      const q = kpiModalSearch.toLowerCase()
+      list = list.filter((c) => c.name.toLowerCase().includes(q))
+    }
+    return list
+  }, [products, activeKpiModal, kpiModalSearch])
+
+  // KPI Card Popup Pagination (5 items per page)
+  const KPI_ITEMS_PER_PAGE = 5
+  const [kpiCurrentPage, setKpiCurrentPage] = useState(1)
+
+  // Reset KPI pagination to page 1 whenever activeKpiModal or search query changes
+  useEffect(() => {
+    setKpiCurrentPage(1)
+  }, [activeKpiModal, kpiModalSearch])
+
+  // Active dataset count and pagination indices for KPI popup
+  const activeKpiTotalItems =
+    activeKpiModal === 'categories' ? categoryBreakdown.length : kpiModalProducts.length
+  const totalKpiPages = Math.max(1, Math.ceil(activeKpiTotalItems / KPI_ITEMS_PER_PAGE))
+  const kpiStartIndex = (kpiCurrentPage - 1) * KPI_ITEMS_PER_PAGE
+  const kpiEndIndex = Math.min(kpiStartIndex + KPI_ITEMS_PER_PAGE, activeKpiTotalItems)
+
+  // Paginated 5 items per page for Products (Total / In Stock / Out of Stock)
+  const paginatedKpiProducts = useMemo(() => {
+    return kpiModalProducts.slice(kpiStartIndex, kpiStartIndex + KPI_ITEMS_PER_PAGE)
+  }, [kpiModalProducts, kpiStartIndex])
+
+  // Paginated 5 items per page for Categories
+  const paginatedKpiCategories = useMemo(() => {
+    return categoryBreakdown.slice(kpiStartIndex, kpiStartIndex + KPI_ITEMS_PER_PAGE)
+  }, [categoryBreakdown, kpiStartIndex])
 
   // Open modal for new product
   const handleAddProduct = () => {
@@ -247,29 +324,75 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
     setIsModalOpen(false)
   }
 
-  // Confirm delete handler
-  const confirmDelete = async () => {
-    if (!deleteId) return
-    try {
-      const targetProduct = products.find((p) => p._id === deleteId || p.id === deleteId)
-      if (targetProduct && targetProduct._id) {
-        await apiService.deleteProduct(targetProduct._id)
+  // Confirm delete handler with full multi-identifier support & storage sync
+  const confirmDelete = async (productToDel) => {
+    const target = productToDel || deleteTarget
+    if (!target) return
+
+    const targetMongoId = target._id
+    const targetLocalId = target.id
+    const targetName = target.name
+
+    // 1. Delete from MongoDB API if _id exists
+    const apiId =
+      targetMongoId ||
+      (typeof targetLocalId === 'string' && targetLocalId.length >= 24 ? targetLocalId : null)
+    if (apiId) {
+      try {
+        await apiService.deleteProduct(apiId)
+      } catch (err) {
+        console.warn('MongoDB delete warning:', err.message)
       }
-    } catch (err) {
-      console.warn('MongoDB delete error:', err.message)
     }
 
-    const updated = products.filter((p) => p._id !== deleteId && p.id !== deleteId)
+    // 2. Filter out product from local state
+    const updated = products.filter((p) => {
+      if (targetMongoId && p._id && String(p._id) === String(targetMongoId)) return false
+      if (
+        targetLocalId !== undefined &&
+        targetLocalId !== null &&
+        p.id !== undefined &&
+        p.id !== null &&
+        String(p.id) === String(targetLocalId)
+      )
+        return false
+      if (
+        !targetMongoId &&
+        (targetLocalId === undefined || targetLocalId === null) &&
+        p.name &&
+        p.name === targetName
+      )
+        return false
+      return true
+    })
+
     setProducts(updated)
-    setDeleteId(null)
-    showToast('Product removed successfully!')
+
+    // 3. Immediately persist to localStorage and trigger storage event
+    try {
+      localStorage.setItem('enquiry_admin_products', JSON.stringify(updated))
+      window.dispatchEvent(new Event('storage'))
+    } catch (e) {
+      console.warn('LocalStorage save warning:', e)
+    }
+
+    setDeleteTarget(null)
+    showToast(`"${targetName || 'Product'}" removed successfully!`)
   }
 
   return (
     <div className="product-management-container">
       {/* KPI METRICS ROW */}
       <div className="kpi-grid">
-        <div className="kpi-card">
+        <div
+          className="kpi-card clickable"
+          onClick={() => {
+            setKpiModalSearch('')
+            setActiveKpiModal('total')
+          }}
+          title="Click to view total products list"
+          style={{ cursor: 'pointer', position: 'relative' }}
+        >
           <div className="kpi-icon-wrapper indigo">
             <FiPackage />
           </div>
@@ -277,9 +400,34 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
             <span className="kpi-label">Total Products</span>
             <span className="kpi-value">{totalProducts}</span>
           </div>
+          <div
+            style={{
+              marginLeft: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              color: '#6366F1',
+              fontSize: '0.74rem',
+              fontWeight: 700,
+              backgroundColor: '#EEF2FF',
+              padding: '4px 8px',
+              borderRadius: '6px'
+            }}
+          >
+            <FiEye size={13} />
+            <span>View</span>
+          </div>
         </div>
 
-        <div className="kpi-card">
+        <div
+          className="kpi-card clickable"
+          onClick={() => {
+            setKpiModalSearch('')
+            setActiveKpiModal('inStock')
+          }}
+          title="Click to view in-stock products"
+          style={{ cursor: 'pointer', position: 'relative' }}
+        >
           <div className="kpi-icon-wrapper emerald">
             <FiCheckCircle />
           </div>
@@ -287,9 +435,34 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
             <span className="kpi-label">In Stock Items</span>
             <span className="kpi-value">{inStockCount}</span>
           </div>
+          <div
+            style={{
+              marginLeft: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              color: '#059669',
+              fontSize: '0.74rem',
+              fontWeight: 700,
+              backgroundColor: '#ECFDF5',
+              padding: '4px 8px',
+              borderRadius: '6px'
+            }}
+          >
+            <FiEye size={13} />
+            <span>View</span>
+          </div>
         </div>
 
-        <div className="kpi-card">
+        <div
+          className="kpi-card clickable"
+          onClick={() => {
+            setKpiModalSearch('')
+            setActiveKpiModal('outOfStock')
+          }}
+          title="Click to view out-of-stock products"
+          style={{ cursor: 'pointer', position: 'relative' }}
+        >
           <div className="kpi-icon-wrapper amber">
             <FiAlertTriangle />
           </div>
@@ -297,15 +470,57 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
             <span className="kpi-label">Out of Stock</span>
             <span className="kpi-value">{outOfStockCount}</span>
           </div>
+          <div
+            style={{
+              marginLeft: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              color: '#D97706',
+              fontSize: '0.74rem',
+              fontWeight: 700,
+              backgroundColor: '#FFFBEB',
+              padding: '4px 8px',
+              borderRadius: '6px'
+            }}
+          >
+            <FiEye size={13} />
+            <span>View</span>
+          </div>
         </div>
 
-        <div className="kpi-card">
+        <div
+          className="kpi-card clickable"
+          onClick={() => {
+            setKpiModalSearch('')
+            setActiveKpiModal('categories')
+          }}
+          title="Click to view categories breakdown"
+          style={{ cursor: 'pointer', position: 'relative' }}
+        >
           <div className="kpi-icon-wrapper blue">
             <FiLayers />
           </div>
           <div className="kpi-details">
             <span className="kpi-label">Categories</span>
             <span className="kpi-value">{categoryCount > 0 ? categoryCount : 1}</span>
+          </div>
+          <div
+            style={{
+              marginLeft: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              color: '#2563EB',
+              fontSize: '0.74rem',
+              fontWeight: 700,
+              backgroundColor: '#EFF6FF',
+              padding: '4px 8px',
+              borderRadius: '6px'
+            }}
+          >
+            <FiEye size={13} />
+            <span>View</span>
           </div>
         </div>
       </div>
@@ -362,22 +577,39 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
           <table className="admin-table">
             <thead>
               <tr>
-                <th>Product Details</th>
-                <th>Category</th>
-                <th>Weight / Pack</th>
-                <th>Status</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
+                <th style={{ width: '28%' }}>Product Details</th>
+                <th style={{ width: '16%' }}>Category</th>
+                <th style={{ width: '12%' }}>Weight / Pack</th>
+                <th style={{ width: '12%' }}>Status</th>
+                <th style={{ width: '32%', textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {paginatedProducts.length > 0 ? (
                 paginatedProducts.map((product) => {
+                  const currentProdKey =
+                    product._id || product.id || product.slug || product.name
                   const isInStock =
                     product.availability === 'In Stock' || product.availability === true
+                  const isDeletingThis =
+                    deleteTarget &&
+                    ((deleteTarget._id && product._id && deleteTarget._id === product._id) ||
+                      (deleteTarget.id !== undefined &&
+                        product.id !== undefined &&
+                        String(deleteTarget.id) === String(product.id)) ||
+                      (deleteTarget.name &&
+                        product.name &&
+                        deleteTarget.name === product.name))
+
                   return (
-                    <tr key={product.id}>
+                    <tr key={currentProdKey}>
                       <td>
-                        <div className="product-cell">
+                        <div
+                          className="product-cell"
+                          style={{ cursor: 'pointer' }}
+                          title="Click to view full product details"
+                          onClick={() => setSelectedProductDetail(product)}
+                        >
                           <img
                             src={product.image}
                             alt={product.name}
@@ -389,9 +621,17 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
                             }}
                           />
                           <div>
-                            <div className="product-info-name">{product.name}</div>
+                            <div className="product-info-name" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <span>{product.name}</span>
+                              <FiEye size={12} color="#6366F1" style={{ opacity: 0.8 }} />
+                            </div>
                             <div className="product-info-sku">
-                              {product.sku || `SKU-${product.id}`}
+                              {product.sku ||
+                                (product.id
+                                  ? `SKU-${product.id}`
+                                  : product._id
+                                  ? `SKU-${product._id.slice(-6).toUpperCase()}`
+                                  : 'SKU-PRD')}
                             </div>
                           </div>
                         </div>
@@ -411,53 +651,89 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
                           {isInStock ? 'In Stock' : 'Out of Stock'}
                         </button>
                       </td>
-                      <td>
-                        {deleteId === product.id ? (
+                      <td style={{ textAlign: 'right', whiteSpace: 'nowrap', paddingRight: '12px' }}>
+                        {isDeletingThis ? (
                           <div
                             style={{
-                              display: 'flex',
+                              display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'flex-end',
-                              gap: '6px',
+                              gap: '5px',
                               backgroundColor: '#FEF2F2',
-                              border: '1px solid #FCA5A5',
+                              border: '1px solid #FECACA',
                               borderRadius: '8px',
-                              padding: '4px 8px'
+                              padding: '3px 6px',
+                              boxShadow: '0 2px 5px rgba(239, 68, 68, 0.08)'
                             }}
                           >
-                            <span style={{ fontSize: '0.78rem', color: '#991B1B', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                              Delete item?
+                            <span
+                              style={{
+                                fontSize: '0.74rem',
+                                color: '#991B1B',
+                                fontWeight: 600,
+                                whiteSpace: 'nowrap',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '3px'
+                              }}
+                            >
+                              <FiAlertTriangle size={12} style={{ color: '#DC2626' }} />
+                              Delete?
                             </span>
                             <button
                               type="button"
                               style={{
-                                backgroundColor: '#EF4444',
+                                backgroundColor: '#DC2626',
                                 color: '#FFFFFF',
                                 border: 'none',
                                 borderRadius: '6px',
-                                padding: '4px 10px',
-                                fontSize: '0.75rem',
+                                padding: '4px 8px',
+                                fontSize: '0.74rem',
                                 fontWeight: 700,
-                                cursor: 'pointer'
+                                cursor: 'pointer',
+                                boxShadow: '0 1px 2px rgba(220, 38, 38, 0.25)',
+                                transition: 'all 0.15s ease',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '3px'
                               }}
-                              onClick={confirmDelete}
+                              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#B91C1C')}
+                              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#DC2626')}
+                              onClick={() => confirmDelete(product)}
                             >
+                              <FiTrash2 size={11} />
                               Delete
                             </button>
                             <button
                               type="button"
+                              title="Cancel"
                               style={{
                                 backgroundColor: '#FFFFFF',
                                 color: '#475569',
                                 border: '1px solid #CBD5E1',
                                 borderRadius: '6px',
                                 padding: '4px 8px',
-                                fontSize: '0.75rem',
+                                fontSize: '0.74rem',
                                 fontWeight: 600,
-                                cursor: 'pointer'
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '3px',
+                                transition: 'all 0.15s ease'
                               }}
-                              onClick={() => setDeleteId(null)}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#F1F5F9'
+                                e.currentTarget.style.borderColor = '#94A3B8'
+                                e.currentTarget.style.color = '#0F172A'
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#FFFFFF'
+                                e.currentTarget.style.borderColor = '#CBD5E1'
+                                e.currentTarget.style.color = '#475569'
+                              }}
+                              onClick={() => setDeleteTarget(null)}
                             >
+                              <FiX size={13} style={{ strokeWidth: 2.5 }} />
                               Cancel
                             </button>
                           </div>
@@ -465,11 +741,21 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
                           <div
                             style={{
                               display: 'flex',
+                              alignItems: 'center',
                               justifyContent: 'flex-end',
-                              gap: '8px'
+                              gap: '6px'
                             }}
                           >
                             <button
+                              type="button"
+                              className="btn-icon"
+                              title="View Product Info"
+                              onClick={() => setSelectedProductDetail(product)}
+                            >
+                              <FiEye size={14} />
+                            </button>
+                            <button
+                              type="button"
                               className="btn-icon"
                               title="Edit Product"
                               onClick={() => handleEditProduct(product)}
@@ -477,9 +763,10 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
                               <FiEdit2 size={14} />
                             </button>
                             <button
+                              type="button"
                               className="btn-icon delete"
                               title="Delete Product"
-                              onClick={() => setDeleteId(product.id)}
+                              onClick={() => setDeleteTarget(product)}
                             >
                               <FiTrash2 size={14} />
                             </button>
@@ -789,6 +1076,585 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
                   </button>
                 </div>
               </form>
+            </div>
+          </div>,
+          document.body
+        )}
+
+      {/* KPI CARD DETAIL POPUP MODAL */}
+      {activeKpiModal &&
+        createPortal(
+          <div
+            className="modal-overlay"
+            style={{
+              zIndex: 10000,
+              backgroundColor: 'rgba(15, 23, 42, 0.65)',
+              backdropFilter: 'blur(4px)',
+              position: 'fixed',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '16px'
+            }}
+            onClick={() => setActiveKpiModal(null)}
+          >
+            <div
+              className="modal-content"
+              style={{
+                maxWidth: '750px',
+                width: '100%',
+                maxHeight: '85vh',
+                backgroundColor: '#FFFFFF',
+                borderRadius: '16px',
+                boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.35)',
+                border: '1px solid var(--admin-card-border)',
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* MODAL HEADER */}
+              <div
+                style={{
+                  padding: '16px 20px',
+                  backgroundColor: '#FAF6F0',
+                  borderBottom: '1px solid var(--admin-card-border)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '12px'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div
+                    className={`kpi-icon-wrapper ${
+                      activeKpiModal === 'total'
+                        ? 'indigo'
+                        : activeKpiModal === 'inStock'
+                        ? 'emerald'
+                        : activeKpiModal === 'outOfStock'
+                        ? 'amber'
+                        : 'blue'
+                    }`}
+                    style={{ width: '40px', height: '40px', fontSize: '1.2rem', borderRadius: '10px' }}
+                  >
+                    {activeKpiModal === 'total' && <FiPackage />}
+                    {activeKpiModal === 'inStock' && <FiCheckCircle />}
+                    {activeKpiModal === 'outOfStock' && <FiAlertTriangle />}
+                    {activeKpiModal === 'categories' && <FiLayers />}
+                  </div>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--admin-text-main)' }}>
+                      {activeKpiModal === 'total' && `Total Products (${products.length})`}
+                      {activeKpiModal === 'inStock' && `In Stock Items (${inStockCount})`}
+                      {activeKpiModal === 'outOfStock' && `Out of Stock Items (${outOfStockCount})`}
+                      {activeKpiModal === 'categories' && `Catalogue Categories (${categoryCount > 0 ? categoryCount : 1})`}
+                    </h3>
+                    <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--admin-text-muted)' }}>
+                      {activeKpiModal === 'total' && 'Detailed inspection of all catalogue items, SKU codes, and weights.'}
+                      {activeKpiModal === 'inStock' && 'Products currently available and ready for customer orders.'}
+                      {activeKpiModal === 'outOfStock' && 'Products currently out of stock requiring inventory reorder.'}
+                      {activeKpiModal === 'categories' && 'Distribution of products across catalogue categories.'}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="modal-close-btn"
+                  style={{
+                    background: '#FFFFFF',
+                    border: '1px solid var(--admin-card-border)',
+                    borderRadius: '8px',
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: 'var(--admin-text-muted)'
+                  }}
+                  onClick={() => setActiveKpiModal(null)}
+                >
+                  <FiX size={16} />
+                </button>
+              </div>
+
+              {/* SEARCH BAR */}
+              <div style={{ padding: '12px 20px', borderBottom: '1px solid #F1F5F9', backgroundColor: '#FFFFFF' }}>
+                <div style={{ position: 'relative' }}>
+                  <FiSearch
+                    size={15}
+                    style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }}
+                  />
+                  <input
+                    type="text"
+                    placeholder={
+                      activeKpiModal === 'categories'
+                        ? 'Search categories by name...'
+                        : 'Search by product name, SKU or category...'
+                    }
+                    value={kpiModalSearch}
+                    onChange={(e) => setKpiModalSearch(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px 8px 36px',
+                      borderRadius: '8px',
+                      border: '1px solid var(--admin-card-border)',
+                      fontSize: '0.84rem',
+                      outline: 'none',
+                      backgroundColor: '#FAF6F0'
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* MODAL BODY CONTENT */}
+              <div style={{ padding: '16px 20px', overflowY: 'auto', flex: 1, maxHeight: '55vh' }}>
+                {activeKpiModal === 'categories' ? (
+                  paginatedKpiCategories.length > 0 ? (
+                    paginatedKpiCategories.map((cat) => (
+                      <div
+                        key={cat.name}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '12px 16px',
+                          borderRadius: '10px',
+                          border: '1px solid var(--admin-card-border)',
+                          backgroundColor: '#FFFFFF',
+                          marginBottom: '10px',
+                          gap: '12px'
+                        }}
+                      >
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--admin-text-main)' }}>
+                              {cat.name}
+                            </span>
+                            <span style={{ backgroundColor: '#EEF2FF', color: '#4F46E5', fontSize: '0.72rem', fontWeight: 700, padding: '2px 8px', borderRadius: '12px' }}>
+                              {cat.count} {cat.count === 1 ? 'Product' : 'Products'}
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '6px', marginTop: '6px', flexWrap: 'wrap' }}>
+                            {cat.products.map((cp) => (
+                              <span
+                                key={cp._id || cp.id}
+                                style={{
+                                  fontSize: '0.72rem',
+                                  color: '#64748B',
+                                  backgroundColor: '#F8FAFC',
+                                  border: '1px solid #E2E8F0',
+                                  padding: '1px 6px',
+                                  borderRadius: '4px'
+                                }}
+                              >
+                                {cp.name}
+                              </span>
+                            ))}
+                            {cat.count > cat.products.length && (
+                              <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+                                +{cat.count - cat.products.length} more
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          className="btn-secondary"
+                          style={{ fontSize: '0.76rem', padding: '6px 12px', whiteSpace: 'nowrap' }}
+                          onClick={() => {
+                            setSelectedCategory(cat.name)
+                            setActiveKpiModal(null)
+                            showToast(`Filtered catalogue by ${cat.name}`)
+                          }}
+                        >
+                          Filter in Table →
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: '32px 16px', color: '#64748B', fontSize: '0.85rem' }}>
+                      No categories found matching "{kpiModalSearch}".
+                    </div>
+                  )
+                ) : (
+                  paginatedKpiProducts.length > 0 ? (
+                    paginatedKpiProducts.map((p) => {
+                      const isInStock = p.availability === 'In Stock' || p.availability === true
+                      return (
+                        <div
+                          key={p._id || p.id}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '10px 14px',
+                            borderRadius: '10px',
+                            border: '1px solid var(--admin-card-border)',
+                            backgroundColor: '#FFFFFF',
+                            marginBottom: '8px',
+                            gap: '12px'
+                          }}
+                        >
+                          <div
+                            style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, cursor: 'pointer' }}
+                            onClick={() => setSelectedProductDetail(p)}
+                            title="Click to view full product information"
+                          >
+                            <img
+                              src={p.image}
+                              alt={p.name}
+                              style={{ width: '42px', height: '42px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0, border: '1px solid #E2E8F0' }}
+                              onError={(e) => {
+                                e.target.onerror = null
+                                e.target.src = 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80'
+                              }}
+                            />
+                            <div style={{ minWidth: 0 }}>
+                              <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--admin-text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {p.name}
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px', flexWrap: 'wrap' }}>
+                                <span style={{ fontSize: '0.72rem', backgroundColor: '#F1F5F9', color: '#475569', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>
+                                  {p.sku || `SKU-${p.id || 'PRD'}`}
+                                </span>
+                                <span style={{ fontSize: '0.72rem', color: '#6366F1', fontWeight: 600 }}>
+                                  {p.category || 'GENERAL'}
+                                </span>
+                                <span style={{ fontSize: '0.72rem', color: '#64748B' }}>
+                                  {p.netWeight || p.weight || '100g'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                            <button
+                              type="button"
+                              onClick={() => handleToggleStock(p)}
+                              className={`status-badge ${isInStock ? 'in-stock' : 'out-stock'}`}
+                              style={{ cursor: 'pointer', border: 'none', fontSize: '0.72rem', padding: '3px 8px' }}
+                              title="Click to toggle stock"
+                            >
+                              {isInStock ? 'In Stock' : 'Out of Stock'}
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-icon"
+                              style={{ width: '30px', height: '30px' }}
+                              title="View Details"
+                              onClick={() => setSelectedProductDetail(p)}
+                            >
+                              <FiEye size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    })
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: '36px 16px' }}>
+                      {activeKpiModal === 'outOfStock' ? (
+                        <>
+                          <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#ECFDF5', color: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: '1.4rem' }}>
+                            <FiCheckCircle />
+                          </div>
+                          <h4 style={{ margin: '0 0 6px', color: '#065F46', fontSize: '1rem', fontWeight: 700 }}>All Products In Stock!</h4>
+                          <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748B' }}>Currently zero products are marked out of stock in your catalogue.</p>
+                        </>
+                      ) : (
+                        <p style={{ color: '#64748B', fontSize: '0.85rem' }}>No products match your search query.</p>
+                      )}
+                    </div>
+                  )
+                )}
+              </div>
+
+              {/* MODAL FOOTER WITH 5-ITEM PAGINATION */}
+              <div
+                style={{
+                  padding: '12px 20px',
+                  backgroundColor: '#FAF6F0',
+                  borderTop: '1px solid var(--admin-card-border)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: '12px',
+                  flexWrap: 'wrap'
+                }}
+              >
+                <div style={{ fontSize: '0.78rem', color: 'var(--admin-text-muted)', minWidth: '140px' }}>
+                  {activeKpiTotalItems > 0 ? (
+                    <>
+                      Showing <strong style={{ color: 'var(--admin-text-main)' }}>{kpiStartIndex + 1}</strong> to{' '}
+                      <strong style={{ color: 'var(--admin-text-main)' }}>{kpiEndIndex}</strong> of{' '}
+                      <strong style={{ color: 'var(--admin-text-main)' }}>{activeKpiTotalItems}</strong> items
+                    </>
+                  ) : (
+                    '0 items'
+                  )}
+                </div>
+
+                {/* PAGINATION CONTROLS (5 ITEMS PER PAGE) */}
+                {totalKpiPages > 1 && (
+                  <div className="pagination-controls" style={{ gap: '4px', margin: '0 auto' }}>
+                    <button
+                      type="button"
+                      className="pagination-btn"
+                      disabled={kpiCurrentPage === 1}
+                      onClick={() => setKpiCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      title="Previous Page"
+                      style={{ width: '28px', height: '28px', padding: 0 }}
+                    >
+                      <FiChevronLeft size={14} />
+                    </button>
+
+                    {Array.from({ length: totalKpiPages }, (_, i) => i + 1).map((page) => (
+                      <button
+                        key={page}
+                        type="button"
+                        className={`pagination-btn ${page === kpiCurrentPage ? 'active' : ''}`}
+                        onClick={() => setKpiCurrentPage(page)}
+                        style={{
+                          width: '28px',
+                          height: '28px',
+                          padding: 0,
+                          fontSize: '0.78rem',
+                          fontWeight: page === kpiCurrentPage ? 700 : 500
+                        }}
+                      >
+                        {page}
+                      </button>
+                    ))}
+
+                    <button
+                      type="button"
+                      className="pagination-btn"
+                      disabled={kpiCurrentPage === totalKpiPages}
+                      onClick={() => setKpiCurrentPage((prev) => Math.min(prev + 1, totalKpiPages))}
+                      title="Next Page"
+                      style={{ width: '28px', height: '28px', padding: 0 }}
+                    >
+                      <FiChevronRight size={14} />
+                    </button>
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{ fontSize: '0.82rem', padding: '6px 18px', minWidth: '80px' }}
+                  onClick={() => setActiveKpiModal(null)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+      {/* FULL PRODUCT DETAIL POPUP MODAL */}
+      {selectedProductDetail &&
+        createPortal(
+          <div
+            className="modal-overlay"
+            style={{
+              zIndex: 10001,
+              backgroundColor: 'rgba(15, 23, 42, 0.7)',
+              backdropFilter: 'blur(4px)',
+              position: 'fixed',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '16px'
+            }}
+            onClick={() => setSelectedProductDetail(null)}
+          >
+            <div
+              className="modal-content"
+              style={{
+                maxWidth: '560px',
+                width: '100%',
+                maxHeight: '90vh',
+                backgroundColor: '#FFFFFF',
+                borderRadius: '16px',
+                boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.4)',
+                border: '1px solid var(--admin-card-border)',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* HEADER */}
+              <div
+                style={{
+                  padding: '16px 20px',
+                  backgroundColor: '#FAF6F0',
+                  borderBottom: '1px solid var(--admin-card-border)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '2px 8px', borderRadius: '4px', backgroundColor: '#EEF2FF', color: '#4F46E5' }}>
+                    {selectedProductDetail.category || 'PURE SPICES'}
+                  </span>
+                  <span
+                    className={`status-badge ${
+                      selectedProductDetail.availability === 'In Stock' || selectedProductDetail.availability === true
+                        ? 'in-stock'
+                        : 'out-stock'
+                    }`}
+                    style={{ fontSize: '0.72rem', padding: '2px 8px' }}
+                  >
+                    {selectedProductDetail.availability === 'In Stock' || selectedProductDetail.availability === true
+                      ? 'In Stock'
+                      : 'Out of Stock'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="modal-close-btn"
+                  style={{
+                    background: '#FFFFFF',
+                    border: '1px solid var(--admin-card-border)',
+                    borderRadius: '8px',
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: 'var(--admin-text-muted)'
+                  }}
+                  onClick={() => setSelectedProductDetail(null)}
+                >
+                  <FiX size={16} />
+                </button>
+              </div>
+
+              {/* BODY */}
+              <div style={{ padding: '20px', overflowY: 'auto', flex: 1 }}>
+                <div style={{ display: 'flex', gap: '18px', alignItems: 'flex-start', marginBottom: '18px' }}>
+                  <img
+                    src={selectedProductDetail.image}
+                    alt={selectedProductDetail.name}
+                    style={{
+                      width: '120px',
+                      height: '120px',
+                      borderRadius: '12px',
+                      objectFit: 'cover',
+                      border: '1px solid var(--admin-card-border)',
+                      flexShrink: 0
+                    }}
+                    onError={(e) => {
+                      e.target.onerror = null
+                      e.target.src =
+                        'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80'
+                    }}
+                  />
+                  <div style={{ flex: 1 }}>
+                    <h3 style={{ margin: '0 0 6px', fontSize: '1.2rem', fontWeight: 800, color: 'var(--admin-text-main)' }}>
+                      {selectedProductDetail.name}
+                    </h3>
+                    <div style={{ fontSize: '0.8rem', color: '#64748B', marginBottom: '10px' }}>
+                      SKU: <strong style={{ color: 'var(--admin-text-main)' }}>{selectedProductDetail.sku || (selectedProductDetail.id ? `SKU-${selectedProductDetail.id}` : 'SKU-PRD')}</strong>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                      <div style={{ padding: '8px 10px', borderRadius: '8px', backgroundColor: '#FAF6F0', border: '1px solid var(--admin-card-border)' }}>
+                        <div style={{ fontSize: '0.68rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>Weight / Pack</div>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--admin-text-main)' }}>
+                          {selectedProductDetail.netWeight || selectedProductDetail.weight || '100g'}
+                        </div>
+                      </div>
+                      <div style={{ padding: '8px 10px', borderRadius: '8px', backgroundColor: '#FAF6F0', border: '1px solid var(--admin-card-border)' }}>
+                        <div style={{ fontSize: '0.68rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>Min Order Qty</div>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--admin-text-main)' }}>
+                          {selectedProductDetail.minOrderQty || '50 Units'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* DESCRIPTION */}
+                <div style={{ marginBottom: '16px' }}>
+                  <h4 style={{ margin: '0 0 6px', fontSize: '0.84rem', fontWeight: 700, color: 'var(--admin-text-main)' }}>
+                    Description
+                  </h4>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', lineHeight: 1.5, backgroundColor: '#FAF6F0', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--admin-card-border)' }}>
+                    {selectedProductDetail.description || 'No description provided for this product catalogue item.'}
+                  </p>
+                </div>
+
+                {/* RATING & REVIEWS */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: '8px', backgroundColor: '#FEF9C3', border: '1px solid #FEF08A' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <FiStar size={16} fill="#CA8A04" color="#CA8A04" />
+                    <span style={{ fontWeight: 800, fontSize: '0.88rem', color: '#854D0E' }}>
+                      {selectedProductDetail.rating || 4.8} / 5.0
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '0.78rem', color: '#854D0E', fontWeight: 600 }}>
+                    {selectedProductDetail.reviewsCount || 12} Verified Customer Reviews
+                  </span>
+                </div>
+              </div>
+
+              {/* FOOTER */}
+              <div
+                style={{
+                  padding: '12px 20px',
+                  backgroundColor: '#FAF6F0',
+                  borderTop: '1px solid var(--admin-card-border)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}
+              >
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{ fontSize: '0.82rem', padding: '6px 14px' }}
+                  onClick={() => {
+                    handleToggleStock(selectedProductDetail)
+                    setSelectedProductDetail((prev) => ({
+                      ...prev,
+                      availability: prev.availability === 'In Stock' || prev.availability === true ? 'Out of Stock' : 'In Stock'
+                    }))
+                  }}
+                >
+                  Toggle Stock Status
+                </button>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{ fontSize: '0.82rem', padding: '6px 14px' }}
+                    onClick={() => {
+                      handleEditProduct(selectedProductDetail)
+                      setSelectedProductDetail(null)
+                    }}
+                  >
+                    <FiEdit2 size={13} /> Edit Product
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    style={{ fontSize: '0.82rem', padding: '6px 14px' }}
+                    onClick={() => setSelectedProductDetail(null)}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
             </div>
           </div>,
           document.body

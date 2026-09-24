@@ -321,6 +321,7 @@ const AdminPage = () => {
 
   useEffect(() => {
     localStorage.setItem(LOCAL_KEY_PRODUCTS, JSON.stringify(products))
+    window.dispatchEvent(new Event('storage'))
   }, [products])
 
   useEffect(() => {

@@ -717,6 +717,21 @@
   border-color: rgba(99, 102, 241, 0.3);
 }
 
+.kpi-card.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.kpi-card.clickable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px -4px rgba(99, 102, 241, 0.15), 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-color: #6366F1;
+}
+
+.kpi-card.clickable:active {
+  transform: translateY(-1px);
+}
+
 .kpi-icon-wrapper {
   width: 44px;
   height: 44px;
@@ -764,6 +779,119 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* Responsive Clean Admin Table Styles */
+.admin-table-container {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--admin-card-border);
+  border-radius: 12px;
+  background: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-table {
+  width: 100%;
+  min-width: 1040px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-table thead tr {
+  background-color: #F8FAFC;
+  border-bottom: 1px solid var(--admin-card-border);
+}
+
+.admin-table th {
+  padding: 14px 18px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #F1F5F9;
+  vertical-align: middle;
+  font-size: 0.88rem;
+  color: var(--admin-text-main);
+  background-color: #FFFFFF;
+  transition: background-color 0.15s ease;
+}
+
+.admin-table tbody tr:hover td {
+  background-color: #F8FAFC;
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Compact Single-View Enquiry Table (No horizontal scroll, fits all data cleanly) */
+.enquiry-table-wrapper {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--admin-card-border);
+  border-radius: 10px;
+  background: #FFFFFF;
+}
+
+.enquiry-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.enquiry-table thead tr {
+  background-color: #F8FAFC;
+  border-bottom: 1px solid var(--admin-card-border);
+}
+
+.enquiry-table th {
+  padding: 10px 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+}
+
+.enquiry-table td {
+  padding: 10px 8px;
+  font-size: 0.8rem;
+  border-bottom: 1px solid #F1F5F9;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-sizing: border-box;
+  background-color: #FFFFFF;
+}
+
+.enquiry-table tbody tr:hover td {
+  background-color: #F8FAFC;
+}
+
+.enquiry-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.enquiry-col-customer { width: 17%; }
+.enquiry-col-contact { width: 22%; }
+.enquiry-col-product { width: 15%; }
+.enquiry-col-message { width: 18%; }
+.enquiry-col-date { width: 11%; }
+.enquiry-col-status { width: 10%; }
+.enquiry-col-actions { width: 7%; text-align: center; }
 
 /* Section Cards & Animated Module Cards */
 .admin-card {
@@ -1175,7 +1303,7 @@ body:has(.admin-container) .global-whatsapp-fixed-wrapper,
 
 .admin-table-container {
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: auto;
   border-radius: 10px;
   border: 1px solid var(--admin-card-border);
   background: #FFFFFF;
@@ -1345,13 +1473,14 @@ body:has(.admin-container) .global-whatsapp-fixed-wrapper,
   to { opacity: 1; }
 }
 
-.modal-content {
+.modal-content,
+.modal-card {
   background-color: #FFFFFF;
   border: 1px solid var(--admin-card-border);
   border-radius: 16px;
   width: 90%;
   max-width: 650px;
-  max-height: 80vh;
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -1362,7 +1491,8 @@ body:has(.admin-container) .global-whatsapp-fixed-wrapper,
   z-index: 1000000;
 }
 
-.modal-content > form {
+.modal-content > form,
+.modal-card > form {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -1793,28 +1923,28 @@ body:has(.admin-container) .global-whatsapp-fixed-wrapper,
   /* Table Column Percentages */
   .admin-table th:nth-child(1),
   .admin-table td:nth-child(1) {
-    width: 36%;
+    width: 28%;
   }
 
   .admin-table th:nth-child(2),
   .admin-table td:nth-child(2) {
-    width: 20%;
+    width: 16%;
   }
 
   .admin-table th:nth-child(3),
   .admin-table td:nth-child(3) {
-    width: 16%;
+    width: 12%;
   }
 
   .admin-table th:nth-child(4),
   .admin-table td:nth-child(4) {
-    width: 14%;
+    width: 12%;
   }
 
   .admin-table th:nth-child(5),
   .admin-table td:nth-child(5) {
-    width: 14%;
-    text-align: center !important;
+    width: 32%;
+    text-align: right !important;
   }
 
   .product-cell {

@@ -125,7 +125,10 @@ const Home = () => {
       {/* Hero Carousel Banner Section */}
       {visibility.heroSlider !== false && <Hero data={heroSlides} />}
 
-      <ScrollReveal variant="up"><CompanySection /></ScrollReveal>
+      {/* 2. Trusted By Retail Partners */}
+      {visibility.trustedBy !== false && (
+        <ScrollReveal variant="up"><CompanySection /></ScrollReveal>
+      )}
 
       {/* Featured Products Section */}
       {visibility.featuredProducts !== false && (
@@ -135,8 +138,8 @@ const Home = () => {
       <ScrollReveal variant="up"><ShopCategory /></ScrollReveal>
       
       <Suspense fallback={<SectionLoader />}>
-        {/* Popular Products */}
-        {visibility.featuredProducts !== false && (
+        {/* Popular Products Coverflow Carousel */}
+        {visibility.popularProducts !== false && (
           <ScrollReveal variant="up"><PopularProduct /></ScrollReveal>
         )}
 

@@ -1,12 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   FiGrid,
   FiHome,
   FiPackage,
   FiBriefcase,
+  FiLayout,
   FiX,
   FiChevronLeft,
-  FiChevronRight
+  FiChevronRight,
+  FiChevronDown,
+  FiChevronUp,
+  FiTag,
+  FiList
 } from 'react-icons/fi'
 import { FaCommentDots } from 'react-icons/fa'
 
@@ -18,11 +23,14 @@ const AdminSidebar = ({
   isCollapsed,
   setIsCollapsed
 }) => {
+  const isProductTabGroup = ['product', 'category', 'enquiry'].includes(activeTab)
+  const [isProductMenuOpen, setIsProductMenuOpen] = useState(true)
+
   const navItems = [
     { id: 'overview', label: 'Dashboard Overview', icon: FiGrid },
     { id: 'homepage', label: 'Homepage Settings', icon: FiHome },
-    { id: 'company', label: 'Company Settings', icon: FiBriefcase },
-    { id: 'product', label: 'Product Management', icon: FiPackage }
+    { id: 'footer', label: 'Footer Settings', icon: FiLayout },
+    { id: 'company', label: 'Company Settings', icon: FiBriefcase }
   ]
 
   return (
@@ -35,7 +43,7 @@ const AdminSidebar = ({
         title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
         aria-label="Toggle Sidebar Collapse"
       >
-        {isCollapsed ? <FiChevronRight size={24} /> : <FiChevronLeft size={24} />}
+        {isCollapsed ? <FiChevronRight size={14} /> : <FiChevronLeft size={14} />}
       </button>
 
       {/* Sidebar Top Brand Header with QuickEnquiry Logo */}
@@ -88,6 +96,141 @@ const AdminSidebar = ({
             </button>
           )
         })}
+
+        {/* Product Management Group with Dropdown */}
+        <div className="admin-nav-group" style={{ width: '100%' }}>
+          <button
+            type="button"
+            className={`admin-nav-item ${isProductTabGroup ? 'active' : ''}`}
+            title={isCollapsed ? 'Product Management' : ''}
+            onClick={() => {
+              if (isCollapsed) {
+                setIsCollapsed(false)
+                setIsProductMenuOpen(true)
+              } else {
+                setIsProductMenuOpen(!isProductMenuOpen)
+              }
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: isCollapsed ? 'center' : 'space-between',
+              cursor: 'pointer'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <FiPackage size={20} className="nav-item-icon" />
+              {!isCollapsed && <span>Product Management</span>}
+            </div>
+
+            {!isCollapsed && (
+              <span style={{ display: 'flex', alignItems: 'center', opacity: 0.85, marginLeft: 'auto' }}>
+                {isProductMenuOpen ? <FiChevronUp size={16} /> : <FiChevronDown size={16} />}
+              </span>
+            )}
+          </button>
+
+          {/* Dropdown submenu showing All Products, Category, and Enquiry */}
+          {!isCollapsed && isProductMenuOpen && (
+            <div
+              className="admin-nav-submenu"
+              style={{
+                marginLeft: '18px',
+                paddingLeft: '10px',
+                borderLeft: '2px solid rgba(255, 255, 255, 0.12)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px',
+                marginTop: '6px',
+                marginBottom: '6px'
+              }}
+            >
+              {/* 1. All Products */}
+              <button
+                type="button"
+                className={`admin-nav-subitem ${activeTab === 'product' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('product')
+                  if (window.innerWidth <= 1024) setIsOpen(false)
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '9px 12px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  fontSize: '0.86rem',
+                  fontWeight: activeTab === 'product' ? 700 : 500,
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  backgroundColor: activeTab === 'product' ? 'rgba(99, 102, 241, 0.25)' : 'transparent',
+                  color: activeTab === 'product' ? '#818CF8' : '#94A3B8',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <FiList size={16} />
+                <span>All Products</span>
+              </button>
+
+              {/* 2. Category */}
+              <button
+                type="button"
+                className={`admin-nav-subitem ${activeTab === 'category' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('category')
+                  if (window.innerWidth <= 1024) setIsOpen(false)
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '9px 12px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  fontSize: '0.86rem',
+                  fontWeight: activeTab === 'category' ? 700 : 500,
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  backgroundColor: activeTab === 'category' ? 'rgba(13, 148, 136, 0.25)' : 'transparent',
+                  color: activeTab === 'category' ? '#2DD4BF' : '#94A3B8',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <FiTag size={16} />
+                <span>Category</span>
+              </button>
+
+              {/* 3. Enquiry */}
+              <button
+                type="button"
+                className={`admin-nav-subitem ${activeTab === 'enquiry' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('enquiry')
+                  if (window.innerWidth <= 1024) setIsOpen(false)
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '9px 12px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  fontSize: '0.86rem',
+                  fontWeight: activeTab === 'enquiry' ? 700 : 500,
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  backgroundColor: activeTab === 'enquiry' ? 'rgba(234, 88, 12, 0.25)' : 'transparent',
+                  color: activeTab === 'enquiry' ? '#FB923C' : '#94A3B8',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <FaCommentDots size={16} />
+                <span>Enquiry</span>
+              </button>
+            </div>
+          )}
+        </div>
       </nav>
 
       {/* Sidebar User Footer */}

@@ -1,19 +1,97 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import { apiService } from '../api/apiService'
+
+const LOCAL_KEY_TRUSTED_BY = 'enquiry_admin_trusted_partners'
+const LOCAL_KEY_SETTINGS = 'enquiry_admin_store_settings'
+
+const defaultCompanies = [
+  'Reliance Retail',
+  'Big Basket',
+  'D-Mart',
+  'Amazon Fresh',
+  'Flipkart',
+  'Jiomart',
+  'Blinkit',
+  'Zepto',
+  'Swiggy Instamart'
+]
 
 const TrustedBy = () => {
-  // List of trusted partner retail companies
-  const companies = [
-    'Reliance Retail',
-    'Bigs Basket',
-    'D-Mart',
-    'Amazon Fresh',
-    'Flipkart',
-    'Jiomart',
-    'Blinkit',
-    'Zepto',
-    'Swiggy Instamart',
-    'Nature\'s Basket/ecom'
-  ]
+  const [label, setLabel] = useState(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_KEY_SETTINGS)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        return parsed.trustedByLabel || 'TRUSTED BY'
+      }
+    } catch {}
+    return 'TRUSTED BY'
+  })
+
+  const [companies, setCompanies] = useState(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_KEY_TRUSTED_BY)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed
+      }
+      const savedSettings = localStorage.getItem(LOCAL_KEY_SETTINGS)
+      if (savedSettings) {
+        const parsed = JSON.parse(savedSettings)
+        if (Array.isArray(parsed.trustedByPartners) && parsed.trustedByPartners.length > 0) {
+          return parsed.trustedByPartners
+        }
+      }
+    } catch {}
+    return defaultCompanies
+  })
+
+  useEffect(() => {
+    const handleSync = () => {
+      try {
+        const saved = localStorage.getItem(LOCAL_KEY_TRUSTED_BY)
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setCompanies(parsed)
+          }
+        }
+        const savedSettings = localStorage.getItem(LOCAL_KEY_SETTINGS)
+        if (savedSettings) {
+          const parsed = JSON.parse(savedSettings)
+          if (parsed.trustedByLabel) {
+            setLabel(parsed.trustedByLabel)
+          }
+          if (!saved && Array.isArray(parsed.trustedByPartners) && parsed.trustedByPartners.length > 0) {
+            setCompanies(parsed.trustedByPartners)
+          }
+        }
+      } catch {}
+    }
+    window.addEventListener('storage', handleSync)
+    return () => window.removeEventListener('storage', handleSync)
+  }, [])
+
+  useEffect(() => {
+    let isMounted = true
+    const fetchRemote = async () => {
+      try {
+        const dbSettings = await apiService.getSettings()
+        if (dbSettings && isMounted) {
+          if (dbSettings.trustedByLabel) {
+            setLabel(dbSettings.trustedByLabel)
+          }
+          if (Array.isArray(dbSettings.trustedByPartners) && dbSettings.trustedByPartners.length > 0) {
+            setCompanies(dbSettings.trustedByPartners)
+          }
+        }
+      } catch {}
+    }
+    fetchRemote()
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   return (
     <section className="trusted-by-section">
@@ -21,7 +99,7 @@ const TrustedBy = () => {
         
         {/* Left Section Label */}
         <div className="trusted-label-box">
-          <span className="trusted-title">TRUSTED BY</span>
+          <span className="trusted-title">{label}</span>
           <span className="trusted-divider"></span>
         </div>
 
@@ -49,4 +127,4 @@ const TrustedBy = () => {
   )
 }
 
-export default TrustedBy
+export default React.memo(TrustedBy)

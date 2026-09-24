@@ -8,8 +8,12 @@ import {
   FiLogOut,
   FiChevronDown,
   FiExternalLink,
-  FiShield
+  FiShield,
+  FiTag,
+  FiLayout,
+  FiBriefcase
 } from 'react-icons/fi'
+import { FaCommentDots } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 
 const AdminHeader = ({ activeTab, setIsOpen, showToast }) => {
@@ -43,12 +47,40 @@ const AdminHeader = ({ activeTab, setIsOpen, showToast }) => {
           icon: <FiSliders size={20} color="#4F46E5" />,
           accentColor: '#4F46E5'
         }
+      case 'footer':
+        return {
+          title: 'Footer Settings',
+          subtitle: 'Customize footer brand story, social profiles, navigation columns, and certifications.',
+          icon: <FiLayout size={20} color="#059669" />,
+          accentColor: '#059669'
+        }
+      case 'company':
+        return {
+          title: 'Company Settings',
+          subtitle: 'Manage company profile, contact details, and organization branding.',
+          icon: <FiBriefcase size={20} color="#D97706" />,
+          accentColor: '#D97706'
+        }
       case 'product':
         return {
           title: 'Product Management',
           subtitle: 'Manage catalog items, stock status, categories, and inventory details.',
-          icon: <FiPackage size={20} color="#059669" />,
-          accentColor: '#059669'
+          icon: <FiPackage size={20} color="#0284C7" />,
+          accentColor: '#0284C7'
+        }
+      case 'category':
+        return {
+          title: 'Category Management',
+          subtitle: 'Organize store departments, catalog groupings, and storefront filters.',
+          icon: <FiTag size={20} color="#0D9488" />,
+          accentColor: '#0D9488'
+        }
+      case 'enquiry':
+        return {
+          title: 'Customer Enquiries & Leads',
+          subtitle: 'Track incoming product quote requests, bulk orders, and buyer contact leads.',
+          icon: <FaCommentDots size={20} color="#EA580C" />,
+          accentColor: '#EA580C'
         }
       case 'overview':
       default:

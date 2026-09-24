@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Award, Users, Sparkles } from 'lucide-react'
 import { FiArrowRight } from 'react-icons/fi'
+import { apiService } from '../api/apiService'
+
+const LOCAL_KEY_SETTINGS = 'enquiry_admin_store_settings'
 
 const AboutCompany = ({
   isBeauty = false,
@@ -17,10 +20,41 @@ const AboutCompany = ({
 }) => {
   const navigate = useNavigate()
 
-  const handleAboutMore = () => {
-    navigate('/about-company')
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
+  // Real-time synchronization with Admin Homepage Settings
+  const [adminSettings, setAdminSettings] = useState(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_KEY_SETTINGS)
+      if (saved) return JSON.parse(saved)
+    } catch {}
+    return {}
+  })
+
+  useEffect(() => {
+    const handleSync = () => {
+      try {
+        const saved = localStorage.getItem(LOCAL_KEY_SETTINGS)
+        if (saved) setAdminSettings(JSON.parse(saved))
+      } catch {}
+    }
+    window.addEventListener('storage', handleSync)
+    return () => window.removeEventListener('storage', handleSync)
+  }, [])
+
+  useEffect(() => {
+    let isMounted = true
+    const fetchRemote = async () => {
+      try {
+        const dbSettings = await apiService.getSettings()
+        if (dbSettings && isMounted) {
+          setAdminSettings((prev) => ({ ...prev, ...dbSettings }))
+        }
+      } catch {}
+    }
+    fetchRemote()
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   // Beauty defaults vs Standard defaults
   const defaultImage = isBeauty
@@ -35,10 +69,45 @@ const AboutCompany = ({
     ? 'Every serum, hydrating gel, and botanical elixir in our collection is carefully formulated with clean, active ingredients to nourish your skin, enhance natural glow, and elevate your daily self-care ritual.'
     : 'Every product in our catalogue is carefully selected and quality-checked to ensure it meets our high standards. We believe that great products and great service go hand in hand.'
 
-  const b1Number = badge1Number || (isBeauty ? '12+' : '12+')
-  const b1Label = badge1Label || (isBeauty ? 'YEARS IN BEAUTY' : 'YEARS ESTABLISHED')
-  const b2Number = badge2Number || (isBeauty ? '100%' : '35+')
-  const b2Label = badge2Label || (isBeauty ? 'CRUELTY FREE & VEGAN' : 'TEAM MEMBERS')
+  // Dynamic values with priority: props -> admin settings -> standard/beauty defaults
+  const activeImage = image || adminSettings.homeAboutImage || defaultImage
+  const activeSubtitle =
+    subtitle !== '— WHO WE ARE'
+      ? subtitle
+      : adminSettings.homeAboutSubtitle || '— WHO WE ARE'
+  const activeTitle = title || adminSettings.homeAboutTitle
+  const activeDesc1 = description1 || adminSettings.homeAboutDesc1 || defaultDesc1
+  const activeDesc2 = description2 || adminSettings.homeAboutDesc2 || defaultDesc2
+  const b1Number = badge1Number || adminSettings.homeAboutBadge1Number || (isBeauty ? '12+' : '12+')
+  const b1Label = badge1Label || adminSettings.homeAboutBadge1Label || (isBeauty ? 'YEARS IN BEAUTY' : 'YEARS ESTABLISHED')
+  const b2Number = badge2Number || adminSettings.homeAboutBadge2Number || (isBeauty ? '100%' : '35+')
+  const b2Label = badge2Label || adminSettings.homeAboutBadge2Label || (isBeauty ? 'CRUELTY FREE & VEGAN' : 'TEAM MEMBERS')
+  const btnText = adminSettings.homeAboutBtnText || 'About More'
+  const btnLink = adminSettings.homeAboutBtnLink || '/about-company'
+
+  const handleAboutMore = () => {
+    navigate(btnLink)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const renderTitle = () => {
+    if (activeTitle) {
+      if (activeTitle.includes('Company')) {
+        const parts = activeTitle.split('Company')
+        return (
+          <h2 className="about-title">
+            {parts[0]}<span className="about-title-blue">Company</span>{parts[1]}
+          </h2>
+        )
+      }
+      return <h2 className="about-title">{activeTitle}</h2>
+    }
+    return (
+      <h2 className="about-title">
+        About Our <span className="about-title-blue">{isBeauty ? 'Beauty Care' : 'Company'}</span>
+      </h2>
+    )
+  }
 
   return (
     <section className="about-company-section">
@@ -53,14 +122,14 @@ const AboutCompany = ({
             
             {/* Main Image */}
             <img 
-              src={image || defaultImage} 
+              src={activeImage} 
               alt={isBeauty ? 'Our Beauty Brand Journey' : 'Our Company Journey'} 
               className="about-main-img"
               loading="lazy"
               decoding="async"
               onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = defaultImage;
+                e.target.onerror = null
+                e.target.src = defaultImage
               }}
             />
 
@@ -92,22 +161,16 @@ const AboutCompany = ({
         {/* Right Column: Text Content & CTA */}
         <div className="about-content-column">
           
-          <span className="about-subtitle-tag">{subtitle}</span>
+          <span className="about-subtitle-tag">{activeSubtitle}</span>
           
-          {title ? (
-            <h2 className="about-title">{title}</h2>
-          ) : (
-            <h2 className="about-title">
-              About Our <span className="about-title-blue">{isBeauty ? 'Beauty Care' : 'Company'}</span>
-            </h2>
-          )}
+          {renderTitle()}
 
           <p className="about-description">
-            {description1 || defaultDesc1}
+            {activeDesc1}
           </p>
 
           <p className="about-description">
-            {description2 || defaultDesc2}
+            {activeDesc2}
           </p>
 
           {/* CTA Button */}
@@ -116,7 +179,7 @@ const AboutCompany = ({
             className="about-cta-btn" 
             onClick={handleAboutMore}
           >
-            About More <FiArrowRight size={16} className="btn-arrow" />
+            {btnText} <FiArrowRight size={16} className="btn-arrow" />
           </button>
 
         </div>

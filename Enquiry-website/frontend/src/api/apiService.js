@@ -84,6 +84,13 @@ export const apiService = {
     return data && data.success ? data.data : null
   },
 
+  updateEnquiryStatus: async (id, status) => {
+    return await fetchAPI(`/enquiries/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status })
+    })
+  },
+
   // Hero Slides API
   getHeroSlides: async () => {
     const data = await fetchAPI('/hero-slides')

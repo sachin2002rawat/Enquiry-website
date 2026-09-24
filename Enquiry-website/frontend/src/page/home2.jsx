@@ -89,14 +89,17 @@ const Home2 = () => {
       <Topbar />
       <Navbar />
       {visibility.heroSlider !== false && <Hero data={beautyHeroImages} />}
-      <ScrollReveal variant="up"><CompanySection isBeauty={true} /></ScrollReveal>
+      {visibility.trustedBy !== false && (
+        <ScrollReveal variant="up"><CompanySection isBeauty={true} /></ScrollReveal>
+      )}
       {visibility.featuredProducts !== false && (
         <ScrollReveal variant="up"><WideRangeProducts data={beautyProductsData} isBeauty={true} /></ScrollReveal>
       )}
       <ScrollReveal variant="up"><ShopCategory data={beautyProductsData} isBeauty={true} /></ScrollReveal>
       
       <Suspense fallback={<SectionLoader />}>
-        {visibility.featuredProducts !== false && (
+        {/* Popular Products Coverflow Carousel */}
+        {visibility.popularProducts !== false && (
           <ScrollReveal variant="up"><PopularProduct data={beautyProductsData} isBeauty={true} /></ScrollReveal>
         )}
         {visibility.whyChoose !== false && (

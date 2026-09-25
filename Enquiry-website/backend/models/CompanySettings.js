@@ -419,6 +419,23 @@ const companySettingsSchema = new mongoose.Schema(
     footerCopyright: {
       type: String,
       default: '©2025 QuickEnquiry. London, UK. All materials are protected. Crafted with ♡ by Appoint Distributors.'
+    },
+
+    // Outbound SMTP & Email Delivery Settings
+    smtp: {
+      enabled: { type: Boolean, default: true },
+      provider: { type: String, default: 'gmail' },
+      host: { type: String, default: 'smtp.gmail.com' },
+      port: { type: Number, default: 587 },
+      encryption: { type: String, default: 'TLS' },
+      user: { type: String, default: 'notifications@quick-enquiry.co' },
+      password: { type: String, default: '' },
+      fromName: { type: String, default: 'QuickEnquiry Notifications' },
+      fromEmail: { type: String, default: 'no-reply@quick-enquiry.co' },
+      replyTo: { type: String, default: 'support@quick-enquiry.co' },
+      notifyOnNewEnquiry: { type: Boolean, default: true },
+      sendCustomerReceipt: { type: Boolean, default: true },
+      lowStockAlert: { type: Boolean, default: false }
     }
   },
   { timestamps: true }

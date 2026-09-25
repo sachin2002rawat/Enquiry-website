@@ -11,7 +11,8 @@ import {
   FiChevronDown,
   FiChevronUp,
   FiTag,
-  FiList
+  FiList,
+  FiSettings
 } from 'react-icons/fi'
 import { FaCommentDots } from 'react-icons/fa'
 
@@ -231,6 +232,21 @@ const AdminSidebar = ({
             </div>
           )}
         </div>
+
+        {/* Settings Navigation Item */}
+        <button
+          type="button"
+          className={`admin-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
+          title={isCollapsed ? 'Settings' : ''}
+          onClick={() => {
+            setActiveTab('settings')
+            if (window.innerWidth <= 1024) setIsOpen(false)
+          }}
+          style={{ width: '100%' }}
+        >
+          <FiSettings size={20} className="nav-item-icon" />
+          {!isCollapsed && <span>Settings</span>}
+        </button>
       </nav>
 
       {/* Sidebar User Footer */}

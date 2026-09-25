@@ -13,7 +13,8 @@ import {
   FiPhone,
   FiMail,
   FiMapPin,
-  FiGlobe
+  FiGlobe,
+  FiLink
 } from 'react-icons/fi'
 import {
   FaFacebookF,
@@ -169,23 +170,136 @@ const FooterSettings = ({ storeSettings, setStoreSettings, showToast }) => {
 
   return (
     <div className="admin-homepage-settings">
-      {/* Top Header Banner */}
-      <div className="settings-page-header" style={{ marginBottom: '24px' }}>
-        <div>
-          <h1 className="settings-main-title" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <FiLayout size={24} color="#059669" /> Footer Settings & Customization
-          </h1>
-          <p className="settings-main-subtitle">
-            Configure footer branding, story description, category links, navigation links, certification badges, and contact details.
-          </p>
+      {/* 1. TOP HEADER BANNER CARD */}
+      <div className="admin-card" style={{ marginBottom: '20px' }}>
+        <div className="admin-card-header" style={{ marginBottom: 0, borderBottom: 'none', flexWrap: 'wrap', gap: '16px' }}>
+          <div className="card-title-group">
+            <div
+              className="card-title-icon-wrapper"
+              style={{
+                backgroundColor: '#ECFDF5',
+                color: '#059669',
+                boxShadow: '0 4px 12px rgba(5, 150, 105, 0.15)'
+              }}
+            >
+              <FiLayout className="card-title-icon" size={22} />
+            </div>
+            <div>
+              <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <h2 className="card-title" style={{ fontSize: '1.25rem', fontWeight: 800 }}>
+                  Footer Settings & Customization
+                </h2>
+                <span
+                  className="live-count-badge"
+                  style={{
+                    backgroundColor: '#ECFDF5',
+                    color: '#059669',
+                    border: '1px solid #A7F3D0',
+                    fontWeight: 700
+                  }}
+                >
+                  Live Storefront Footer
+                </span>
+                <span
+                  style={{
+                    backgroundColor: '#EFF6FF',
+                    color: '#2563EB',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    padding: '2px 8px',
+                    borderRadius: '12px',
+                    border: '1px solid #BFDBFE'
+                  }}
+                >
+                  Dark Theme (#0F172A)
+                </span>
+              </div>
+              <p className="card-subtitle" style={{ margin: '4px 0 0 0', maxWidth: '680px' }}>
+                Configure footer branding, story description, category links, navigation links, certification badges, and customer support channels.
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={handleResetDefaults}
+              style={{
+                fontSize: '0.84rem',
+                padding: '9px 16px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <FiRotateCcw size={15} /> Reset Defaults
+            </button>
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={handleSaveFooter}
+              style={{
+                backgroundColor: '#059669',
+                borderColor: '#059669',
+                boxShadow: '0 4px 12px rgba(5, 150, 105, 0.25)',
+                fontSize: '0.84rem',
+                padding: '9px 20px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+            >
+              <FiSave size={16} /> Save Footer Settings
+            </button>
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button type="button" className="btn-secondary" onClick={handleResetDefaults}>
-            <FiRotateCcw size={16} /> Reset Defaults
-          </button>
-          <button type="button" className="btn-primary" onClick={handleSaveFooter} style={{ backgroundColor: '#059669', borderColor: '#059669' }}>
-            <FiSave size={16} /> Save Footer Settings
-          </button>
+      </div>
+
+      {/* 2. STATS & QUICK-JUMP KPI METRICS */}
+      <div className="kpi-grid" style={{ marginBottom: '24px' }}>
+        <div className="kpi-card" style={{ borderLeft: '4px solid #059669' }}>
+          <div className="kpi-icon-wrapper" style={{ backgroundColor: '#ECFDF5', color: '#059669' }}>
+            <FiGlobe size={20} />
+          </div>
+          <div className="kpi-details">
+            <span className="kpi-label">Brand & Story</span>
+            <span className="kpi-value">{formData.footerBrandName || 'Brand'}</span>
+            <span className="kpi-meta" style={{ color: '#059669' }}>5 Social profiles linked</span>
+          </div>
+        </div>
+
+        <div className="kpi-card" style={{ borderLeft: '4px solid #16A34A' }}>
+          <div className="kpi-icon-wrapper" style={{ backgroundColor: '#F0FDF4', color: '#16A34A' }}>
+            <FiLayout size={20} />
+          </div>
+          <div className="kpi-details">
+            <span className="kpi-label">{formData.footerCol1Title || 'Category'}</span>
+            <span className="kpi-value">{formData.footerCol1Links?.length || 0} Links</span>
+            <span className="kpi-meta" style={{ color: '#16A34A' }}>Product department tags</span>
+          </div>
+        </div>
+
+        <div className="kpi-card" style={{ borderLeft: '4px solid #2563EB' }}>
+          <div className="kpi-icon-wrapper" style={{ backgroundColor: '#EFF6FF', color: '#2563EB' }}>
+            <FiLink size={20} />
+          </div>
+          <div className="kpi-details">
+            <span className="kpi-label">{formData.footerCol2Title || 'Navigation'}</span>
+            <span className="kpi-value">{formData.footerCol2Links?.length || 0} Links</span>
+            <span className="kpi-meta" style={{ color: '#2563EB' }}>Company & policy pages</span>
+          </div>
+        </div>
+
+        <div className="kpi-card" style={{ borderLeft: '4px solid #D97706' }}>
+          <div className="kpi-icon-wrapper" style={{ backgroundColor: '#FEF3C7', color: '#D97706' }}>
+            <FiShield size={20} />
+          </div>
+          <div className="kpi-details">
+            <span className="kpi-label">Trust Badges</span>
+            <span className="kpi-value">{formData.footerShowBadges ? 'Active' : 'Hidden'}</span>
+            <span className="kpi-meta" style={{ color: '#D97706' }}>ISO 22000, FSSAI certified</span>
+          </div>
         </div>
       </div>
 

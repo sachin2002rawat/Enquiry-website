@@ -577,11 +577,11 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
           <table className="admin-table">
             <thead>
               <tr>
-                <th style={{ width: '28%' }}>Product Details</th>
-                <th style={{ width: '16%' }}>Category</th>
-                <th style={{ width: '12%' }}>Weight / Pack</th>
-                <th style={{ width: '12%' }}>Status</th>
-                <th style={{ width: '32%', textAlign: 'right' }}>Actions</th>
+                <th style={{ width: '30%' }}>Product Details</th>
+                <th style={{ width: '18%' }}>Category</th>
+                <th style={{ width: '16%' }}>Weight / Pack</th>
+                <th style={{ width: '16%' }}>Status</th>
+                <th style={{ width: '20%', textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -620,10 +620,10 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
                                 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80'
                             }}
                           />
-                          <div>
-                            <div className="product-info-name" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <span>{product.name}</span>
-                              <FiEye size={12} color="#6366F1" style={{ opacity: 0.8 }} />
+                          <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                            <div className="product-info-name" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{product.name}</span>
+                              <FiEye size={12} color="#6366F1" style={{ opacity: 0.8, flexShrink: 0 }} />
                             </div>
                             <div className="product-info-sku">
                               {product.sku ||
@@ -651,33 +651,33 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
                           {isInStock ? 'In Stock' : 'Out of Stock'}
                         </button>
                       </td>
-                      <td style={{ textAlign: 'right', whiteSpace: 'nowrap', paddingRight: '12px' }}>
+                      <td style={{ textAlign: 'right', whiteSpace: 'nowrap', paddingRight: '6px' }}>
                         {isDeletingThis ? (
                           <div
                             style={{
                               display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'flex-end',
-                              gap: '5px',
+                              gap: '4px',
                               backgroundColor: '#FEF2F2',
                               border: '1px solid #FECACA',
-                              borderRadius: '8px',
-                              padding: '3px 6px',
+                              borderRadius: '6px',
+                              padding: '2px 5px',
                               boxShadow: '0 2px 5px rgba(239, 68, 68, 0.08)'
                             }}
                           >
                             <span
                               style={{
-                                fontSize: '0.74rem',
+                                fontSize: '0.72rem',
                                 color: '#991B1B',
                                 fontWeight: 600,
                                 whiteSpace: 'nowrap',
                                 display: 'inline-flex',
                                 alignItems: 'center',
-                                gap: '3px'
+                                gap: '2px'
                               }}
                             >
-                              <FiAlertTriangle size={12} style={{ color: '#DC2626' }} />
+                              <FiAlertTriangle size={11} style={{ color: '#DC2626' }} />
                               Delete?
                             </span>
                             <button
@@ -686,9 +686,9 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
                                 backgroundColor: '#DC2626',
                                 color: '#FFFFFF',
                                 border: 'none',
-                                borderRadius: '6px',
-                                padding: '4px 8px',
-                                fontSize: '0.74rem',
+                                borderRadius: '5px',
+                                padding: '3px 7px',
+                                fontSize: '0.72rem',
                                 fontWeight: 700,
                                 cursor: 'pointer',
                                 boxShadow: '0 1px 2px rgba(220, 38, 38, 0.25)',
@@ -711,14 +711,14 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
                                 backgroundColor: '#FFFFFF',
                                 color: '#475569',
                                 border: '1px solid #CBD5E1',
-                                borderRadius: '6px',
-                                padding: '4px 8px',
-                                fontSize: '0.74rem',
+                                borderRadius: '5px',
+                                padding: '3px 7px',
+                                fontSize: '0.72rem',
                                 fontWeight: 600,
                                 cursor: 'pointer',
                                 display: 'inline-flex',
                                 alignItems: 'center',
-                                gap: '3px',
+                                gap: '2px',
                                 transition: 'all 0.15s ease'
                               }}
                               onMouseEnter={(e) => {
@@ -733,7 +733,7 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
                               }}
                               onClick={() => setDeleteTarget(null)}
                             >
-                              <FiX size={13} style={{ strokeWidth: 2.5 }} />
+                              <FiX size={12} style={{ strokeWidth: 2.5 }} />
                               Cancel
                             </button>
                           </div>
@@ -743,7 +743,7 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'flex-end',
-                              gap: '6px'
+                              gap: '4px'
                             }}
                           >
                             <button

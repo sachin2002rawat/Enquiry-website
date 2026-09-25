@@ -11,7 +11,8 @@ import {
   FiShield,
   FiTag,
   FiLayout,
-  FiBriefcase
+  FiBriefcase,
+  FiSettings
 } from 'react-icons/fi'
 import { FaCommentDots } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
@@ -81,6 +82,13 @@ const AdminHeader = ({ activeTab, setIsOpen, showToast }) => {
           subtitle: 'Track incoming product quote requests, bulk orders, and buyer contact leads.',
           icon: <FaCommentDots size={20} color="#EA580C" />,
           accentColor: '#EA580C'
+        }
+      case 'settings':
+        return {
+          title: 'System & Platform Settings',
+          subtitle: 'Configure store preferences, currency, alerts, and data maintenance.',
+          icon: <FiSettings size={20} color="#6366F1" />,
+          accentColor: '#6366F1'
         }
       case 'overview':
       default:

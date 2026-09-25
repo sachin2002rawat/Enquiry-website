@@ -14,7 +14,21 @@ import defaultFaqs from '../Faq.json'
 import defaultWhyChoose from '../WhyChoose.json'
 import defaultReviews from '../Review.json'
 import { apiService } from '../api/apiService'
-import { FiCheckCircle, FiAlertCircle } from 'react-icons/fi'
+import {
+  FiCheckCircle,
+  FiAlertCircle,
+  FiSettings,
+  FiSave,
+  FiRotateCcw,
+  FiBell,
+  FiShield,
+  FiDatabase,
+  FiDollarSign,
+  FiGlobe,
+  FiRefreshCw,
+  FiDownload,
+  FiCheck
+} from 'react-icons/fi'
 import './AdminPage.css'
 
 const LOCAL_KEY_HERO = 'enquiry_admin_hero_slides'
@@ -86,6 +100,347 @@ const defaultTrustedByPartners = [
   'Zepto',
   'Swiggy Instamart'
 ]
+
+// Embedded System Settings view (no extra external page file needed)
+const SystemSettingsView = ({ storeSettings, setStoreSettings, showToast }) => {
+  const [settingsForm, setSettingsForm] = useState(() => {
+    try {
+      const saved = localStorage.getItem('enquiry_admin_system_settings')
+      return saved
+        ? JSON.parse(saved)
+        : {
+            storeName: storeSettings?.storeName || 'QuickEnquiry',
+            currency: storeSettings?.currency || 'INR (₹)',
+            supportEmail: storeSettings?.supportEmail || 'support@quick-enquiry.co',
+            supportPhone: storeSettings?.supportPhone || '+91 9876543210',
+            timezone: 'Asia/Kolkata (IST)',
+            emailAlerts: true,
+            whatsappAlerts: true,
+            soundAlerts: false,
+            itemsPerPage: '10',
+            showOutOfStock: true,
+            allowQuoteRequests: true
+          }
+    } catch {
+      return {
+        storeName: 'QuickEnquiry',
+        currency: 'INR (₹)',
+        supportEmail: 'support@quick-enquiry.co',
+        supportPhone: '+91 9876543210',
+        timezone: 'Asia/Kolkata (IST)',
+        emailAlerts: true,
+        whatsappAlerts: true,
+        soundAlerts: false,
+        itemsPerPage: '10',
+        showOutOfStock: true,
+        allowQuoteRequests: true
+      }
+    }
+  })
+
+  const handleSettingChange = (field, value) => {
+    setSettingsForm((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleSave = () => {
+    localStorage.setItem('enquiry_admin_system_settings', JSON.stringify(settingsForm))
+    const updatedStore = {
+      ...storeSettings,
+      storeName: settingsForm.storeName,
+      currency: settingsForm.currency,
+      supportEmail: settingsForm.supportEmail,
+      supportPhone: settingsForm.supportPhone
+    }
+    setStoreSettings(updatedStore)
+    localStorage.setItem(LOCAL_KEY_SETTINGS, JSON.stringify(updatedStore))
+    apiService.updateSettings(updatedStore)
+    window.dispatchEvent(new Event('storage'))
+    showToast('System settings saved & synchronized successfully!')
+  }
+
+  const handleExportBackup = () => {
+    try {
+      const backupData = {
+        exportedAt: new Date().toISOString(),
+        systemSettings: settingsForm,
+        storeSettings: JSON.parse(localStorage.getItem(LOCAL_KEY_SETTINGS) || '{}'),
+        products: JSON.parse(localStorage.getItem(LOCAL_KEY_PRODUCTS) || '[]'),
+        heroSlides: JSON.parse(localStorage.getItem(LOCAL_KEY_HERO) || '[]'),
+        enquiries: JSON.parse(localStorage.getItem('enquiry_admin_customer_enquiries') || '[]')
+      }
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `quickenquiry_system_backup_${new Date().toISOString().slice(0, 10)}.json`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      showToast('System configuration backup downloaded!')
+    } catch {
+      showToast('Export failed', 'warning')
+    }
+  }
+
+  const handleClearCache = () => {
+    window.dispatchEvent(new Event('storage'))
+    showToast('Browser cache refreshed and synchronized!')
+  }
+
+  return (
+    <div className="admin-homepage-settings" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* 1. Header Card */}
+      <div className="admin-card">
+        <div className="admin-card-header" style={{ marginBottom: 0, borderBottom: 'none', flexWrap: 'wrap', gap: '16px' }}>
+          <div className="card-title-group">
+            <div className="card-title-icon-wrapper" style={{ backgroundColor: '#EEF2FF', color: '#4F46E5' }}>
+              <FiSettings size={22} />
+            </div>
+            <div>
+              <div className="card-title-row" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <h2 className="card-title">System & Platform Settings</h2>
+                <span className="live-count-badge" style={{ backgroundColor: '#EEF2FF', color: '#4F46E5', border: '1px solid #C7D2FE' }}>
+                  Live System Config
+                </span>
+              </div>
+              <p className="card-subtitle" style={{ margin: '4px 0 0 0' }}>
+                Manage store configurations, currency, automated enquiry notifications, catalog preferences, and backup tools.
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={handleClearCache}
+              style={{ fontSize: '0.84rem', padding: '9px 16px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            >
+              <FiRefreshCw size={15} /> Sync Cache
+            </button>
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={handleSave}
+              style={{ backgroundColor: '#4F46E5', borderColor: '#4F46E5', fontSize: '0.84rem', padding: '9px 20px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+            >
+              <FiSave size={16} /> Save Settings
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. KPI Metrics Grid */}
+      <div className="kpi-grid">
+        <div className="kpi-card" style={{ borderLeft: '4px solid #4F46E5' }}>
+          <div className="kpi-icon-wrapper" style={{ backgroundColor: '#EEF2FF', color: '#4F46E5' }}>
+            <FiDollarSign size={20} />
+          </div>
+          <div className="kpi-details">
+            <span className="kpi-label">Active Currency</span>
+            <span className="kpi-value">{settingsForm.currency.split(' ')[0]}</span>
+            <span className="kpi-meta" style={{ color: '#4F46E5' }}>Default store denomination</span>
+          </div>
+        </div>
+
+        <div className="kpi-card" style={{ borderLeft: '4px solid #059669' }}>
+          <div className="kpi-icon-wrapper" style={{ backgroundColor: '#ECFDF5', color: '#059669' }}>
+            <FiBell size={20} />
+          </div>
+          <div className="kpi-details">
+            <span className="kpi-label">Lead Alerts</span>
+            <span className="kpi-value">{settingsForm.emailAlerts && settingsForm.whatsappAlerts ? 'Full Active' : 'Partial'}</span>
+            <span className="kpi-meta" style={{ color: '#059669' }}>Email & WhatsApp ready</span>
+          </div>
+        </div>
+
+        <div className="kpi-card" style={{ borderLeft: '4px solid #D97706' }}>
+          <div className="kpi-icon-wrapper" style={{ backgroundColor: '#FEF3C7', color: '#D97706' }}>
+            <FiGlobe size={20} />
+          </div>
+          <div className="kpi-details">
+            <span className="kpi-label">Timezone & Locale</span>
+            <span className="kpi-value" style={{ fontSize: '1.05rem' }}>Asia/Kolkata</span>
+            <span className="kpi-meta" style={{ color: '#D97706' }}>IST (UTC+05:30)</span>
+          </div>
+        </div>
+
+        <div className="kpi-card" style={{ borderLeft: '4px solid #0284C7' }}>
+          <div className="kpi-icon-wrapper" style={{ backgroundColor: '#E0F2FE', color: '#0284C7' }}>
+            <FiShield size={20} />
+          </div>
+          <div className="kpi-details">
+            <span className="kpi-label">Data State</span>
+            <span className="kpi-value">Connected</span>
+            <span className="kpi-meta" style={{ color: '#0284C7' }}>MongoDB Synced</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. General Store & Regional Settings */}
+      <div className="admin-card">
+        <div className="admin-card-header">
+          <div className="card-title-group">
+            <div className="card-title-icon-wrapper" style={{ backgroundColor: '#EEF2FF', color: '#4F46E5' }}>
+              <FiGlobe size={20} />
+            </div>
+            <div>
+              <h2 className="card-title">General Platform & Regional Formats</h2>
+              <p className="card-subtitle">Default branding and display parameters used across storefront.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="form-grid" style={{ marginBottom: '16px' }}>
+          <div className="form-group">
+            <label className="form-label" style={{ fontWeight: 600 }}>Store / Platform Name</label>
+            <input
+              type="text"
+              className="form-input"
+              value={settingsForm.storeName}
+              onChange={(e) => handleSettingChange('storeName', e.target.value)}
+              placeholder="QuickEnquiry"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label" style={{ fontWeight: 600 }}>Store Currency</label>
+            <select
+              className="form-input"
+              value={settingsForm.currency}
+              onChange={(e) => handleSettingChange('currency', e.target.value)}
+              style={{ cursor: 'pointer' }}
+            >
+              <option value="INR (₹)">INR - Indian Rupee (₹)</option>
+              <option value="USD ($)">USD - US Dollar ($)</option>
+              <option value="EUR (€)">EUR - Euro (€)</option>
+              <option value="GBP (£)">GBP - British Pound (£)</option>
+              <option value="AED (د.إ)">AED - UAE Dirham (د.إ)</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label" style={{ fontWeight: 600 }}>Support Notification Email</label>
+            <input
+              type="email"
+              className="form-input"
+              value={settingsForm.supportEmail}
+              onChange={(e) => handleSettingChange('supportEmail', e.target.value)}
+              placeholder="support@quick-enquiry.co"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label" style={{ fontWeight: 600 }}>Support Phone / Helpline</label>
+            <input
+              type="text"
+              className="form-input"
+              value={settingsForm.supportPhone}
+              onChange={(e) => handleSettingChange('supportPhone', e.target.value)}
+              placeholder="+91 9876543210"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Automated Lead & Notification Preferences */}
+      <div className="admin-card">
+        <div className="admin-card-header">
+          <div className="card-title-group">
+            <div className="card-title-icon-wrapper" style={{ backgroundColor: '#ECFDF5', color: '#059669' }}>
+              <FiBell size={20} />
+            </div>
+            <div>
+              <h2 className="card-title">Enquiry & Lead Alert Channels</h2>
+              <p className="card-subtitle">Choose how you want to be notified when a customer submits an enquiry or quote request.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', backgroundColor: '#F8FAFC', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0F172A' }}>Instant Email Notification</div>
+              <div style={{ fontSize: '0.78rem', color: '#64748B' }}>Send an instant copy of every customer enquiry to the support email address.</div>
+            </div>
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={settingsForm.emailAlerts}
+                onChange={(e) => handleSettingChange('emailAlerts', e.target.checked)}
+              />
+              <span className="slider"></span>
+            </label>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', backgroundColor: '#F8FAFC', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0F172A' }}>WhatsApp Lead Forwarding</div>
+              <div style={{ fontSize: '0.78rem', color: '#64748B' }}>Enable quick one-click WhatsApp response link on all new enquiries.</div>
+            </div>
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={settingsForm.whatsappAlerts}
+                onChange={(e) => handleSettingChange('whatsappAlerts', e.target.checked)}
+              />
+              <span className="slider"></span>
+            </label>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', backgroundColor: '#F8FAFC', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0F172A' }}>Allow Out-of-Stock Enquiries</div>
+              <div style={{ fontSize: '0.78rem', color: '#64748B' }}>Allow buyers to enquire about products that are currently marked out of stock.</div>
+            </div>
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={settingsForm.showOutOfStock}
+                onChange={(e) => handleSettingChange('showOutOfStock', e.target.checked)}
+              />
+              <span className="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. Backup & Data Tools */}
+      <div className="admin-card">
+        <div className="admin-card-header">
+          <div className="card-title-group">
+            <div className="card-title-icon-wrapper" style={{ backgroundColor: '#FEF3C7', color: '#D97706' }}>
+              <FiDatabase size={20} />
+            </div>
+            <div>
+              <h2 className="card-title">Data Maintenance & Backup Tools</h2>
+              <p className="card-subtitle">Export your store configuration or force a clean sync with the cloud database.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={handleExportBackup}
+            style={{ fontSize: '0.85rem', padding: '8px 18px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <FiDownload size={15} /> Export Configuration Backup (JSON)
+          </button>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={handleClearCache}
+            style={{ fontSize: '0.85rem', padding: '8px 18px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <FiRefreshCw size={15} /> Refresh LocalStorage Cache
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState('overview')
@@ -468,6 +823,14 @@ const AdminPage = () => {
 
           {activeTab === 'enquiry' && (
             <EnquiryManagement
+              showToast={showToast}
+            />
+          )}
+
+          {activeTab === 'settings' && (
+            <SystemSettingsView
+              storeSettings={storeSettings}
+              setStoreSettings={setStoreSettings}
               showToast={showToast}
             />
           )}

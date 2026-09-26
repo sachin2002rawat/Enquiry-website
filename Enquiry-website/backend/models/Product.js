@@ -51,6 +51,21 @@ const productSchema = new mongoose.Schema(
     slug: {
       type: String,
       trim: true
+    },
+    seoTitle: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    metaDescription: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    metaKeywords: {
+      type: String,
+      default: '',
+      trim: true
     }
   },
   {

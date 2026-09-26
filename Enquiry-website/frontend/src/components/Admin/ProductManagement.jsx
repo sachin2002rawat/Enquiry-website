@@ -19,20 +19,44 @@ import {
   FiLink,
   FiEye,
   FiStar,
-  FiArrowRight
+  FiArrowRight,
+  FiGlobe,
+  FiZap
 } from 'react-icons/fi'
 import { apiService } from '../../api/apiService'
 
 const ITEMS_PER_PAGE = 5
 
-const ProductManagement = ({ products, setProducts, showToast, globalSearch }) => {
+const ProductManagement = ({
+  products,
+  setProducts,
+  showToast,
+  globalSearch,
+  selectedCategoryProp,
+  onCategoryChange
+}) => {
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('ALL')
+  const [selectedCategory, setSelectedCategory] = useState(selectedCategoryProp || 'ALL')
   const [currentPage, setCurrentPage] = useState(1)
+
+  // Sync state if selectedCategoryProp changes externally (e.g., from CategoryManagement)
+  useEffect(() => {
+    if (selectedCategoryProp !== undefined) {
+      setSelectedCategory(selectedCategoryProp)
+    }
+  }, [selectedCategoryProp])
+
+  const handleCategoryFilterChange = (newCat) => {
+    setSelectedCategory(newCat)
+    if (onCategoryChange) {
+      onCategoryChange(newCat)
+    }
+  }
 
   // Modal State for Add/Edit
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
+  const [modalTab, setModalTab] = useState('general') // 'general' | 'seo'
   const [imageSourceType, setImageSourceType] = useState('upload') // 'upload' | 'url'
   const [formState, setFormState] = useState({
     name: '',
@@ -45,7 +69,10 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
     image: '',
     description: '',
     rating: 4.5,
-    reviewsCount: 10
+    reviewsCount: 10,
+    seoTitle: '',
+    metaDescription: '',
+    metaKeywords: ''
   })
 
   const [uploadedProductFileName, setUploadedProductFileName] = useState('')
@@ -109,9 +136,16 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
 
   // Categories list derived from products
   const categories = useMemo(() => {
-    const cats = new Set(products.map((p) => p.category).filter(Boolean))
+    const cats = new Set(
+      products
+        .map((p) => (p.category || '').trim().toUpperCase())
+        .filter(Boolean)
+    )
+    if (selectedCategory && selectedCategory !== 'ALL') {
+      cats.add(selectedCategory.trim().toUpperCase())
+    }
     return ['ALL', ...Array.from(cats)]
-  }, [products])
+  }, [products, selectedCategory])
 
   // Filtered Products
   const filteredProducts = useMemo(() => {
@@ -120,7 +154,11 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
         !activeSearch ||
         p.name.toLowerCase().includes(activeSearch.toLowerCase()) ||
         (p.sku && p.sku.toLowerCase().includes(activeSearch.toLowerCase()))
-      const matchCat = selectedCategory === 'ALL' || p.category === selectedCategory
+
+      const pCat = (p.category || '').trim().toUpperCase()
+      const sCat = (selectedCategory || 'ALL').trim().toUpperCase()
+      const matchCat = sCat === 'ALL' || pCat === sCat
+
       return matchSearch && matchCat
     })
   }, [products, activeSearch, selectedCategory])
@@ -213,6 +251,7 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
   // Open modal for new product
   const handleAddProduct = () => {
     setEditingProduct(null)
+    setModalTab('general')
     setFormState({
       name: '',
       category: categories[1] || 'PURE SPICES',
@@ -224,7 +263,10 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
       image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80',
       description: 'Premium authentic spice product crafted with natural ingredients.',
       rating: 4.8,
-      reviewsCount: 15
+      reviewsCount: 15,
+      seoTitle: '',
+      metaDescription: '',
+      metaKeywords: ''
     })
     setIsModalOpen(true)
   }
@@ -232,6 +274,7 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
   // Open modal for editing product
   const handleEditProduct = (product) => {
     setEditingProduct(product)
+    setModalTab('general')
     setFormState({
       name: product.name || '',
       category: product.category || 'PURE SPICES',
@@ -243,7 +286,10 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
       image: product.image || '',
       description: product.description || '',
       rating: product.rating || 4.5,
-      reviewsCount: product.reviewsCount || 10
+      reviewsCount: product.reviewsCount || 10,
+      seoTitle: product.seoTitle || product.metaTitle || '',
+      metaDescription: product.metaDescription || '',
+      metaKeywords: product.metaKeywords || ''
     })
     setIsModalOpen(true)
   }
@@ -562,7 +608,7 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
           <select
             className="filter-select"
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={(e) => handleCategoryFilterChange(e.target.value)}
           >
             {categories.map((cat) => (
               <option key={cat} value={cat}>
@@ -571,6 +617,64 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
             ))}
           </select>
         </div>
+
+        {/* Active Category Filter Indicator Banner */}
+        {selectedCategory !== 'ALL' && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              backgroundColor: '#F0FDFA',
+              border: '1px solid #99F6E4',
+              borderRadius: '8px',
+              padding: '8px 16px',
+              margin: '0 20px 14px 20px',
+              fontSize: '0.84rem',
+              color: '#0F766E'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  backgroundColor: '#CCFBF1',
+                  color: '#0D9488',
+                  padding: '3px 8px',
+                  borderRadius: '6px',
+                  fontWeight: 800,
+                  fontSize: '0.78rem'
+                }}
+              >
+                <FiTag size={12} /> {selectedCategory}
+              </span>
+              <span>
+                Showing <strong>{filteredProducts.length}</strong> {filteredProducts.length === 1 ? 'product' : 'products'} for this category
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleCategoryFilterChange('ALL')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#0D9488',
+                fontWeight: 700,
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '3px 8px',
+                borderRadius: '6px'
+              }}
+            >
+              <FiX size={14} /> Clear Category Filter
+            </button>
+          </div>
+        )}
 
         {/* Products Table */}
         <div className="admin-table-container">
@@ -837,243 +941,554 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
           <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
-                <h3 className="modal-title">
-                  {editingProduct ? 'Edit Product Details' : 'Add New Product'}
-                </h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div
+                    style={{
+                      width: '34px',
+                      height: '34px',
+                      borderRadius: '8px',
+                      backgroundColor: '#EEF2FF',
+                      color: 'var(--admin-primary)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <FiPackage size={17} />
+                  </div>
+                  <div>
+                    <h3 className="modal-title" style={{ margin: 0, fontSize: '1.02rem', lineHeight: 1.25 }}>
+                      {editingProduct ? 'Edit Product Details' : 'Add New Product'}
+                    </h3>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', marginTop: '2px' }}>
+                      {editingProduct
+                        ? (editingProduct.sku || editingProduct.category || 'Update product details')
+                        : 'Complete product catalog details'}
+                    </div>
+                  </div>
+                </div>
                 <button className="btn-icon" onClick={() => setIsModalOpen(false)} aria-label="Close">
                   <FiX size={18} />
                 </button>
               </div>
+
+              {/* Modal Sub-navigation Tabs */}
+              <div className="modal-tabs-bar">
+                <button
+                  type="button"
+                  className={`modal-tab-btn ${modalTab === 'general' ? 'active' : ''}`}
+                  onClick={() => setModalTab('general')}
+                >
+                  <FiPackage size={15} />
+                  <span>Product Details</span>
+                </button>
+                <button
+                  type="button"
+                  className={`modal-tab-btn ${modalTab === 'seo' ? 'active' : ''}`}
+                  onClick={() => setModalTab('seo')}
+                >
+                  <FiGlobe size={15} />
+                  <span>Search & SEO</span>
+                  {(formState.seoTitle || formState.metaDescription || formState.metaKeywords) && (
+                    <span className="modal-tab-badge">Configured</span>
+                  )}
+                </button>
+              </div>
+
               <form onSubmit={handleFormSubmit}>
                 <div className="modal-body">
-                  <div className="form-group">
-                    <label className="form-label">Product Name *</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      value={formState.name}
-                      onChange={(e) =>
-                        setFormState({ ...formState, name: e.target.value })
-                      }
-                      placeholder="e.g. Pure Turmeric Powder"
-                      required
-                    />
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label className="form-label">Category</label>
-                      <input
-                        type="text"
-                        className="form-input"
-                        value={formState.category}
-                        onChange={(e) =>
-                          setFormState({ ...formState, category: e.target.value })
-                        }
-                        placeholder="PURE SPICES"
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">SKU Code</label>
-                      <input
-                        type="text"
-                        className="form-input"
-                        value={formState.sku}
-                        onChange={(e) =>
-                          setFormState({ ...formState, sku: e.target.value })
-                        }
-                        placeholder="SKU-GM-001"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label className="form-label">Net Weight / Pack</label>
-                      <input
-                        type="text"
-                        className="form-input"
-                        value={formState.netWeight}
-                        onChange={(e) =>
-                          setFormState({ ...formState, netWeight: e.target.value })
-                        }
-                        placeholder="100g / Pack"
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">Stock Availability</label>
-                      <select
-                        className="form-select"
-                        value={formState.availability}
-                        onChange={(e) =>
-                          setFormState({ ...formState, availability: e.target.value })
-                        }
-                      >
-                        <option value="In Stock">In Stock</option>
-                        <option value="Out of Stock">Out of Stock</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Dual Image Input Mode */}
-                  <div className="form-group">
-                    <label className="form-label">Product Display Image</label>
-
-                    <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                      <button
-                        type="button"
-                        className="btn-secondary"
-                        style={{
-                          flex: 1,
-                          justifyContent: 'center',
-                          fontSize: '0.82rem',
-                          padding: '8px 12px',
-                          backgroundColor:
-                            imageSourceType === 'upload' ? '#EEF2FF' : '#FAF6F0',
-                          borderColor:
-                            imageSourceType === 'upload' ? '#6366F1' : 'var(--admin-card-border)',
-                          color: imageSourceType === 'upload' ? '#4F46E5' : 'var(--admin-text-main)',
-                          fontWeight: 700
-                        }}
-                        onClick={() => setImageSourceType('upload')}
-                      >
-                        <FiUploadCloud size={16} /> Upload Image File
-                      </button>
-                      <button
-                        type="button"
-                        className="btn-secondary"
-                        style={{
-                          flex: 1,
-                          justifyContent: 'center',
-                          fontSize: '0.82rem',
-                          padding: '8px 12px',
-                          backgroundColor:
-                            imageSourceType === 'url' ? '#EEF2FF' : '#FAF6F0',
-                          borderColor:
-                            imageSourceType === 'url' ? '#6366F1' : 'var(--admin-card-border)',
-                          color: imageSourceType === 'url' ? '#4F46E5' : 'var(--admin-text-main)',
-                          fontWeight: 700
-                        }}
-                        onClick={() => setImageSourceType('url')}
-                      >
-                        <FiLink size={16} /> Paste Image Link URL
-                      </button>
-                    </div>
-
-                    {imageSourceType === 'upload' ? (
-                      <div
-                        style={{
-                          border: formState.image ? '2px solid #10B981' : '2px dashed var(--admin-card-border)',
-                          borderRadius: '10px',
-                          padding: '10px 14px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '8px',
-                          backgroundColor: formState.image ? '#ECFDF5' : '#FAF6F0',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease'
-                        }}
-                        onClick={() => document.getElementById('product-file-input').click()}
-                      >
+                  {modalTab === 'general' ? (
+                    <>
+                      <div className="form-group">
+                        <label className="form-label">Product Name *</label>
                         <input
-                          id="product-file-input"
-                          type="file"
-                          accept="image/*"
-                          style={{ display: 'none' }}
-                          onChange={handleProductImageUpload}
+                          type="text"
+                          className="form-input"
+                          value={formState.name}
+                          onChange={(e) =>
+                            setFormState({ ...formState, name: e.target.value })
+                          }
+                          placeholder="e.g. Pure Turmeric Powder"
+                          required
                         />
-                        {formState.image ? (
-                          <>
-                            <FiCheckCircle size={18} color="#10B981" />
-                            <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#059669' }}>
-                              Selected: {uploadedProductFileName || 'Product Image Loaded ✓'}
-                            </div>
-                            <span style={{ fontSize: '0.72rem', color: '#64748B', marginLeft: '6px' }}>(Click to change)</span>
-                          </>
-                        ) : (
-                          <>
-                            <FiUploadCloud size={18} color="#6366F1" />
-                            <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--admin-text-main)' }}>
-                              Click to select image file from device (JPG, PNG, WEBP)
-                            </div>
-                          </>
-                        )}
                       </div>
-                    ) : (
-                      <input
-                        type="text"
-                        className="form-input"
-                        value={formState.image}
-                        onChange={(e) =>
-                          setFormState({ ...formState, image: e.target.value })
-                        }
-                        placeholder="/garam_masala.png or https://..."
-                      />
-                    )}
 
-                    {/* Compact Image Thumbnail Preview */}
-                    {formState.image && (
-                      <div
-                        style={{
-                          marginTop: '8px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '10px',
-                          padding: '6px 10px',
-                          backgroundColor: '#FAF6F0',
-                          border: '1px solid var(--admin-card-border)',
-                          borderRadius: '8px'
-                        }}
-                      >
-                        <img
-                          src={formState.image}
-                          alt="Uploaded Preview"
-                          style={{
-                            width: '54px',
-                            height: '38px',
-                            objectFit: 'cover',
-                            borderRadius: '6px',
-                            border: '1px solid var(--admin-card-border)'
-                          }}
-                          onError={(e) => {
-                            e.target.onerror = null
-                            e.target.style.display = 'none'
-                          }}
-                        />
-                        <div style={{ fontSize: '0.78rem', color: 'var(--admin-text-main)', fontWeight: 600 }}>
-                          Image Preview Ready
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label className="form-label">Category</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={formState.category}
+                            onChange={(e) =>
+                              setFormState({ ...formState, category: e.target.value })
+                            }
+                            placeholder="PURE SPICES"
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">SKU Code</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={formState.sku}
+                            onChange={(e) =>
+                              setFormState({ ...formState, sku: e.target.value })
+                            }
+                            placeholder="SKU-GM-001"
+                          />
                         </div>
                       </div>
-                    )}
 
-                  </div>
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label className="form-label">Net Weight / Pack</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={formState.netWeight}
+                            onChange={(e) =>
+                              setFormState({ ...formState, netWeight: e.target.value })
+                            }
+                            placeholder="100g / Pack"
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Stock Availability</label>
+                          <select
+                            className="form-select"
+                            value={formState.availability}
+                            onChange={(e) =>
+                              setFormState({ ...formState, availability: e.target.value })
+                            }
+                          >
+                            <option value="In Stock">In Stock</option>
+                            <option value="Out of Stock">Out of Stock</option>
+                          </select>
+                        </div>
+                      </div>
 
-                  <div className="form-group">
-                    <label className="form-label">Short Description</label>
-                    <textarea
-                      rows={2}
-                      className="form-textarea"
-                      value={formState.description}
-                      onChange={(e) =>
-                        setFormState({ ...formState, description: e.target.value })
-                      }
-                      placeholder="Brief summary of product features..."
-                    />
-                  </div>
+                      {/* Dual Image Input Mode */}
+                      <div className="form-group">
+                        <label className="form-label">Product Display Image</label>
+
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            style={{
+                              flex: 1,
+                              justifyContent: 'center',
+                              fontSize: '0.82rem',
+                              padding: '8px 12px',
+                              backgroundColor:
+                                imageSourceType === 'upload' ? '#FFFFFF' : '#FAF6F0',
+                              borderColor:
+                                imageSourceType === 'upload' ? 'var(--admin-primary)' : 'var(--admin-card-border)',
+                              color: imageSourceType === 'upload' ? 'var(--admin-primary)' : 'var(--admin-text-main)',
+                              fontWeight: 700
+                            }}
+                            onClick={() => setImageSourceType('upload')}
+                          >
+                            <FiUploadCloud size={16} /> Upload Image File
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            style={{
+                              flex: 1,
+                              justifyContent: 'center',
+                              fontSize: '0.82rem',
+                              padding: '8px 12px',
+                              backgroundColor:
+                                imageSourceType === 'url' ? '#FFFFFF' : '#FAF6F0',
+                              borderColor:
+                                imageSourceType === 'url' ? 'var(--admin-primary)' : 'var(--admin-card-border)',
+                              color: imageSourceType === 'url' ? 'var(--admin-primary)' : 'var(--admin-text-main)',
+                              fontWeight: 700
+                            }}
+                            onClick={() => setImageSourceType('url')}
+                          >
+                            <FiLink size={16} /> Paste Image Link URL
+                          </button>
+                        </div>
+
+                        {imageSourceType === 'upload' ? (
+                          <div
+                            style={{
+                              border: formState.image ? '2px solid #10B981' : '2px dashed var(--admin-card-border)',
+                              borderRadius: '10px',
+                              padding: '12px 14px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '8px',
+                              backgroundColor: formState.image ? '#ECFDF5' : '#FAF6F0',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease'
+                            }}
+                            onClick={() => document.getElementById('product-file-input').click()}
+                          >
+                            <input
+                              id="product-file-input"
+                              type="file"
+                              accept="image/*"
+                              style={{ display: 'none' }}
+                              onChange={handleProductImageUpload}
+                            />
+                            {formState.image ? (
+                              <>
+                                <FiCheckCircle size={18} color="#10B981" />
+                                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#059669' }}>
+                                  Selected: {uploadedProductFileName || 'Product Image Loaded ✓'}
+                                </div>
+                                <span style={{ fontSize: '0.72rem', color: '#64748B', marginLeft: '6px' }}>(Click to change)</span>
+                              </>
+                            ) : (
+                              <>
+                                <FiUploadCloud size={18} color="var(--admin-primary)" />
+                                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--admin-text-main)' }}>
+                                  Click to select image file from device (JPG, PNG, WEBP)
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        ) : (
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={formState.image}
+                            onChange={(e) =>
+                              setFormState({ ...formState, image: e.target.value })
+                            }
+                            placeholder="/garam_masala.png or https://..."
+                          />
+                        )}
+
+                        {/* Compact Image Thumbnail Preview */}
+                        {formState.image && (
+                          <div
+                            style={{
+                              marginTop: '8px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '10px',
+                              padding: '6px 10px',
+                              backgroundColor: '#FAF6F0',
+                              border: '1px solid var(--admin-card-border)',
+                              borderRadius: '8px'
+                            }}
+                          >
+                            <img
+                              src={formState.image}
+                              alt="Uploaded Preview"
+                              style={{
+                                width: '54px',
+                                height: '38px',
+                                objectFit: 'cover',
+                                borderRadius: '6px',
+                                border: '1px solid var(--admin-card-border)'
+                              }}
+                              onError={(e) => {
+                                e.target.onerror = null
+                                e.target.style.display = 'none'
+                              }}
+                            />
+                            <div style={{ fontSize: '0.78rem', color: 'var(--admin-text-main)', fontWeight: 600 }}>
+                              Image Preview Ready
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label">Short Description</label>
+                        <textarea
+                          rows={2}
+                          className="form-textarea"
+                          value={formState.description}
+                          onChange={(e) =>
+                            setFormState({ ...formState, description: e.target.value })
+                          }
+                          placeholder="Brief summary of product features..."
+                        />
+                      </div>
+
+                      {/* Quick SEO Jump Card */}
+                      <div
+                        style={{
+                          marginTop: '10px',
+                          padding: '12px 14px',
+                          borderRadius: '10px',
+                          backgroundColor: '#FAF6F0',
+                          border: '1px solid var(--admin-card-border)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '12px'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div
+                            style={{
+                              width: '32px',
+                              height: '32px',
+                              borderRadius: '8px',
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid var(--admin-card-border)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: 'var(--admin-primary)'
+                            }}
+                          >
+                            <FiGlobe size={16} />
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--admin-text-main)' }}>
+                              Search Engine Optimization (SEO)
+                            </div>
+                            <div style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)' }}>
+                              {formState.seoTitle
+                                ? `Configured title: "${formState.seoTitle.substring(0, 32)}..."`
+                                : 'Configure title, description & preview how it appears on Google.'}
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn-secondary"
+                          style={{ fontSize: '0.78rem', padding: '6px 12px', whiteSpace: 'nowrap' }}
+                          onClick={() => setModalTab('seo')}
+                        >
+                          Configure SEO →
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    /* SEO & SEARCH ENGINE CONFIGURATION VIEW */
+                    <div className="seo-settings-wrap">
+                      <div className="seo-card">
+                        <div className="seo-card-header">
+                          <div>
+                            <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--admin-text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <FiGlobe size={16} color="var(--admin-primary)" />
+                              Search Engine Listing
+                            </div>
+                            <div style={{ fontSize: '0.74rem', color: 'var(--admin-text-muted)', marginTop: '2px' }}>
+                              Customize how this product displays in search engine results and social shares.
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            style={{ fontSize: '0.76rem', padding: '6px 11px', whiteSpace: 'nowrap', gap: '5px' }}
+                            onClick={() => {
+                              const autoTitle = formState.name ? `${formState.name} - Buy Online | Quick Enquiry` : ''
+                              const autoDesc = formState.description || (formState.name ? `Order authentic ${formState.name}. Premium quality available for enquiry and bulk wholesale orders.` : '')
+                              const autoKeywords = [
+                                formState.category,
+                                formState.name,
+                                'wholesale',
+                                'enquiry',
+                                'authentic'
+                              ].filter(Boolean).join(', ').toLowerCase()
+
+                              setFormState((prev) => ({
+                                ...prev,
+                                seoTitle: prev.seoTitle || autoTitle,
+                                metaDescription: prev.metaDescription || autoDesc,
+                                metaKeywords: prev.metaKeywords || autoKeywords
+                              }))
+                              showToast('Auto-generated SEO metadata from product details!')
+                            }}
+                          >
+                            <FiZap size={14} color="var(--admin-primary)" /> Auto-Fill from Info
+                          </button>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                          {/* 1. Page Title */}
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <div className="seo-field-header">
+                              <label className="form-label" style={{ marginBottom: 0 }}>
+                                Page Title
+                              </label>
+                              <div className="seo-char-meter">
+                                <span>{(formState.seoTitle || '').length} / 60</span>
+                                <span
+                                  className={`seo-char-pill ${
+                                    (formState.seoTitle || '').length === 0
+                                      ? 'neutral'
+                                      : (formState.seoTitle || '').length <= 60
+                                      ? 'optimal'
+                                      : 'warning'
+                                  }`}
+                                >
+                                  {(formState.seoTitle || '').length === 0
+                                    ? 'Recommended: 40-60'
+                                    : (formState.seoTitle || '').length <= 60
+                                    ? 'Good length'
+                                    : 'May truncate'}
+                                </span>
+                              </div>
+                            </div>
+                            <input
+                              type="text"
+                              className="form-input"
+                              value={formState.seoTitle || ''}
+                              onChange={(e) => setFormState({ ...formState, seoTitle: e.target.value })}
+                              placeholder="e.g. Pure Turmeric Powder - Premium Quality Wholesale"
+                            />
+                            <span style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', marginTop: '2px' }}>
+                              The main headline displayed in Google search results.
+                            </span>
+                          </div>
+
+                          {/* 2. Meta Description */}
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <div className="seo-field-header">
+                              <label className="form-label" style={{ marginBottom: 0 }}>
+                                Meta Description
+                              </label>
+                              <div className="seo-char-meter">
+                                <span>{(formState.metaDescription || '').length} / 160</span>
+                                <span
+                                  className={`seo-char-pill ${
+                                    (formState.metaDescription || '').length === 0
+                                      ? 'neutral'
+                                      : (formState.metaDescription || '').length <= 160
+                                      ? 'optimal'
+                                      : 'warning'
+                                  }`}
+                                >
+                                  {(formState.metaDescription || '').length === 0
+                                    ? 'Recommended: 120-160'
+                                    : (formState.metaDescription || '').length <= 160
+                                    ? 'Good length'
+                                    : 'May truncate'}
+                                </span>
+                              </div>
+                            </div>
+                            <textarea
+                              rows={3}
+                              className="form-textarea"
+                              style={{ resize: 'vertical' }}
+                              value={formState.metaDescription || ''}
+                              onChange={(e) => setFormState({ ...formState, metaDescription: e.target.value })}
+                              placeholder="e.g. Order pure turmeric powder in sealed 100g packs. Freshly milled, 100% natural spices available for wholesale and bulk enquiry."
+                            />
+                            <span style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', marginTop: '2px' }}>
+                              A brief, compelling summary to encourage searchers to click through.
+                            </span>
+                          </div>
+
+                          {/* 3. Meta Keywords */}
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <div className="seo-field-header">
+                              <label className="form-label" style={{ marginBottom: 0 }}>
+                                Target Keywords
+                              </label>
+                              <span style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)' }}>
+                                Comma-separated
+                              </span>
+                            </div>
+                            <input
+                              type="text"
+                              className="form-input"
+                              value={formState.metaKeywords || ''}
+                              onChange={(e) => setFormState({ ...formState, metaKeywords: e.target.value })}
+                              placeholder="e.g. spices, turmeric, 100g pack, wholesale"
+                            />
+                            {/* Interactive Keyword Chips */}
+                            {formState.metaKeywords && (
+                              <div className="seo-chips-wrap">
+                                {formState.metaKeywords
+                                  .split(',')
+                                  .map((kw) => kw.trim())
+                                  .filter(Boolean)
+                                  .map((kw, idx) => (
+                                    <span key={idx} className="seo-chip">
+                                      #{kw}
+                                      <button
+                                        type="button"
+                                        className="seo-chip-remove"
+                                        onClick={() => {
+                                          const currentList = formState.metaKeywords
+                                            .split(',')
+                                            .map((k) => k.trim())
+                                            .filter(Boolean)
+                                          const filtered = currentList.filter((_, i) => i !== idx).join(', ')
+                                          setFormState({ ...formState, metaKeywords: filtered })
+                                        }}
+                                        title="Remove keyword"
+                                      >
+                                        <FiX size={12} />
+                                      </button>
+                                    </span>
+                                  ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Google Search Result Live Preview Card */}
+                      <div className="serp-card">
+                        <div className="serp-card-label">
+                          <FiSearch size={13} /> Google Search Result (Live Preview)
+                        </div>
+                        <div className="serp-breadcrumb">
+                          <span className="serp-favicon">G</span>
+                          <span>
+                            https://quick-enquiry.co › products › {formState.name ? formState.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : 'product-item'}
+                          </span>
+                        </div>
+                        <div className="serp-title">
+                          {formState.seoTitle || formState.name || 'Product Title — Quick Enquiry'}
+                        </div>
+                        <div className="serp-desc">
+                          {formState.metaDescription || formState.description || 'Add an SEO meta description to preview how your product will be indexed and displayed across search engines.'}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={() => setIsModalOpen(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn-primary">
-                    <FiCheck size={16} /> Save Product
-                  </button>
+                <div className="modal-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    {modalTab === 'seo' ? (
+                      <button
+                        type="button"
+                        className="btn-secondary"
+                        onClick={() => setModalTab('general')}
+                        style={{ fontSize: '0.82rem' }}
+                      >
+                        <FiChevronLeft size={16} /> Back to Details
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btn-secondary"
+                        onClick={() => setModalTab('seo')}
+                        style={{ fontSize: '0.82rem' }}
+                      >
+                        Configure SEO <FiChevronRight size={16} />
+                      </button>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={() => setIsModalOpen(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn-primary">
+                      <FiCheck size={16} /> Save Product
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>
@@ -1606,6 +2021,33 @@ const ProductManagement = ({ products, setProducts, showToast, globalSearch }) =
                     {selectedProductDetail.reviewsCount || 12} Verified Customer Reviews
                   </span>
                 </div>
+
+                {/* SEO TAGS & METADATA PREVIEW */}
+                {(selectedProductDetail.seoTitle || selectedProductDetail.metaKeywords || selectedProductDetail.metaDescription) && (
+                  <div style={{ marginTop: '14px', padding: '12px 14px', borderRadius: '10px', backgroundColor: '#FAF6F0', border: '1px solid var(--admin-card-border)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                      <FiGlobe size={15} color="var(--admin-primary)" />
+                      <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--admin-text-main)' }}>
+                        Search Engine Metadata (SEO)
+                      </span>
+                    </div>
+                    {selectedProductDetail.seoTitle && (
+                      <div style={{ fontSize: '0.78rem', color: 'var(--admin-text-main)', marginBottom: '4px' }}>
+                        <span style={{ color: 'var(--admin-text-muted)', fontWeight: 600 }}>Page Title:</span> {selectedProductDetail.seoTitle}
+                      </div>
+                    )}
+                    {selectedProductDetail.metaKeywords && (
+                      <div style={{ fontSize: '0.76rem', color: 'var(--admin-text-main)', marginBottom: '4px' }}>
+                        <span style={{ color: 'var(--admin-text-muted)', fontWeight: 600 }}>Keywords:</span> {selectedProductDetail.metaKeywords}
+                      </div>
+                    )}
+                    {selectedProductDetail.metaDescription && (
+                      <div style={{ fontSize: '0.76rem', color: 'var(--admin-text-muted)', fontStyle: 'italic', marginTop: '4px', lineHeight: 1.4 }}>
+                        "{selectedProductDetail.metaDescription}"
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* FOOTER */}

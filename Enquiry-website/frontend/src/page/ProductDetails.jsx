@@ -17,10 +17,33 @@ const combinedCatalog = [...productsData, ...categoryVariantProducts, ...beautyP
 const ProductDetails = () => {
   const { id } = useParams()
 
-  // Scroll to top whenever the product ID changes
+  // Scroll to top and apply dynamic SEO metadata tags
   useEffect(() => {
-    window.scrollTo(0, 0)  
-  }, [id])
+    window.scrollTo(0, 0)
+    if (product) {
+      document.title = product.seoTitle || `${product.name} | QuickEnquiry`
+
+      if (product.metaDescription) {
+        let metaDesc = document.querySelector('meta[name="description"]')
+        if (!metaDesc) {
+          metaDesc = document.createElement('meta')
+          metaDesc.name = 'description'
+          document.head.appendChild(metaDesc)
+        }
+        metaDesc.content = product.metaDescription
+      }
+
+      if (product.metaKeywords) {
+        let metaKeys = document.querySelector('meta[name="keywords"]')
+        if (!metaKeys) {
+          metaKeys = document.createElement('meta')
+          metaKeys.name = 'keywords'
+          document.head.appendChild(metaKeys)
+        }
+        metaKeys.content = product.metaKeywords
+      }
+    }
+  }, [id, product])
 
   // Find matching product by slug, ID, or normalized product name across combined catalog
   

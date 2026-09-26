@@ -8,6 +8,7 @@ import CompanySettings from '../components/Admin/CompanySettings'
 import ProductManagement from '../components/Admin/ProductManagement'
 import CategoryManagement from '../components/Admin/CategoryManagement'
 import EnquiryManagement from '../components/Admin/EnquiryManagement'
+import SmtpSettings from '../components/Admin/SmtpSettings'
 import defaultHeroImages from '../HeroImage.json'
 import defaultProducts from '../ProductsData.json'
 import defaultFaqs from '../Faq.json'
@@ -447,6 +448,7 @@ const AdminPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [searchFilter, setSearchFilter] = useState('')
+  const [productCategoryFilter, setProductCategoryFilter] = useState('ALL')
   const [toast, setToast] = useState(null)
 
   // 1. Hero Slides State with LocalStorage persistence
@@ -746,6 +748,7 @@ const AdminPage = () => {
         setIsOpen={setIsSidebarOpen}
         isCollapsed={isCollapsed}
         setIsCollapsed={setIsCollapsed}
+        onSelectAllProducts={() => setProductCategoryFilter('ALL')}
       />
 
       {/* Main Content Dashboard Wrapper */}
@@ -809,6 +812,8 @@ const AdminPage = () => {
               setProducts={setProducts}
               showToast={showToast}
               globalSearch={searchFilter}
+              selectedCategoryProp={productCategoryFilter}
+              onCategoryChange={setProductCategoryFilter}
             />
           )}
 
@@ -818,6 +823,10 @@ const AdminPage = () => {
               setProducts={setProducts}
               setActiveTab={setActiveTab}
               showToast={showToast}
+              onViewCategoryProducts={(catName) => {
+                setProductCategoryFilter(catName)
+                setActiveTab('product')
+              }}
             />
           )}
 
@@ -829,6 +838,14 @@ const AdminPage = () => {
 
           {activeTab === 'settings' && (
             <SystemSettingsView
+              storeSettings={storeSettings}
+              setStoreSettings={setStoreSettings}
+              showToast={showToast}
+            />
+          )}
+
+          {activeTab === 'smtp' && (
+            <SmtpSettings
               storeSettings={storeSettings}
               setStoreSettings={setStoreSettings}
               showToast={showToast}

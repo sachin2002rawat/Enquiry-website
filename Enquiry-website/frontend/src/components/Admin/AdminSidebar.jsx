@@ -12,7 +12,8 @@ import {
   FiChevronUp,
   FiTag,
   FiList,
-  FiSettings
+  FiSettings,
+  FiMail
 } from 'react-icons/fi'
 import { FaCommentDots } from 'react-icons/fa'
 
@@ -22,10 +23,14 @@ const AdminSidebar = ({
   isOpen,
   setIsOpen,
   isCollapsed,
-  setIsCollapsed
+  setIsCollapsed,
+  onSelectAllProducts
 }) => {
   const isProductTabGroup = ['product', 'category', 'enquiry'].includes(activeTab)
   const [isProductMenuOpen, setIsProductMenuOpen] = useState(true)
+
+  const isSettingsTabGroup = ['settings', 'smtp'].includes(activeTab)
+  const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(true)
 
   const navItems = [
     { id: 'overview', label: 'Dashboard Overview', icon: FiGrid },
@@ -44,7 +49,7 @@ const AdminSidebar = ({
         title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
         aria-label="Toggle Sidebar Collapse"
       >
-        {isCollapsed ? <FiChevronRight size={14} /> : <FiChevronLeft size={14} />}
+        {isCollapsed ? <FiChevronRight size={18} /> : <FiChevronLeft size={18} />}
       </button>
 
       {/* Sidebar Top Brand Header with QuickEnquiry Logo */}
@@ -74,7 +79,10 @@ const AdminSidebar = ({
       {/* Sidebar Navigation */}
       <nav className="admin-sidebar-nav">
         {!isCollapsed ? (
-          <div className="nav-section-label">Main Menu</div>
+          <div className="nav-section-label">
+            <span className="nav-section-dot"></span>
+            <span>Main Menu</span>
+          </div>
         ) : (
           <div className="nav-section-divider"></div>
         )}
@@ -151,6 +159,7 @@ const AdminSidebar = ({
                 type="button"
                 className={`admin-nav-subitem ${activeTab === 'product' ? 'active' : ''}`}
                 onClick={() => {
+                  if (onSelectAllProducts) onSelectAllProducts()
                   setActiveTab('product')
                   if (window.innerWidth <= 1024) setIsOpen(false)
                 }}
@@ -233,20 +242,84 @@ const AdminSidebar = ({
           )}
         </div>
 
-        {/* Settings Navigation Item */}
-        <button
-          type="button"
-          className={`admin-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
-          title={isCollapsed ? 'Settings' : ''}
-          onClick={() => {
-            setActiveTab('settings')
-            if (window.innerWidth <= 1024) setIsOpen(false)
-          }}
-          style={{ width: '100%' }}
-        >
-          <FiSettings size={20} className="nav-item-icon" />
-          {!isCollapsed && <span>Settings</span>}
-        </button>
+        {/* Settings Group with Dropdown */}
+        <div className="admin-nav-group" style={{ width: '100%' }}>
+          <button
+            type="button"
+            className={`admin-nav-item ${isSettingsTabGroup ? 'active' : ''}`}
+            title={isCollapsed ? 'Settings' : ''}
+            onClick={() => {
+              if (isCollapsed) {
+                setIsCollapsed(false)
+                setIsSettingsMenuOpen(true)
+              } else {
+                setIsSettingsMenuOpen(!isSettingsMenuOpen)
+              }
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: isCollapsed ? 'center' : 'space-between',
+              cursor: 'pointer'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <FiSettings size={20} className="nav-item-icon" />
+              {!isCollapsed && <span>Settings</span>}
+            </div>
+
+            {!isCollapsed && (
+              <span style={{ display: 'flex', alignItems: 'center', opacity: 0.85, marginLeft: 'auto' }}>
+                {isSettingsMenuOpen ? <FiChevronUp size={16} /> : <FiChevronDown size={16} />}
+              </span>
+            )}
+          </button>
+
+          {/* Dropdown submenu showing SMTP */}
+          {!isCollapsed && isSettingsMenuOpen && (
+            <div
+              className="admin-nav-submenu"
+              style={{
+                marginLeft: '18px',
+                paddingLeft: '10px',
+                borderLeft: '2px solid rgba(255, 255, 255, 0.12)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px',
+                marginTop: '6px',
+                marginBottom: '6px'
+              }}
+            >
+              {/* SMTP */}
+              <button
+                type="button"
+                className={`admin-nav-subitem ${activeTab === 'smtp' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('smtp')
+                  if (window.innerWidth <= 1024) setIsOpen(false)
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '9px 12px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  fontSize: '0.86rem',
+                  fontWeight: activeTab === 'smtp' ? 700 : 500,
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  backgroundColor: activeTab === 'smtp' ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
+                  color: activeTab === 'smtp' ? '#A78BFA' : '#94A3B8',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <FiMail size={16} />
+                <span>SMTP</span>
+              </button>
+            </div>
+          )}
+        </div>
       </nav>
 
       {/* Sidebar User Footer */}

@@ -19,7 +19,7 @@ import {
   FiEye
 } from 'react-icons/fi'
 
-const CategoryManagement = ({ products = [], setProducts, setActiveTab, showToast }) => {
+const CategoryManagement = ({ products = [], setProducts, setActiveTab, showToast, onViewCategoryProducts }) => {
   const [viewMode, setViewMode] = useState('list')
   const [searchTerm, setSearchTerm] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -235,7 +235,9 @@ const CategoryManagement = ({ products = [], setProducts, setActiveTab, showToas
   }
 
   const handleViewProductsOfCategory = (catName) => {
-    if (setActiveTab) {
+    if (onViewCategoryProducts) {
+      onViewCategoryProducts(catName)
+    } else if (setActiveTab) {
       setActiveTab('product')
     }
   }
@@ -517,6 +519,8 @@ const CategoryManagement = ({ products = [], setProducts, setActiveTab, showToas
                       {/* Product Count Badge */}
                       <td style={{ padding: '12px 18px', textAlign: 'center' }}>
                         <span
+                          onClick={() => handleViewProductsOfCategory(cat.name)}
+                          title={`Click to view all ${cat.count} products in ${cat.name}`}
                           style={{
                             display: 'inline-flex',
                             alignItems: 'center',
@@ -526,7 +530,9 @@ const CategoryManagement = ({ products = [], setProducts, setActiveTab, showToas
                             padding: '4px 10px',
                             borderRadius: '12px',
                             backgroundColor: '#CCFBF1',
-                            color: '#0D9488'
+                            color: '#0D9488',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease'
                           }}
                         >
                           <FiPackage size={12} /> {cat.count} {cat.count === 1 ? 'Product' : 'Products'}

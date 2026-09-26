@@ -23,6 +23,8 @@ import {
 import {
   FiSliders,
   FiPlus,
+  FiList,
+  FiGrid,
   FiEdit2,
   FiTrash2,
   FiSave,
@@ -164,6 +166,7 @@ const HomepageSettings = ({
   const [imageSourceType, setImageSourceType] = useState('upload') // 'upload' | 'url'
   const [uploadedFileName, setUploadedFileName] = useState('')
   const [deleteSlideId, setDeleteSlideId] = useState(null)
+  const [bannerViewMode, setBannerViewMode] = useState('list') // 'list' | 'grid'
 
   // FAQ Management State
   const [faqMeta, setFaqMeta] = useState({
@@ -1341,100 +1344,353 @@ const HomepageSettings = ({
               </p>
             </div>
           </div>
-          <button className="btn-secondary" onClick={handleAddSlideClick}>
-            <FiPlus size={16} /> Add Hero Banner
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                backgroundColor: '#F1F5F9',
+                borderRadius: '8px',
+                padding: '3px',
+                border: '1px solid #E2E8F0'
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setBannerViewMode('list')}
+                title="List View"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '5px 10px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  backgroundColor: bannerViewMode === 'list' ? '#FFFFFF' : 'transparent',
+                  color: bannerViewMode === 'list' ? '#4F46E5' : '#64748B',
+                  boxShadow: bannerViewMode === 'list' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <FiList size={14} /> List View
+              </button>
+              <button
+                type="button"
+                onClick={() => setBannerViewMode('grid')}
+                title="Cards View"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '5px 10px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  backgroundColor: bannerViewMode === 'grid' ? '#FFFFFF' : 'transparent',
+                  color: bannerViewMode === 'grid' ? '#4F46E5' : '#64748B',
+                  boxShadow: bannerViewMode === 'grid' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <FiGrid size={14} /> Cards
+              </button>
+            </div>
+            <button className="btn-secondary" onClick={handleAddSlideClick}>
+              <FiPlus size={16} /> Add Hero Banner
+            </button>
+          </div>
         </div>
 
-        <div className="banners-grid">
-          {heroSlides.map((slide, index) => (
-            <div className="banner-item-card" key={slide.id || index}>
-              <div className="banner-img-wrap">
-                <span className="banner-order-badge">Slide #{index + 1}</span>
-                <img
-                  src={slide.url}
-                  alt={slide.title}
-                  onError={(e) => {
-                    e.target.onerror = null
-                    e.target.src = 'https://images.unsplash.com/photo-1509358271058-acd22cc93898?auto=format&fit=crop&w=800&q=80'
-                  }}
-                />
-              </div>
-              <div className="banner-content">
-                <div className="banner-title">{slide.title}</div>
-                <div className="banner-sub">{slide.subtitle}</div>
-                <div className="banner-actions">
-                  {deleteSlideId === slide.id ? (
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        backgroundColor: '#FEF2F2',
-                        border: '1px solid #FCA5A5',
-                        borderRadius: '6px',
-                        padding: '3px 6px'
-                      }}
-                    >
-                      <span style={{ fontSize: '0.74rem', color: '#991B1B', fontWeight: 600 }}>
-                        Delete?
-                      </span>
-                      <button
-                        type="button"
+        {bannerViewMode === 'list' ? (
+          <div className="banner-table-wrapper">
+            <table className="banner-table">
+              <thead>
+                <tr>
+                  <th className="banner-col-order">Slide #</th>
+                  <th className="banner-col-media">Banner Media</th>
+                  <th className="banner-col-title">Headline & Title</th>
+                  <th className="banner-col-desc">Subtitle / Description</th>
+                  <th className="banner-col-actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {heroSlides.length > 0 ? (
+                  heroSlides.map((slide, index) => (
+                    <tr key={slide.id || index}>
+                      {/* Slide # */}
+                      <td className="banner-col-order">
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            padding: '4px 9px',
+                            borderRadius: '12px',
+                            backgroundColor: '#EEF2FF',
+                            color: '#4F46E5',
+                            fontWeight: 800,
+                            fontSize: '0.74rem',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          #{index + 1}
+                        </span>
+                      </td>
+
+                      {/* Banner Preview Thumbnail */}
+                      <td className="banner-col-media">
+                        <div
+                          style={{
+                            width: '96px',
+                            height: '50px',
+                            borderRadius: '8px',
+                            overflow: 'hidden',
+                            border: '1px solid #E2E8F0',
+                            backgroundColor: '#F1F5F9',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                        >
+                          <img
+                            src={slide.url}
+                            alt={slide.title}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                              display: 'block'
+                            }}
+                            onError={(e) => {
+                              e.target.onerror = null
+                              e.target.src =
+                                'https://images.unsplash.com/photo-1509358271058-acd22cc93898?auto=format&fit=crop&w=800&q=80'
+                            }}
+                          />
+                        </div>
+                      </td>
+
+                      {/* Headline & Title */}
+                      <td className="banner-col-title">
+                        <div
+                          style={{
+                            fontWeight: 700,
+                            fontSize: '0.9rem',
+                            color: 'var(--admin-text-main)',
+                            lineHeight: 1.3,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}
+                          title={slide.title}
+                        >
+                          {slide.title}
+                        </div>
+                        <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+                          ID: {slide.id || index + 1}
+                        </span>
+                      </td>
+
+                      {/* Subtitle / Description */}
+                      <td className="banner-col-desc">
+                        <div
+                          style={{
+                            fontSize: '0.8rem',
+                            color: '#64748B',
+                            lineHeight: 1.4,
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}
+                          title={slide.subtitle}
+                        >
+                          {slide.subtitle || '—'}
+                        </div>
+                      </td>
+
+                      {/* Actions */}
+                      <td className="banner-col-actions">
+                        {deleteSlideId === slide.id ? (
+                          <div
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              backgroundColor: '#FEF2F2',
+                              border: '1px solid #FCA5A5',
+                              borderRadius: '6px',
+                              padding: '2px 4px'
+                            }}
+                          >
+                            <button
+                              type="button"
+                              title="Confirm Delete"
+                              style={{
+                                backgroundColor: '#EF4444',
+                                color: '#FFFFFF',
+                                border: 'none',
+                                borderRadius: '4px',
+                                padding: '3px 6px',
+                                fontSize: '0.7rem',
+                                fontWeight: 700,
+                                cursor: 'pointer'
+                              }}
+                              onClick={() => handleDeleteSlide(slide.id)}
+                            >
+                              Delete
+                            </button>
+                            <button
+                              type="button"
+                              title="Cancel"
+                              style={{
+                                backgroundColor: '#FFFFFF',
+                                color: '#475569',
+                                border: '1px solid #CBD5E1',
+                                borderRadius: '4px',
+                                padding: '3px 5px',
+                                fontSize: '0.7rem',
+                                fontWeight: 600,
+                                cursor: 'pointer'
+                              }}
+                              onClick={() => setDeleteSlideId(null)}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ) : (
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
+                            <button
+                              type="button"
+                              className="btn-icon"
+                              title="Edit Banner"
+                              onClick={() => handleEditSlideClick(slide)}
+                              style={{ width: '28px', height: '28px', padding: 0 }}
+                            >
+                              <FiEdit2 size={13} />
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-icon delete"
+                              title="Delete Banner"
+                              onClick={() => setDeleteSlideId(slide.id)}
+                              style={{ width: '28px', height: '28px', padding: 0 }}
+                            >
+                              <FiTrash2 size={13} />
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} style={{ textAlign: 'center', padding: '32px 16px', color: '#64748B' }}>
+                      No hero banners configured. Click "+ Add Hero Banner" to create one.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="banners-grid">
+            {heroSlides.map((slide, index) => (
+              <div className="banner-item-card" key={slide.id || index}>
+                <div className="banner-img-wrap">
+                  <span className="banner-order-badge">Slide #{index + 1}</span>
+                  <img
+                    src={slide.url}
+                    alt={slide.title}
+                    onError={(e) => {
+                      e.target.onerror = null
+                      e.target.src =
+                        'https://images.unsplash.com/photo-1509358271058-acd22cc93898?auto=format&fit=crop&w=800&q=80'
+                    }}
+                  />
+                </div>
+                <div className="banner-content">
+                  <div className="banner-title">{slide.title}</div>
+                  <div className="banner-sub">{slide.subtitle}</div>
+                  <div className="banner-actions">
+                    {deleteSlideId === slide.id ? (
+                      <div
                         style={{
-                          backgroundColor: '#EF4444',
-                          color: '#FFFFFF',
-                          border: 'none',
-                          borderRadius: '4px',
-                          padding: '2px 8px',
-                          fontSize: '0.72rem',
-                          fontWeight: 700,
-                          cursor: 'pointer'
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          backgroundColor: '#FEF2F2',
+                          border: '1px solid #FCA5A5',
+                          borderRadius: '6px',
+                          padding: '3px 6px'
                         }}
-                        onClick={() => handleDeleteSlide(slide.id)}
                       >
-                        Delete
-                      </button>
-                      <button
-                        type="button"
-                        style={{
-                          backgroundColor: '#FFFFFF',
-                          color: '#475569',
-                          border: '1px solid #CBD5E1',
-                          borderRadius: '4px',
-                          padding: '2px 6px',
-                          fontSize: '0.72rem',
-                          fontWeight: 600,
-                          cursor: 'pointer'
-                        }}
-                        onClick={() => setDeleteSlideId(null)}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <button
-                        className="btn-icon"
-                        title="Edit Banner"
-                        onClick={() => handleEditSlideClick(slide)}
-                      >
-                        <FiEdit2 size={14} />
-                      </button>
-                      <button
-                        className="btn-icon delete"
-                        title="Delete Banner"
-                        onClick={() => setDeleteSlideId(slide.id)}
-                      >
-                        <FiTrash2 size={14} />
-                      </button>
-                    </>
-                  )}
+                        <span style={{ fontSize: '0.74rem', color: '#991B1B', fontWeight: 600 }}>
+                          Delete?
+                        </span>
+                        <button
+                          type="button"
+                          style={{
+                            backgroundColor: '#EF4444',
+                            color: '#FFFFFF',
+                            border: 'none',
+                            borderRadius: '4px',
+                            padding: '2px 8px',
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            cursor: 'pointer'
+                          }}
+                          onClick={() => handleDeleteSlide(slide.id)}
+                        >
+                          Delete
+                        </button>
+                        <button
+                          type="button"
+                          style={{
+                            backgroundColor: '#FFFFFF',
+                            color: '#475569',
+                            border: '1px solid #CBD5E1',
+                            borderRadius: '4px',
+                            padding: '2px 6px',
+                            fontSize: '0.72rem',
+                            fontWeight: 600,
+                            cursor: 'pointer'
+                          }}
+                          onClick={() => setDeleteSlideId(null)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          className="btn-icon"
+                          title="Edit Banner"
+                          onClick={() => handleEditSlideClick(slide)}
+                        >
+                          <FiEdit2 size={14} />
+                        </button>
+                        <button
+                          className="btn-icon delete"
+                          title="Delete Banner"
+                          onClick={() => setDeleteSlideId(slide.id)}
+                        >
+                          <FiTrash2 size={14} />
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 1.5. TRUSTED BY PARTNERS TICKER MANAGEMENT */}
@@ -1447,7 +1703,7 @@ const HomepageSettings = ({
             <div>
               <div className="card-title-row">
                 <h2 className="card-title">Trusted By Retail Partners Ticker</h2>
-                <span className="live-count-badge" style={{ backgroundColor: '#E0F2FE', color: '#0369A1' }}>
+                <span className="live-count-badge" style={{ backgroundColor: '#E0F2FE', color: '#0369A1', border: '1px solid #BAE6FD' }}>
                   {trustedByPartners.length} Brands
                 </span>
               </div>
@@ -1648,7 +1904,7 @@ const HomepageSettings = ({
             <div>
               <div className="card-title-row">
                 <h2 className="card-title">Popular Products Coverflow Carousel</h2>
-                <span className="live-count-badge" style={{ backgroundColor: '#E0F2FE', color: '#0284C7' }}>
+                <span className="live-count-badge" style={{ backgroundColor: '#E0F2FE', color: '#0369A1', border: '1px solid #BAE6FD' }}>
                   {popularProducts.length} Trending Products
                 </span>
               </div>
@@ -2215,7 +2471,7 @@ const HomepageSettings = ({
             <div>
               <div className="card-title-row">
                 <h2 className="card-title">About Company ("Who We Are") Showcase</h2>
-                <span className="live-count-badge" style={{ backgroundColor: '#FEF3C7', color: '#B45309' }}>
+                <span className="live-count-badge" style={{ backgroundColor: '#FEF3C7', color: '#B45309', border: '1px solid #FDE68A' }}>
                   Homepage Feature Block
                 </span>
               </div>
@@ -2556,7 +2812,7 @@ const HomepageSettings = ({
             <div>
               <div className="card-title-row">
                 <h2 className="card-title">Why Choose Us Section Management</h2>
-                <span className="live-count-badge" style={{ backgroundColor: '#FEF3C7', color: '#B45309' }}>
+                <span className="live-count-badge" style={{ backgroundColor: '#FEF3C7', color: '#B45309', border: '1px solid #FDE68A' }}>
                   {whyChooseList.length} Highlights
                 </span>
               </div>
@@ -3411,7 +3667,7 @@ const HomepageSettings = ({
             <div>
               <div className="card-title-row">
                 <h2 className="card-title">Frequently Asked Questions (FAQ)</h2>
-                <span className="live-count-badge" style={{ backgroundColor: '#ECFDF5', color: '#059669' }}>
+                <span className="live-count-badge" style={{ backgroundColor: '#ECFDF5', color: '#047857', border: '1px solid #A7F3D0' }}>
                   {faqs.length} Questions
                 </span>
               </div>

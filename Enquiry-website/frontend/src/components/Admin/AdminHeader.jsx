@@ -12,7 +12,8 @@ import {
   FiTag,
   FiLayout,
   FiBriefcase,
-  FiSettings
+  FiSettings,
+  FiMail
 } from 'react-icons/fi'
 import { FaCommentDots } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
@@ -89,6 +90,13 @@ const AdminHeader = ({ activeTab, setIsOpen, showToast }) => {
           subtitle: 'Configure store preferences, currency, alerts, and data maintenance.',
           icon: <FiSettings size={20} color="#6366F1" />,
           accentColor: '#6366F1'
+        }
+      case 'smtp':
+        return {
+          title: 'SMTP & Email Configuration',
+          subtitle: 'Configure mail server credentials, sender identity, security protocols, and email notifications.',
+          icon: <FiMail size={20} color="#7C3AED" />,
+          accentColor: '#7C3AED'
         }
       case 'overview':
       default:
